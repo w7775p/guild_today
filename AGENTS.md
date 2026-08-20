@@ -6,6 +6,17 @@
 - 禁止加入旧网页工作台、Node.js、Vite、TypeScript 或浏览器草稿数据。
 - Resource 表示静态策划定义，Runtime / Instance 表示实际发生的游戏事实，System 管理运行逻辑。
 
+## 项目真源
+
+开工前按以下顺序读取本地工作镜像：
+
+1. `docs/agents/godot_runtime_architecture.md`
+2. `docs/agents/engineering_rules.md`
+3. `docs/agents/notion_agents.md`
+4. `docs/agents/known_traps.md`
+
+Notion 页面仍是项目真源，本地文件用于 Agent 稳定访问、版本审查和离线工作。
+
 ## 开发规则
 
 - 每次只执行 Jackie 明确授权的一个 Task，不提前实现后续 Task。
