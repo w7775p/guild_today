@@ -1,0 +1,4 @@
+# Godot 4+ 本地缓存与平台导出目录
+.godot/
+/android/
+*.translation

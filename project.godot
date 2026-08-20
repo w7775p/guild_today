@@ -1,0 +1,24 @@
+; Godot 引擎配置文件。
+; 优先通过编辑器修改，避免手动填写不完整的引擎参数。
+
+config_version=5
+
+[application]
+
+config/name="今日公会照常营业"
+run/main_scene="res://tests/vertical_slice_test.tscn"
+config/features=PackedStringArray("4.7", "Forward Plus")
+config/icon="res://icon.svg"
+
+[display]
+
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+
+[physics]
+
+3d/physics_engine="Jolt Physics"
+
+[rendering]
+
+rendering_device/driver.windows="d3d12"
