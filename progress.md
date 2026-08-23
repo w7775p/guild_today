@@ -1,5 +1,17 @@
 # 进度日志
 
+## 2026-08-23：完成 V2 Task 10 TaskSystem
+
+- 已新增 `runtime/tasks/task_system.gd`，类型为 Node，独占保存与修改本局 TaskInstance。
+- 已提供 `create_task_instance()`、`get_task_instance()` 与 `record_final_result()` 三个最小公开 API。
+- 已从废弃医院 TaskAsset 创建两个实例，生成 `test_abandoned_hospital_instance_1` 与 `test_abandoned_hospital_instance_2`，并验证系统可按 ID 读回原实例。
+- 已通过公开 API 只给第一个实例写入成功结果 ID，第二个实例保持空值。
+- Godot 编辑器无界面扫描生成了 `task_system.gd.uid`；扫描因 `--quit-after 8` 结束时出现一次 `Scan thread aborted` 警告，不影响类缓存与 UID 生成。
+- Godot 4.7.2 对 `task_system.gd` 与 `vertical_slice_test.gd` 的单脚本检查退出码均为 0。
+- Godot 4.7.2 主场景运行退出码为 0，输出 `TaskSystem ownership success: first=test_abandoned_hospital_instance_1, second=test_abandoned_hospital_instance_2, result=test_abandoned_hospital_success`。
+- 未实现每日刷新、生成条件框架、派遣、结果选择或完整生命周期枚举；未执行 Task 11；未 push。
+- 下一步：只执行 Task 11 的 DispatchSystem。
+
 ## 2026-08-23：完成 V2 Task 9 ResultInstance
 
 - 已新增 `runtime/results/result_instance.gd`，类型为 `RefCounted`，只保存 `result_asset_id`、`dispatch_instance_id` 与 `resolved_effects`。

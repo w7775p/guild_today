@@ -13,6 +13,7 @@ func _ready() -> void:
 	_validate_task_instance()
 	_validate_dispatch_instance()
 	_validate_result_instance()
+	_validate_task_system()
 
 
 # 通过实际加载 TEST_ONLY 资源，验证 Task 1 的静态字段和稳定 ID。
@@ -182,3 +183,27 @@ func _validate_result_instance() -> void:
 	assert(result_asset.effects[1] == reputation_effect, "ResultAsset 效果顺序被运行记录污染")
 	result_instance.resolved_effects.reverse()
 	print("ResultInstance record success: result=%s, dispatch=%s, effects=%d" % [result_instance.result_asset_id, result_instance.dispatch_instance_id, result_instance.resolved_effects.size()])
+
+
+# 让 TaskSystem 创建并拥有两个实例，再通过公开 API 写入其中一个最终结果。
+func _validate_task_system() -> void:
+	var task_asset: TaskAsset = load("res://tests/fixtures/abandoned_hospital.tres") as TaskAsset
+	assert(task_asset != null, "TaskSystem 所需 TaskAsset 加载失败")
+	var task_system := TaskSystem.new()
+	add_child(task_system)
+
+	var first_instance := task_system.create_task_instance(task_asset)
+	var second_instance := task_system.create_task_instance(task_asset)
+	assert(first_instance != null and second_instance != null, "TaskSystem 创建任务实例失败")
+	assert(first_instance.instance_id != second_instance.instance_id, "TaskSystem 生成了重复实例 ID")
+	assert(first_instance.task_id == task_asset.id, "第一个 TaskInstance 的任务 ID 不正确")
+	assert(second_instance.task_id == task_asset.id, "第二个 TaskInstance 的任务 ID 不正确")
+	assert(first_instance.lifecycle_state == &"PUBLISHED", "第一个 TaskInstance 初始状态不正确")
+	assert(second_instance.lifecycle_state == &"PUBLISHED", "第二个 TaskInstance 初始状态不正确")
+	assert(task_system.get_task_instance(first_instance.instance_id) == first_instance, "TaskSystem 未保存第一个实例")
+	assert(task_system.get_task_instance(second_instance.instance_id) == second_instance, "TaskSystem 未保存第二个实例")
+	assert(task_system.record_final_result(first_instance.instance_id, &"test_abandoned_hospital_success"), "TaskSystem 记录最终结果失败")
+	assert(first_instance.final_result_id == &"test_abandoned_hospital_success", "TaskSystem 最终结果写入不正确")
+	assert(second_instance.final_result_id.is_empty(), "TaskSystem 污染了另一个任务实例")
+	print("TaskSystem ownership success: first=%s, second=%s, result=%s" % [first_instance.instance_id, second_instance.instance_id, first_instance.final_result_id])
+	task_system.queue_free()

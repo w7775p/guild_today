@@ -20,9 +20,10 @@
 - Task 7：已完成 TaskInstance 与运行事实隔离验收。
 - Task 8：已完成 DispatchInstance 与派遣成员唯一真源验收。
 - Task 9：已完成 ResultInstance 与静态结果隔离验收。
-- Task 10–16：Jackie 已授权按 V2 顺序逐项执行，尚未开始。
+- Task 10：已完成 TaskSystem 创建、持有与最终结果写入验收。
+- Task 11–16：Jackie 已授权按 V2 顺序逐项执行，尚未开始。
 - DOC-1～DOC-5：已完成，历史保存在 `progress.md` 与 `findings.md`，不再混入功能 Task 清单。
-- Task 1–9 均已形成可回退的本地提交检查点；尚未 push。
+- Task 1–10 均已形成可回退的本地提交检查点；尚未 push。
 
 ## 状态标记
 
@@ -156,12 +157,13 @@
 - 验收证据：Godot 4.7.2 对 ResultInstance 与验收脚本的单脚本检查均为 0；实例实际读回结果 ID、派遣 ID 与两个 EffectResource 引用，运行数组变化没有污染 ResultAsset.effects。
 - 不包含：结果选择、效果执行、报告生成、未冻结的完整结算记录 Schema。
 
-### [ ] Task 10：实现 TaskSystem
+### [x] Task 10：实现 TaskSystem
 
 - 单一目标：由 TaskAsset 创建并拥有 TaskInstance 运行事实。
 - 实现：`runtime/tasks/task_system.gd`。
 - 最小职责：生成唯一实例 ID、保存实例、通过公开 API 记录 `final_result_id`。
 - 验收：系统从废弃医院 TaskAsset 创建两个独立 TaskInstance，并能给指定实例记录最终结果 ID。
+- 验收证据：Godot 4.7.2 对 TaskSystem 与验收脚本的单脚本检查均为 0；系统实际创建并保存两个唯一实例，只给指定实例写入成功结果 ID。
 - 不包含：每日刷新、生成条件框架、派遣、结果选择、完整生命周期枚举。
 
 ### [ ] Task 11：实现 DispatchSystem
@@ -237,4 +239,4 @@
 
 ## 当前下一步
 
-下一次只执行 Task 10 的 TaskSystem。
+下一次只执行 Task 11 的 DispatchSystem。

@@ -1,5 +1,13 @@
 # 项目发现与约束
 
+## 2026-08-23 V2 Task 10 TaskSystem 结论
+
+- `TaskSystem` 使用 Node 承担 TaskInstance 的创建、持有和最终结果写入权，实例集合保持私有。
+- 实例 ID 由系统内递增序列确定性生成，格式为 `<task_id>_instance_<sequence>`；同一 TaskAsset 可产生多个互相独立的实例。
+- 新实例初始生命周期使用当前参考状态 `PUBLISHED`，没有引入正式生命周期枚举或额外迁移接口。
+- `final_result_id` 只通过 `record_final_result()` 写入；本 Task 没有让派遣或结果系统直接修改 TaskInstance。
+- 任务生成条件、每日刷新、派遣和结果选择继续留给各自后续职责，没有在 TaskSystem 中预建框架。
+
 ## 2026-08-23 V2 Task 9 ResultInstance 结论
 
 - `ResultInstance` 使用 `RefCounted` 保存一次已经确定的结果事实，最小字段严格保持为结果资产 ID、派遣实例 ID 与已确定效果引用。
