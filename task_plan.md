@@ -19,9 +19,10 @@
 - Task 6：已完成 ResultGroupAsset 与互补结果分支验收。
 - Task 7：已完成 TaskInstance 与运行事实隔离验收。
 - Task 8：已完成 DispatchInstance 与派遣成员唯一真源验收。
-- Task 9–16：Jackie 已授权按 V2 顺序逐项执行，尚未开始。
+- Task 9：已完成 ResultInstance 与静态结果隔离验收。
+- Task 10–16：Jackie 已授权按 V2 顺序逐项执行，尚未开始。
 - DOC-1～DOC-5：已完成，历史保存在 `progress.md` 与 `findings.md`，不再混入功能 Task 清单。
-- Task 1–8 均已形成可回退的本地提交检查点；尚未 push。
+- Task 1–9 均已形成可回退的本地提交检查点；尚未 push。
 
 ## 状态标记
 
@@ -146,12 +147,13 @@
 - 验收证据：Godot 4.7.2 对 DispatchInstance 与验收脚本的单脚本检查均为 0；一次派遣实际保存并读回三个 CharacterAsset 引用，TaskInstance 没有 `party_member_ids`。
 - 不包含：派遣合法性、角色占用、结果判定。
 
-### [ ] Task 9：实现 ResultInstance
+### [x] Task 9：实现 ResultInstance
 
 - 单一目标：记录一次已经确定的结果事实。
 - 实现：`runtime/results/result_instance.gd`，类型为 `RefCounted`。
 - 字段：命中的 `result_asset_id`、对应 `dispatch_instance_id`、本次确定的 `resolved_effects`。
 - 验收：实例可保存并读取结果 ID、派遣 ID 与两个已确定效果引用，且不修改 ResultAsset。
+- 验收证据：Godot 4.7.2 对 ResultInstance 与验收脚本的单脚本检查均为 0；实例实际读回结果 ID、派遣 ID 与两个 EffectResource 引用，运行数组变化没有污染 ResultAsset.effects。
 - 不包含：结果选择、效果执行、报告生成、未冻结的完整结算记录 Schema。
 
 ### [ ] Task 10：实现 TaskSystem
@@ -235,4 +237,4 @@
 
 ## 当前下一步
 
-下一次只执行 Task 9 的 ResultInstance。
+下一次只执行 Task 10 的 TaskSystem。

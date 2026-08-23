@@ -1,5 +1,12 @@
 # 项目发现与约束
 
+## 2026-08-23 V2 Task 9 ResultInstance 结论
+
+- `ResultInstance` 使用 `RefCounted` 保存一次已经确定的结果事实，最小字段严格保持为结果资产 ID、派遣实例 ID 与已确定效果引用。
+- `resolved_effects` 使用 `Array[EffectResource]` 并通过 `assign()` 复制容器；运行记录调整自身数组顺序时不会改写静态 `ResultAsset.effects` 数组。
+- 数组元素继续引用只读 EffectResource，当前没有复制或修改效果 Resource；Task 14 的结算系统将消费这些确定引用。
+- 结果选择、效果执行、报告生成和重复结算保护仍属于后续系统，本 Task 没有增加对应状态或接口。
+
 ## 2026-08-23 V2 Task 8 DispatchInstance 结论
 
 - `DispatchInstance` 使用 `RefCounted` 保存一次派遣决定，并以 `Array[CharacterAsset]` 强类型保存实际角色引用。

@@ -12,6 +12,7 @@ func _ready() -> void:
 	_validate_result_group_asset()
 	_validate_task_instance()
 	_validate_dispatch_instance()
+	_validate_result_instance()
 
 
 # 通过实际加载 TEST_ONLY 资源，验证 Task 1 的静态字段和稳定 ID。
@@ -157,3 +158,27 @@ func _validate_dispatch_instance() -> void:
 	assert(dispatch.status == &"ACTIVE", "DispatchInstance 状态不正确")
 	assert(not "party_member_ids" in TaskInstance.new(), "TaskInstance 不得保存可变派遣成员副本")
 	print("DispatchInstance refs success: id=%s, task=%s, characters=%s" % [dispatch.dispatch_instance_id, dispatch.task_instance_id, [dispatch.character_refs[0].id, dispatch.character_refs[1].id, dispatch.character_refs[2].id]])
+
+
+# 从成功结果复制已确定效果引用，验证运行记录不会改写静态 ResultAsset 数组。
+func _validate_result_instance() -> void:
+	var result_asset: ResultAsset = load("res://tests/fixtures/test_abandoned_hospital_success.tres") as ResultAsset
+	assert(result_asset != null, "ResultInstance 所需 ResultAsset 加载失败")
+	var gold_effect := result_asset.effects[0]
+	var reputation_effect := result_asset.effects[1]
+
+	var result_instance := ResultInstance.new()
+	result_instance.result_asset_id = result_asset.id
+	result_instance.dispatch_instance_id = &"test_dispatch_instance_001"
+	result_instance.resolved_effects.assign(result_asset.effects)
+
+	assert(result_instance.result_asset_id == &"test_abandoned_hospital_success", "ResultInstance 结果资产 ID 不正确")
+	assert(result_instance.dispatch_instance_id == &"test_dispatch_instance_001", "ResultInstance 派遣实例 ID 不正确")
+	assert(result_instance.resolved_effects.size() == 2, "ResultInstance 应保存两个已确定效果")
+	assert(result_instance.resolved_effects[0] == gold_effect, "ResultInstance 金币效果引用不正确")
+	assert(result_instance.resolved_effects[1] == reputation_effect, "ResultInstance 声望效果引用不正确")
+	result_instance.resolved_effects.reverse()
+	assert(result_asset.effects[0] == gold_effect, "ResultInstance 数组变化不应改写 ResultAsset")
+	assert(result_asset.effects[1] == reputation_effect, "ResultAsset 效果顺序被运行记录污染")
+	result_instance.resolved_effects.reverse()
+	print("ResultInstance record success: result=%s, dispatch=%s, effects=%d" % [result_instance.result_asset_id, result_instance.dispatch_instance_id, result_instance.resolved_effects.size()])
