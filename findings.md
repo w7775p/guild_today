@@ -1,5 +1,12 @@
 # 项目发现与约束
 
+## 2026-08-23 V2 Task 7 TaskInstance 结论
+
+- `TaskInstance` 使用 `RefCounted` 表达单局中一次已经发生的任务实例事实，静态 `TaskAsset` 保持只读。
+- `lifecycle_state` 暂以 `StringName` 保存参考状态名称，避免在生命周期契约尚未冻结时引入正式枚举。
+- `runtime_progress` 为每个实例独立持有的 Dictionary；同一 `task_id` 的两个实例可分别修改进度、生命周期与最终结果，没有共享可变事实。
+- 派遣成员继续留给 Task 8 的 `DispatchInstance.character_refs[]`，TaskInstance 没有增加 `party_member_ids` 第二真源。
+
 ## 2026-08-23 V2 Task 6 ResultGroupAsset 结论
 
 - Jackie 已确认允许最小互补条件；新增 `AbilityBelowCondition` 后，`>= 10` 与 `< 10` 将整数调查能力域完整分为成功、失败两支，不需要 fallback、优先级、OR/NOT 或通用规则引擎。

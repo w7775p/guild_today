@@ -1,5 +1,15 @@
 # 进度日志
 
+## 2026-08-23：完成 V2 Task 7 TaskInstance
+
+- 已新增 `runtime/tasks/task_instance.gd`，类型为 `RefCounted`，只保存 `instance_id`、`task_id`、`lifecycle_state`、`final_result_id` 与 `runtime_progress`。
+- 已在主场景验收脚本中手动创建同一任务的两个实例；实例 ID 不同，生命周期、最终结果与进度事实互不污染。
+- Godot 编辑器无界面扫描生成了 `task_instance.gd.uid`；扫描因 `--quit-after 8` 结束时出现一次 `Scan thread aborted` 警告，不影响类缓存与 UID 生成。
+- Godot 4.7.2 对 `task_instance.gd` 与 `vertical_slice_test.gd` 的单脚本检查退出码均为 0。
+- Godot 4.7.2 主场景运行退出码为 0，输出 `TaskInstance isolation success: first=test_task_instance_001, second=test_task_instance_002, task=test_abandoned_hospital`。
+- 未加入 `party_member_ids`，未冻结生命周期枚举，未实现 TaskSystem、派遣或结算；未执行 Task 8；未 push。
+- 下一步：只执行 Task 8 的 DispatchInstance。
+
 ## 2026-08-23：完成 V2 Task 6 ResultGroupAsset
 
 - Jackie 已允许补充最小 `AbilityBelowCondition`；成功条件使用 `investigation >= 10`，失败条件使用 `investigation < 10`。

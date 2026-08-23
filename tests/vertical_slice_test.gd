@@ -10,6 +10,7 @@ func _ready() -> void:
 	_validate_effect_resources()
 	_validate_result_asset()
 	_validate_result_group_asset()
+	_validate_task_instance()
 
 
 # 通过实际加载 TEST_ONLY 资源，验证 Task 1 的静态字段和稳定 ID。
@@ -98,3 +99,32 @@ func _validate_result_group_asset() -> void:
 	assert(not success_condition.is_met(9) and failure_condition.is_met(9), "调查能力 9 应只满足失败条件")
 	assert(success_condition.is_met(10) and not failure_condition.is_met(10), "调查能力 10 应只满足成功条件")
 	print("ResultGroupAsset load success: id=%s, success=%s, failure=%s" % [result_group.id, result_group.results[0].id, result_group.results[1].id])
+
+
+# 手动创建同一静态任务的两个运行实例，验证每份运行事实彼此隔离。
+func _validate_task_instance() -> void:
+	var first_instance := TaskInstance.new()
+	first_instance.instance_id = &"test_task_instance_001"
+	first_instance.task_id = &"test_abandoned_hospital"
+	first_instance.lifecycle_state = &"PUBLISHED"
+	first_instance.runtime_progress[&"investigation"] = 1
+
+	var second_instance := TaskInstance.new()
+	second_instance.instance_id = &"test_task_instance_002"
+	second_instance.task_id = &"test_abandoned_hospital"
+	second_instance.lifecycle_state = &"PUBLISHED"
+	second_instance.runtime_progress[&"investigation"] = 3
+
+	first_instance.lifecycle_state = &"IN_PROGRESS"
+	first_instance.final_result_id = &"test_abandoned_hospital_success"
+	first_instance.runtime_progress[&"investigation"] = 2
+
+	assert(first_instance.instance_id != second_instance.instance_id, "TaskInstance 实例 ID 必须不同")
+	assert(first_instance.task_id == second_instance.task_id, "两个实例应引用同一静态任务 ID")
+	assert(first_instance.lifecycle_state == &"IN_PROGRESS", "第一个实例生命周期事实不正确")
+	assert(second_instance.lifecycle_state == &"PUBLISHED", "第二个实例生命周期事实被污染")
+	assert(first_instance.final_result_id == &"test_abandoned_hospital_success", "第一个实例最终结果 ID 不正确")
+	assert(second_instance.final_result_id.is_empty(), "第二个实例最终结果 ID 被污染")
+	assert(first_instance.runtime_progress[&"investigation"] == 2, "第一个实例进度不正确")
+	assert(second_instance.runtime_progress[&"investigation"] == 3, "第二个实例进度被污染")
+	print("TaskInstance isolation success: first=%s, second=%s, task=%s" % [first_instance.instance_id, second_instance.instance_id, first_instance.task_id])

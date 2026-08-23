@@ -17,9 +17,10 @@
 - Task 4：已完成最小 EffectResource、GoldEffect 与 ReputationEffect 验收。
 - Task 5：已完成 ResultAsset 验收。
 - Task 6：已完成 ResultGroupAsset 与互补结果分支验收。
-- Task 7–16：Jackie 已授权按 V2 顺序逐项执行，尚未开始。
+- Task 7：已完成 TaskInstance 与运行事实隔离验收。
+- Task 8–16：Jackie 已授权按 V2 顺序逐项执行，尚未开始。
 - DOC-1～DOC-5：已完成，历史保存在 `progress.md` 与 `findings.md`，不再混入功能 Task 清单。
-- 当前工作区存在未提交的文档、Task 1–2 代码与 fixture 变更；本计划不代表已经 commit 或 push。
+- Task 1–7 均已形成可回退的本地提交检查点；尚未 push。
 
 ## 状态标记
 
@@ -125,12 +126,13 @@
 - 已确认方案：成功使用 `investigation >= 10`，失败使用 `investigation < 10`，两者互斥且完备。
 - 不包含：优先级、结果选择、条件执行。
 
-### [ ] Task 7：实现 TaskInstance
+### [x] Task 7：实现 TaskInstance
 
 - 单一目标：表达“某个 TaskAsset 在本局实际发生了一次”。
 - 实现：`runtime/tasks/task_instance.gd`，类型为 `RefCounted`。
 - 字段：`instance_id`、`task_id`、`lifecycle_state`、`final_result_id`、`runtime_progress`。
 - 验收：同一任务可手动生成两个不同 `instance_id` 的实例，互不污染运行事实。
+- 验收证据：Godot 4.7.2 对 TaskInstance 与验收脚本的单脚本检查均为 0；两个实例引用同一任务，实例 ID 不同，生命周期、最终结果与进度事实保持隔离。
 - 不包含：`party_member_ids` 真源、正式生命周期枚举、任务生成系统、派遣与结算。
 
 ### [ ] Task 8：实现 DispatchInstance
@@ -231,4 +233,4 @@
 
 ## 当前下一步
 
-下一次只执行 Task 7 的 TaskInstance。
+下一次只执行 Task 8 的 DispatchInstance。
