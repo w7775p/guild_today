@@ -24,9 +24,10 @@
 - Task 11：已完成 DispatchSystem 与 ACTIVE 派遣占用验收。
 - Task 12：已完成 TaskResolutionSystem 唯一结果选择验收。
 - Task 13：已完成 GuildState 与 StateValue 稳定 ID 状态读写验收。
-- Task 14–16：Jackie 已授权按 V2 顺序逐项执行，尚未开始。
+- Task 14：已完成 ResultSettlementSystem 效果分发与重复保护验收。
+- Task 15–16：Jackie 已授权按 V2 顺序逐项执行，尚未开始。
 - DOC-1～DOC-5：已完成，历史保存在 `progress.md` 与 `findings.md`，不再混入功能 Task 清单。
-- Task 1–13 均已形成可回退的本地提交检查点；尚未 push。
+- Task 1–14 均已形成可回退的本地提交检查点；尚未 push。
 
 ## 状态标记
 
@@ -196,12 +197,13 @@
 - 验收证据：Godot 4.7.2 对 StateValue、GuildState 与验收脚本的单脚本检查均为 0；实际运行通过 `gold`、`total_reputation` 稳定 ID 读回 100 与 5。
 - 不包含：库存、设施、债务、评级、地区声望或存档。
 
-### [ ] Task 14：实现 ResultSettlementSystem
+### [x] Task 14：实现 ResultSettlementSystem
 
 - 单一目标：把 ResultInstance 中已确定效果分发到其状态拥有者。
 - 实现：`runtime/results/result_settlement_system.gd`。
 - 首轮范围：GoldEffect 与 ReputationEffect 只能通过 GuildState API 生效。
 - 验收：结算成功结果后，金币为 100、总声望为 5；重复结算必须被阻止或明确失败。
+- 验收证据：Godot 4.7.2 对 ResultSettlementSystem 与验收脚本的单脚本检查均为 0；首次结算得到金币 100、总声望 5，第二次结算明确失败且数值不再增加。
 - 不包含：结果选择、角色状态、关系状态、报告排版、通用效果执行器。
 
 ### [ ] Task 15：实现 ReportIntelSystem 薄边界
@@ -245,4 +247,4 @@
 
 ## 当前下一步
 
-下一次只执行 Task 14 的 ResultSettlementSystem。
+下一次只执行 Task 15 的 ReportIntelSystem 薄边界。

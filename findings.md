@@ -1,5 +1,13 @@
 # 项目发现与约束
 
+## 2026-08-23 V2 Task 14 ResultSettlementSystem 结论
+
+- `ResultSettlementSystem` 只消费 ResultInstance 已确定的 `resolved_effects`，没有重新选择 ResultAsset 或读取条件。
+- GoldEffect 与 ReputationEffect 分别映射到 GuildState 的 `gold`、`total_reputation` 稳定 ID；效果本身不直接修改状态。
+- 系统先验证全部效果类型再开始写入，避免支持效果已生效后才遇到未知效果的半结算。
+- 重复结算事实由系统按 `dispatch_instance_id` 独占记录；首次成功后，同一派遣的后续结算请求明确失败。
+- 当前采用两条具体类型分支，没有创建 EffectExecutor、注册表、DSL 或面向未来效果的通用分发框架。
+
 ## 2026-08-23 V2 Task 13 GuildState 与 StateValue 结论
 
 - `GuildState` 是金币与总声望的唯一公开读写边界；稳定 ID 固定为 `gold` 与 `total_reputation`。

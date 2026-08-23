@@ -17,6 +17,7 @@ func _ready() -> void:
 	_validate_dispatch_system()
 	_validate_task_resolution_system()
 	_validate_guild_state()
+	_validate_result_settlement_system()
 
 
 # 通过实际加载 TEST_ONLY 资源，验证 Task 1 的静态字段和稳定 ID。
@@ -309,4 +310,29 @@ func _validate_guild_state() -> void:
 	assert(guild_state.get_value(GuildState.GOLD_STATE_ID) == 100, "GuildState 金币增加结果不正确")
 	assert(guild_state.get_value(GuildState.TOTAL_REPUTATION_STATE_ID) == 5, "GuildState 总声望增加结果不正确")
 	print("GuildState values success: gold=%d, total_reputation=%d" % [guild_state.get_value(GuildState.GOLD_STATE_ID), guild_state.get_value(GuildState.TOTAL_REPUTATION_STATE_ID)])
+	guild_state.queue_free()
+
+
+# 验证已确定效果只经 GuildState 生效一次，重复结算不会再次增加数值。
+func _validate_result_settlement_system() -> void:
+	var result_asset: ResultAsset = load("res://tests/fixtures/test_abandoned_hospital_success.tres") as ResultAsset
+	assert(result_asset != null, "ResultSettlementSystem 所需成功结果加载失败")
+	var result_instance := ResultInstance.new()
+	result_instance.result_asset_id = result_asset.id
+	result_instance.dispatch_instance_id = &"test_settlement_dispatch_001"
+	result_instance.resolved_effects.assign(result_asset.effects)
+
+	var guild_state := GuildState.new()
+	var settlement_system := ResultSettlementSystem.new()
+	add_child(guild_state)
+	add_child(settlement_system)
+	assert(settlement_system.settle_result(result_instance, guild_state), "ResultSettlementSystem 首次结算失败")
+	assert(guild_state.get_value(GuildState.GOLD_STATE_ID) == 100, "结算后金币应为 100")
+	assert(guild_state.get_value(GuildState.TOTAL_REPUTATION_STATE_ID) == 5, "结算后总声望应为 5")
+
+	assert(not settlement_system.settle_result(result_instance, guild_state), "ResultSettlementSystem 必须拒绝重复结算")
+	assert(guild_state.get_value(GuildState.GOLD_STATE_ID) == 100, "重复结算不应再次增加金币")
+	assert(guild_state.get_value(GuildState.TOTAL_REPUTATION_STATE_ID) == 5, "重复结算不应再次增加总声望")
+	print("ResultSettlementSystem success: gold=100, total_reputation=5, duplicate_blocked=true")
+	settlement_system.queue_free()
 	guild_state.queue_free()

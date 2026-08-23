@@ -1,5 +1,18 @@
 # 进度日志
 
+## 2026-08-23：完成 V2 Task 14 ResultSettlementSystem
+
+- 已新增 `runtime/results/result_settlement_system.gd`，类型为 Node；公开 API `settle_result()` 消费 ResultInstance 中已确定的效果。
+- 首轮只识别 GoldEffect 与 ReputationEffect，并分别通过 `GuildState.add_value()` 写入 `gold`、`total_reputation`。
+- 系统在任何状态写入前验证完整效果集合，未知效果明确失败，避免产生半结算。
+- 重复保护由 ResultSettlementSystem 以稳定 `dispatch_instance_id` 持有；同一派遣第二次结算返回 `false` 并输出明确错误。
+- 已实际验证首次结算后金币为 100、总声望为 5；重复结算后两个数值保持不变。
+- Godot 编辑器无界面扫描生成了 `result_settlement_system.gd.uid`；扫描因 `--quit-after 8` 结束时出现一次 `Scan thread aborted` 警告，不影响类缓存与 UID 生成。
+- Godot 4.7.2 对 `result_settlement_system.gd` 与 `vertical_slice_test.gd` 的单脚本检查退出码均为 0。
+- Godot 4.7.2 主场景运行退出码为 0，输出 `ResultSettlementSystem success: gold=100, total_reputation=5, duplicate_blocked=true`；重复结算错误是本 Task 的预期异常分支，另两条结果命中错误来自 Task 12 的既有预期分支。
+- 未实现结果选择、角色状态、关系状态、报告排版或通用效果执行器；未执行 Task 15；未 push。
+- 下一步：只执行 Task 15 的 ReportIntelSystem 薄边界。
+
 ## 2026-08-23：完成 V2 Task 13 GuildState 与 StateValue
 
 - 已新增 `runtime/guild/state_value.gd` 与 `runtime/guild/guild_state.gd`，两者均为 Node。
