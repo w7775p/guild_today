@@ -15,6 +15,7 @@ func _ready() -> void:
 	_validate_result_instance()
 	_validate_task_system()
 	_validate_dispatch_system()
+	_validate_task_resolution_system()
 
 
 # 通过实际加载 TEST_ONLY 资源，验证 Task 1 的静态字段和稳定 ID。
@@ -236,3 +237,53 @@ func _validate_dispatch_system() -> void:
 	assert(second_dispatch.dispatch_instance_id != first_dispatch.dispatch_instance_id, "两次派遣必须使用不同实例 ID")
 	print("DispatchSystem occupancy success: first=%s, second=%s, released=true" % [first_dispatch.dispatch_instance_id, second_dispatch.dispatch_instance_id])
 	dispatch_system.queue_free()
+
+
+# 验证调查能力分别命中成功与失败，并让无命中、重复命中显式失败。
+func _validate_task_resolution_system() -> void:
+	var task_asset: TaskAsset = load("res://tests/fixtures/abandoned_hospital.tres") as TaskAsset
+	var character: CharacterAsset = load("res://tests/fixtures/character_a.tres") as CharacterAsset
+	assert(task_asset != null and character != null, "TaskResolutionSystem 所需 fixture 加载失败")
+	var resolution_system := TaskResolutionSystem.new()
+	add_child(resolution_system)
+
+	var successful_dispatch := DispatchInstance.new()
+	successful_dispatch.character_refs.assign([character])
+	var success_result_id := resolution_system.resolve_result(successful_dispatch, task_asset.result_group)
+	assert(success_result_id == &"test_abandoned_hospital_success", "调查能力达标时应选择成功结果")
+
+	var low_investigation_character := CharacterAsset.new()
+	low_investigation_character.id = &"test_low_investigation_character"
+	low_investigation_character.investigation = 9
+	var failed_dispatch := DispatchInstance.new()
+	failed_dispatch.character_refs.assign([low_investigation_character])
+	var failure_result_id := resolution_system.resolve_result(failed_dispatch, task_asset.result_group)
+	assert(failure_result_id == &"test_abandoned_hospital_failure", "调查能力不足时应选择失败结果")
+
+	var unreachable_result := ResultAsset.new()
+	unreachable_result.id = &"test_unreachable_result"
+	var unreachable_condition := AbilityCondition.new()
+	unreachable_condition.value = 11
+	unreachable_result.conditions.append(unreachable_condition)
+	var zero_match_group := ResultGroupAsset.new()
+	zero_match_group.id = &"test_zero_match_group"
+	zero_match_group.results.append(unreachable_result)
+	assert(resolution_system.resolve_result(successful_dispatch, zero_match_group).is_empty(), "零命中必须明确失败")
+
+	var overlap_a := ResultAsset.new()
+	overlap_a.id = &"test_overlap_a"
+	var overlap_a_condition := AbilityCondition.new()
+	overlap_a_condition.value = 0
+	overlap_a.conditions.append(overlap_a_condition)
+	var overlap_b := ResultAsset.new()
+	overlap_b.id = &"test_overlap_b"
+	var overlap_b_condition := AbilityCondition.new()
+	overlap_b_condition.value = 0
+	overlap_b.conditions.append(overlap_b_condition)
+	var multiple_match_group := ResultGroupAsset.new()
+	multiple_match_group.id = &"test_multiple_match_group"
+	multiple_match_group.results.assign([overlap_a, overlap_b])
+	assert(resolution_system.resolve_result(successful_dispatch, multiple_match_group).is_empty(), "多命中必须明确失败")
+
+	print("TaskResolutionSystem selection success: success=%s, failure=%s, zero_error=true, multiple_error=true" % [success_result_id, failure_result_id])
+	resolution_system.queue_free()

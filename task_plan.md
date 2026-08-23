@@ -22,9 +22,10 @@
 - Task 9：已完成 ResultInstance 与静态结果隔离验收。
 - Task 10：已完成 TaskSystem 创建、持有与最终结果写入验收。
 - Task 11：已完成 DispatchSystem 与 ACTIVE 派遣占用验收。
-- Task 12–16：Jackie 已授权按 V2 顺序逐项执行，尚未开始。
+- Task 12：已完成 TaskResolutionSystem 唯一结果选择验收。
+- Task 13–16：Jackie 已授权按 V2 顺序逐项执行，尚未开始。
 - DOC-1～DOC-5：已完成，历史保存在 `progress.md` 与 `findings.md`，不再混入功能 Task 清单。
-- Task 1–11 均已形成可回退的本地提交检查点；尚未 push。
+- Task 1–12 均已形成可回退的本地提交检查点；尚未 push。
 
 ## 状态标记
 
@@ -176,12 +177,13 @@
 - 验收证据：Godot 4.7.2 对 DispatchSystem 与验收脚本的单脚本检查均为 0；运行时拒绝角色进入第二个 ACTIVE 派遣，结束首次派遣后成功创建新的 ACTIVE 派遣。
 - 不包含：独立 `is_busy` 副本、时间系统、任务结果判定。
 
-### [ ] Task 12：实现 TaskResolutionSystem
+### [x] Task 12：实现 TaskResolutionSystem
 
 - 单一目标：根据 DispatchInstance 在 ResultGroup 中唯一选择 ResultAsset。
 - 实现：`runtime/tasks/task_resolution_system.gd`。
 - 流程：读取派遣角色 → 汇总三项能力 → 检查 ResultAsset 条件 → 要求唯一命中 → 返回 `result_id`。
 - 验收：调查能力满足阈值时选择成功结果，不满足时选择失败结果；零命中或多命中明确报错。
+- 验收证据：Godot 4.7.2 对 TaskResolutionSystem 与验收脚本的单脚本检查均为 0；实际运行分别选择成功、失败结果，零命中与多命中各输出明确错误并返回空 ID。
 - 不包含：效果执行、GuildState 修改、报告生成、优先级排序。
 
 ### [ ] Task 13：实现 GuildState 与 StateValue
@@ -241,4 +243,4 @@
 
 ## 当前下一步
 
-下一次只执行 Task 12 的 TaskResolutionSystem。
+下一次只执行 Task 13 的 GuildState 与 StateValue。

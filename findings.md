@@ -1,5 +1,13 @@
 # 项目发现与约束
 
+## 2026-08-23 V2 Task 12 TaskResolutionSystem 结论
+
+- `TaskResolutionSystem` 是无持久状态的 Node；输入为 DispatchInstance 与 ResultGroupAsset，输出只保留稳定 `result_id`。
+- 三项队伍能力从 `DispatchInstance.character_refs` 即时求和；当前 ConditionResource 接口只接收调查总值，因此战斗与交涉总值没有被猜测性扩展为新条件 Schema。
+- ResultAsset 内条件采用当前冻结的默认 AND；空条件集合不视为隐式成功或 fallback。
+- 结果组必须恰好命中一个 ResultAsset；零命中与多命中都会显式报出命中数量并返回空 ID，不依赖结果顺序或优先级。
+- 系统没有写入 TaskInstance、创建 ResultInstance 或执行 EffectResource；这些职责继续留在 TaskSystem、后续组装与 ResultSettlementSystem。
+
 ## 2026-08-23 V2 Task 11 DispatchSystem 结论
 
 - `DispatchSystem` 使用 Node 独占 DispatchInstance 集合；创建、读取与状态迁移都经过系统公开 API。

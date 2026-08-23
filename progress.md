@@ -1,5 +1,18 @@
 # 进度日志
 
+## 2026-08-23：完成 V2 Task 12 TaskResolutionSystem
+
+- 已新增 `runtime/tasks/task_resolution_system.gd`，类型为 Node；公开 API `resolve_result()` 只返回唯一命中的静态 `result_id`。
+- 系统从 `DispatchInstance.character_refs` 即时汇总战斗、调查、交涉三项能力；当前具体条件契约只消费调查总值，没有保存能力副本。
+- 已验证调查总值 10 命中 `test_abandoned_hospital_success`，调查总值 9 命中 `test_abandoned_hospital_failure`。
+- 已构造 TEST_ONLY 零命中与多命中结果组；两者分别输出“实际命中 0 个”和“实际命中 2 个”的预期错误，并返回空 ID。
+- 开工只读审计首次使用了三个旧 fixture 文件名，PowerShell 报路径不存在；随后按现有 `test_` 前缀路径读取成功，没有修改或生成错误文件。
+- Godot 编辑器无界面扫描生成了 `task_resolution_system.gd.uid`；扫描因 `--quit-after 8` 结束时出现一次 `Scan thread aborted` 警告，不影响类缓存与 UID 生成。
+- Godot 4.7.2 对 `task_resolution_system.gd` 与 `vertical_slice_test.gd` 的单脚本检查退出码均为 0。
+- Godot 4.7.2 主场景运行退出码为 0，输出 `TaskResolutionSystem selection success: success=test_abandoned_hospital_success, failure=test_abandoned_hospital_failure, zero_error=true, multiple_error=true`。
+- 未生成 ResultInstance，未执行效果、修改 GuildState、生成报告或增加优先级；未执行 Task 13；未 push。
+- 下一步：只执行 Task 13 的 GuildState 与 StateValue。
+
 ## 2026-08-23：完成 V2 Task 11 DispatchSystem
 
 - 已新增 `runtime/dispatch/dispatch_system.gd`，类型为 Node，独占保存 DispatchInstance 历史。
