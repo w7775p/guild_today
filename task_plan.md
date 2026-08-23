@@ -25,9 +25,10 @@
 - Task 12：已完成 TaskResolutionSystem 唯一结果选择验收。
 - Task 13：已完成 GuildState 与 StateValue 稳定 ID 状态读写验收。
 - Task 14：已完成 ResultSettlementSystem 效果分发与重复保护验收。
-- Task 15–16：Jackie 已授权按 V2 顺序逐项执行，尚未开始。
+- Task 15：已完成 ReportIntelSystem 确定性文本输出验收。
+- Task 16：Jackie 已授权按 V2 顺序执行，尚未开始。
 - DOC-1～DOC-5：已完成，历史保存在 `progress.md` 与 `findings.md`，不再混入功能 Task 清单。
-- Task 1–14 均已形成可回退的本地提交检查点；尚未 push。
+- Task 1–15 均已形成可回退的本地提交检查点；尚未 push。
 
 ## 状态标记
 
@@ -206,11 +207,12 @@
 - 验收证据：Godot 4.7.2 对 ResultSettlementSystem 与验收脚本的单脚本检查均为 0；首次结算得到金币 100、总声望 5，第二次结算明确失败且数值不再增加。
 - 不包含：结果选择、角色状态、关系状态、报告排版、通用效果执行器。
 
-### [ ] Task 15：实现 ReportIntelSystem 薄边界
+### [x] Task 15：实现 ReportIntelSystem 薄边界
 
 - 单一目标：把已确定结果与已结算效果转换为玩家可读报告。
 - 实现：`runtime/reports/report_intel_system.gd`。
 - 验收：确定性输出“废弃医院调查完成”“获得金币100”“声望提升5”等内容。
+- 验收证据：Godot 4.7.2 对 ReportIntelSystem 与验收脚本的单脚本检查均为 0；效果结算后实际生成三行确定性文本“废弃医院调查完成”“获得金币100”“声望提升5”。
 - 不包含：独立 ReportAsset、UI、富文本、历史报告数据库或情报扩展系统。
 
 ### [ ] Task 16：完整 Vertical Slice 自动验收
@@ -247,4 +249,4 @@
 
 ## 当前下一步
 
-下一次只执行 Task 15 的 ReportIntelSystem 薄边界。
+下一次只执行 Task 16 的完整 Vertical Slice 自动验收。

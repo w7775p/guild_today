@@ -1,5 +1,17 @@
 # 进度日志
 
+## 2026-08-23：完成 V2 Task 15 ReportIntelSystem
+
+- 已新增 `runtime/reports/report_intel_system.gd`，类型为 Node；公开 API `build_report()` 返回确定性纯文本。
+- 系统校验 ResultAsset 与 ResultInstance 的稳定结果 ID 一致，再从 `report_text` 与已确定效果按固定顺序生成三行内容。
+- 当前只解释 GoldEffect 与 ReputationEffect，输出“获得金币100”“声望提升5”；未知效果明确失败，不建立通用文案注册表。
+- 验收先使用 ResultSettlementSystem 完成效果结算，再生成报告，实际文本为“废弃医院调查完成”“获得金币100”“声望提升5”。
+- Godot 编辑器无界面扫描生成了 `report_intel_system.gd.uid`；扫描因 `--quit-after 8` 结束时出现一次 `Scan thread aborted` 警告，不影响类缓存与 UID 生成。
+- Godot 4.7.2 对 `report_intel_system.gd` 与 `vertical_slice_test.gd` 的单脚本检查退出码均为 0。
+- Godot 4.7.2 主场景运行退出码为 0，输出 `ReportIntelSystem success: 废弃医院调查完成 | 获得金币100 | 声望提升5`；日志中的三条错误均为 Task 12 与 Task 14 的既有预期异常分支。
+- 未实现独立 ReportAsset、UI、富文本、历史报告数据库或情报扩展系统；未执行 Task 16；未 push。
+- 下一步：只执行 Task 16 的完整 Vertical Slice 自动验收。
+
 ## 2026-08-23：完成 V2 Task 14 ResultSettlementSystem
 
 - 已新增 `runtime/results/result_settlement_system.gd`，类型为 Node；公开 API `settle_result()` 消费 ResultInstance 中已确定的效果。

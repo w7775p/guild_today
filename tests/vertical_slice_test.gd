@@ -18,6 +18,7 @@ func _ready() -> void:
 	_validate_task_resolution_system()
 	_validate_guild_state()
 	_validate_result_settlement_system()
+	_validate_report_intel_system()
 
 
 # 通过实际加载 TEST_ONLY 资源，验证 Task 1 的静态字段和稳定 ID。
@@ -334,5 +335,29 @@ func _validate_result_settlement_system() -> void:
 	assert(guild_state.get_value(GuildState.GOLD_STATE_ID) == 100, "重复结算不应再次增加金币")
 	assert(guild_state.get_value(GuildState.TOTAL_REPUTATION_STATE_ID) == 5, "重复结算不应再次增加总声望")
 	print("ResultSettlementSystem success: gold=100, total_reputation=5, duplicate_blocked=true")
+	settlement_system.queue_free()
+	guild_state.queue_free()
+
+
+# 先完成效果结算，再验证 ReportIntelSystem 输出三行确定性玩家文本。
+func _validate_report_intel_system() -> void:
+	var result_asset: ResultAsset = load("res://tests/fixtures/test_abandoned_hospital_success.tres") as ResultAsset
+	assert(result_asset != null, "ReportIntelSystem 所需成功结果加载失败")
+	var result_instance := ResultInstance.new()
+	result_instance.result_asset_id = result_asset.id
+	result_instance.dispatch_instance_id = &"test_report_dispatch_001"
+	result_instance.resolved_effects.assign(result_asset.effects)
+
+	var guild_state := GuildState.new()
+	var settlement_system := ResultSettlementSystem.new()
+	var report_system := ReportIntelSystem.new()
+	add_child(guild_state)
+	add_child(settlement_system)
+	add_child(report_system)
+	assert(settlement_system.settle_result(result_instance, guild_state), "报告生成前的效果结算失败")
+	var report_text := report_system.build_report(result_asset, result_instance)
+	assert(report_text == "废弃医院调查完成\n获得金币100\n声望提升5", "ReportIntelSystem 报告文本不正确")
+	print("ReportIntelSystem success: %s" % report_text.replace("\n", " | "))
+	report_system.queue_free()
 	settlement_system.queue_free()
 	guild_state.queue_free()

@@ -1,5 +1,13 @@
 # 项目发现与约束
 
+## 2026-08-23 V2 Task 15 ReportIntelSystem 结论
+
+- `ReportIntelSystem` 当前是无持久状态的薄 Node，只把一个已确定结果转换为玩家可读纯文本。
+- 报告首行直接使用 ResultAsset.report_text，后续行按 ResultInstance.resolved_effects 的确定顺序解释金币与声望变化。
+- 系统要求 ResultAsset.id 与 ResultInstance.result_asset_id 一致，避免使用错误静态内容解释运行结果。
+- 当前只支持 GoldEffect 与 ReputationEffect 的具体文本，没有引入 ReportAsset、模板 DSL、文案注册表或报告历史状态。
+- Task 15 验收链先完成效果结算再生成文本；ReportIntelSystem 本身不重复执行效果，也不修改 GuildState。
+
 ## 2026-08-23 V2 Task 14 ResultSettlementSystem 结论
 
 - `ResultSettlementSystem` 只消费 ResultInstance 已确定的 `resolved_effects`，没有重新选择 ResultAsset 或读取条件。
