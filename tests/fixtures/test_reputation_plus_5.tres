@@ -1,0 +1,8 @@
+; TEST_ONLY：Task 4 用于验证声望效果静态数据的保存与加载。
+[gd_resource type="Resource" script_class="ReputationEffect" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://assets/types/reputation_effect.gd" id="1_reputation_effect"]
+
+[resource]
+script = ExtResource("1_reputation_effect")
+amount = 5

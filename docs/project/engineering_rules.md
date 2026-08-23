@@ -1,48 +1,8 @@
 # 《公会》正式工程铁律
 
-> 本文件是 Notion 项目真源的本地工作镜像。
->
-> 来源：https://app.notion.com/p/3c07fb71ada4813eb79dcfda505d78a6?pvs=204
->
+> 项目真源：https://app.notion.com/p/3c07fb71ada4813eb79dcfda505d78a6?pvs=204
 > 同步时间：2026-08-18T06:51:50.592Z
->
-> 用途：仓库结构规范；工程开发原则；代码组织规则。
-
-## Notion 页面属性
-
-```json
-{
-  "date:最后核对日期:is_datetime": 0,
-  "date:最后核对日期:start": "2026-08-18",
-  "url": "https://app.notion.com/p/3c07fb71ada4813eb79dcfda505d78a6",
-  "一句话用途": "《公会今日照常营业》Godot 正式开发的执行约束；规定代码、数据、状态所有权、验证与 Git 工作流，不反向规定策划内容。",
-  "名称": "《公会》正式工程铁律",
-  "文档类型": "系统设计",
-  "最近编辑": "2026-08-18T09:19:25.683Z",
-  "状态": "当前使用",
-  "真源级别": "当前项目真源",
-  "类型": "规则",
-  "说明": "Godot 正式开发工程约束。架构事实以《公会》Godot正式开发架构及用户最新明确决定为准；本页只规定实现纪律。",
-  "重要度": "核心",
-  "页面成熟度": "暂时冻结",
-  "项目": "公会今日照常营业",
-  "领域": "游戏开发"
-}
-```
-
-## Notion 原始层级
-
-```text
-<parent-data-source url="collection://2927fb71-ada4-8029-8ebe-000b0239169a" name="个人知识/数据库"/>
-<ancestor-2-database url="https://app.notion.com/p/2927fb71ada48014b856fed0516676ad" title=""/>
-```
-
-## 正文
-
-<content>
-<callout color="red_bg">
-	**生效日期：2026-08-18。** 本页只约束 Godot 正式开发的实现方式。若与 <mention-page url="https://app.notion.com/p/3c07fb71ada481abb702fdf1a48e2eb3"/> 或用户最新明确决定冲突，以后两者为准。工程实现不得反向增加、删除或冻结策划字段。
-</callout>
+> 职责：代码组织、数据与状态所有权、验证流程和 Git 纪律。
 ## 一、工程铁律
 <table fit-page-width="true" header-row="true">
 <tr>
@@ -171,6 +131,72 @@
 3. 没有越权写入其他系统状态。
 4. 相关脚本通过 parse/check 与自动测试。
 5. 重命名、ID、Signal、公开 API 无残留旧引用。
-6. 对照 <mention-page url="https://app.notion.com/p/3c07fb71ada4819391eaefbecabc326e"/> 完成同类陷阱自查。
+6. 对照 https://app.notion.com/p/3c07fb71ada4819391eaefbecabc326e 完成同类陷阱自查。
 7. `git diff` 只包含本次必要改动。
-</content>
+
+
+## 附录 A：TEST_ONLY 测试资产边界
+本节仅用于在正式策划案未完成前支撑 Godot 垂直切片测试。测试资产沿用现有策划案结构中的稳定子集，但**不得自动升级为正式策划 Schema 或 Runtime Schema**。
+<table fit-page-width="true" header-row="true">
+<tr>
+<td>资产</td>
+<td>测试数量</td>
+<td>冻结范围</td>
+</tr>
+<tr>
+<td>测试角色</td>
+<td>2</td>
+<td>`id, name, profession, combat, investigation, negotiation, rank, public_traits, archive_text`</td>
+</tr>
+<tr>
+<td>测试任务</td>
+<td>1</td>
+<td>`id, title, commissioner, description, objective, promised_reward, min_party_size, max_party_size, result_group_id`</td>
+</tr>
+<tr>
+<td>测试结果组</td>
+<td>1</td>
+<td>仅用于连接测试任务与测试结果</td>
+</tr>
+<tr>
+<td>测试结果</td>
+<td>2</td>
+<td>`result_id, report_text, guild_gold_change`</td>
+</tr>
+<tr>
+<td>测试事件</td>
+<td>0</td>
+<td>首轮不使用</td>
+</tr>
+</table>
+### 测试判定边界
+首轮允许在测试代码 / fixture 中使用简单、明确的临时判定，例如 `combat_sum >= X`，仅用于命中不同 `Result`。不得据此创建通用 `Condition / Rule / Flag / Weight` 引擎或正式条件 Schema。
+### 测试闭环
+```plain text
+看任务
+→ 看角色
+→ 选人
+→ 派遣
+→ 判定
+→ Result
+→ GuildState 变化
+→ 显示 Result.report_text
+```
+### 明确边界
+- `public_traits` 与 `archive_text` 首轮仅展示，不自动参与判定。
+- `rank` 首轮仅展示。
+- 不实现隐藏面、行为优先级、拒绝 / 违抗、自主行为、关系规则、疲劳伤势、Flag、揭露规则。
+- 报告首轮直接显示 `Result.report_text`，不建立独立 `ReportAsset`。
+- 所有测试数据必须明确标记 `TEST_ONLY`，正式策划资产出现后可以直接替换。
+
+## 附录 B：TEST_ONLY 工程边界
+- ID 统一 `test_` 前缀。
+- 放入 `tests/fixtures/`。
+- 第一阶段判定保持确定性。
+- 正式运行路径可以消费 fixture，但不得为 fixture 另建第二套业务流程。
+- fixture 字段不得自动升级为正式策划或 Runtime Schema。
+
+## 附录 C：Git 操作纪律
+- 未经用户明确指令：**禁止 push**。
+- 提交前确认 scope，不混入无关文件。
+

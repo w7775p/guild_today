@@ -1,0 +1,16 @@
+; TEST_ONLY：Task 5 用于验证成功结果对条件、效果与报告文本的静态组合。
+[gd_resource type="Resource" script_class="ResultAsset" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://assets/types/result_asset.gd" id="1_result_asset"]
+[ext_resource type="Script" path="res://assets/types/condition_resource.gd" id="2_condition_type"]
+[ext_resource type="Resource" path="res://tests/fixtures/test_investigation_at_least_10.tres" id="3_condition"]
+[ext_resource type="Script" path="res://assets/types/effect_resource.gd" id="4_effect_type"]
+[ext_resource type="Resource" path="res://tests/fixtures/test_gold_plus_100.tres" id="5_gold_effect"]
+[ext_resource type="Resource" path="res://tests/fixtures/test_reputation_plus_5.tres" id="6_reputation_effect"]
+
+[resource]
+script = ExtResource("1_result_asset")
+id = &"test_abandoned_hospital_success"
+conditions = Array[ExtResource("2_condition_type")]([ExtResource("3_condition")])
+effects = Array[ExtResource("4_effect_type")]([ExtResource("5_gold_effect"), ExtResource("6_reputation_effect")])
+report_text = "废弃医院调查完成"

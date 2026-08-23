@@ -1,0 +1,8 @@
+; TEST_ONLY：Task 3 用于验证调查能力达到阈值时条件成立。
+[gd_resource type="Resource" script_class="AbilityCondition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://assets/types/ability_condition.gd" id="1_ability_condition"]
+
+[resource]
+script = ExtResource("1_ability_condition")
+value = 10

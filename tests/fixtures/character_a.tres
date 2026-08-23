@@ -1,0 +1,12 @@
+; TEST_ONLY：Task 1 用于验证 CharacterAsset 加载的最小角色资产。
+[gd_resource type="Resource" script_class="CharacterAsset" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://assets/types/character_asset.gd" id="1_character_asset"]
+
+[resource]
+script = ExtResource("1_character_asset")
+id = &"test_character_a"
+name = "角色A"
+battle = 5
+investigation = 10
+negotiation = 7

@@ -1,50 +1,8 @@
-# 《公会》Godot正式开发架构
+# 《公会》Godot 正式开发架构
 
-> 本文件是 Notion 项目真源的本地工作镜像。
->
-> 来源：https://app.notion.com/p/3c07fb71ada481abb702fdf1a48e2eb3?pvs=204
->
+> 项目真源：https://app.notion.com/p/3c07fb71ada481abb702fdf1a48e2eb3?pvs=204
 > 同步时间：2026-08-20T05:25:00.128Z
->
-> 用途：Godot 运行时架构总入口；Resource / Instance / System 边界；当前冻结技术契约；MVP 开发范围。
->
-> 本地整理：2026-08-20 按正文顺序统一章节编号；未改变原文语义，Notion 真源未回写。
-
-## Notion 页面属性
-
-```json
-{
-  "date:最后核对日期:is_datetime": 0,
-  "date:最后核对日期:start": "2026-08-18",
-  "url": "https://app.notion.com/p/3c07fb71ada481abb702fdf1a48e2eb3",
-  "一句话用途": "《公会今日照常营业》进入 Godot 正式开发时的运行时、数据资产、角色资产与 MVP 垂直切片架构基线；用于追溯当前技术结论并阻止旧方案混入。",
-  "名称": "《公会》Godot正式开发架构",
-  "文档类型": "系统设计",
-  "最近编辑": "2026-08-20T05:25:00.129Z",
-  "状态": "当前使用",
-  "真源级别": "当前项目真源",
-  "类型": "系统",
-  "说明": "《公会》Godot 开发总入口。仅“已冻结继承”和“正式架构变更”构成当前技术契约；“待验证方案”和“未冻结问题”仅用于追踪，不得反向规定策划或被当作正式 Schema。",
-  "重要度": "核心",
-  "页面成熟度": "暂时冻结",
-  "项目": "公会今日照常营业",
-  "领域": "游戏开发"
-}
-```
-
-## Notion 原始层级
-
-```text
-<parent-data-source url="collection://2927fb71-ada4-8029-8ebe-000b0239169a" name="个人知识/数据库"/>
-<ancestor-2-database url="https://app.notion.com/p/2927fb71ada48014b856fed0516676ad" title=""/>
-```
-
-## 正文
-
-<content>
-<callout icon="📌" color="red_bg">
-	**生效日期：2026-08-18。** 本页是《公会今日照常营业》Godot 正式开发总入口。只有“已冻结继承”和“正式架构变更”构成当前技术契约；“待验证方案”和“未冻结问题”只用于追踪，不得反向规定策划，也不得被当作正式 Schema。产品方向、角色正文、任务正文继续由对应策划真源决定。
-</callout>
+> 职责：运行时架构、Resource / Instance / System 边界、冻结契约与 MVP 范围。
 ## 一、当前开发原则
 采用**运行时垂直切片**：先让一张真实任务从生成、派遣、判定、结算到报告完整跑通，再根据真实共性抽象公共规则和工具。
 当前主链：
@@ -357,69 +315,8 @@ res://assets/types/
 - 完整库存、设施、债务、评级等经营系统。
 - 为未来可能需要而预建的 Manager / EventBus / ServiceLocator。
 Data Asset Editor 只保留为未来工具方向；在正式 Resource 契约稳定前不进入 MVP。
-## 八、追溯与优先级
-前序依据：
-- <mention-page url="https://app.notion.com/p/3bc7fb71ada481be9ce9dd51fde72a36"/>：任务、结果、公会状态与运行时基础边界的前序冻结依据。
-- <mention-page url="https://app.notion.com/p/3bb7fb71ada4814888f9ea8e28e501d4"/>：继续决定项目方向、产品验证顺序与策划边界。
-- `角色卡策划原案.xlsx`：本轮角色数据结构候选方案的真实样本来源，目前只验证了埃利乌斯。
-冲突处理：
-1. 玩法、角色、任务创作内容冲突：回到对应策划真源，本页无权覆盖。
-2. Godot 技术架构冲突：先判断本页内容属于“已冻结继承 / 正式变更 / 待验证 / 未冻结”哪一层。
-3. 只有“已冻结继承”和“正式架构变更”可以覆盖更旧的技术结论。
-4. “待验证方案”不得用于否定已冻结内容，也不得反向要求策划适配程序。
-## 九、已冻结：TEST_ONLY 测试资产边界
-本节仅用于在正式策划案未完成前支撑 Godot 垂直切片测试。测试资产沿用现有策划案结构中的稳定子集，但**不得自动升级为正式策划 Schema 或 Runtime Schema**。
-<table fit-page-width="true" header-row="true">
-<tr>
-<td>资产</td>
-<td>测试数量</td>
-<td>冻结范围</td>
-</tr>
-<tr>
-<td>测试角色</td>
-<td>2</td>
-<td>`id, name, profession, combat, investigation, negotiation, rank, public_traits, archive_text`</td>
-</tr>
-<tr>
-<td>测试任务</td>
-<td>1</td>
-<td>`id, title, commissioner, description, objective, promised_reward, min_party_size, max_party_size, result_group_id`</td>
-</tr>
-<tr>
-<td>测试结果组</td>
-<td>1</td>
-<td>仅用于连接测试任务与测试结果</td>
-</tr>
-<tr>
-<td>测试结果</td>
-<td>2</td>
-<td>`result_id, report_text, guild_gold_change`</td>
-</tr>
-<tr>
-<td>测试事件</td>
-<td>0</td>
-<td>首轮不使用</td>
-</tr>
-</table>
-### 测试判定边界
-首轮允许在测试代码 / fixture 中使用简单、明确的临时判定，例如 `combat_sum >= X`，仅用于命中不同 `Result`。不得据此创建通用 `Condition / Rule / Flag / Weight` 引擎或正式条件 Schema。
-### 测试闭环
-```plain text
-看任务
-→ 看角色
-→ 选人
-→ 派遣
-→ 判定
-→ Result
-→ GuildState 变化
-→ 显示 Result.report_text
-```
-### 明确边界
-- `public_traits` 与 `archive_text` 首轮仅展示，不自动参与判定。
-- `rank` 首轮仅展示。
-- 不实现隐藏面、行为优先级、拒绝 / 违抗、自主行为、关系规则、疲劳伤势、Flag、揭露规则。
-- 报告首轮直接显示 `Result.report_text`，不建立独立 `ReportAsset`。
-- 所有测试数据必须明确标记 `TEST_ONLY`，正式策划资产出现后可以直接替换。
+
+
 ## 十、已冻结：新 Godot 仓库初始目录
 当前正式工程只建立已被核心循环、冻结架构或测试闭环证明需要的目录。
 ```plain text
@@ -456,22 +353,7 @@ res://
 ### 角色 / 任务 / 结果资产边界
 `CharacterAsset / TaskAsset / EventAsset / ResultGroupAsset / ResultAsset` 的类型脚本可以位于 `assets/types/`；正式内容资产未冻结前不生产正式 `.tres`。测试内容只进入 `tests/fixtures/`，不得进入 `assets/data/`。
 ### 下一阶段文档要求
-新仓库 `AGENTS.md` 必须参考旧仓库 `w7775p/2D-pixel-TrashSur` 的 `docs/superpowers/框架/AGENTS.md`，但只继承仍适用于《公会》的工程纪律；旧项目业务、旧系统和旧目录结构不得带入新仓库。
-## 十一、[AGENTS.md](http://AGENTS.md) 状态
-`AGENTS.md v0.2` 已完成审计修订方向：
-- 项目阶段改为：概念验证与前期创作阶段；当前技术工作为 Godot 垂直切片验证。
-- 明确策划真源、Godot 架构、工程规范三者职责边界。
-- “明确禁止”调整为“当前阶段禁止擅自引入”，避免把未冻结系统永久否定。
-- 删除 Scene 必须 `load().instantiate()` 的强制规则，只保留 Godot 生命周期相关陷阱。
-- 保留最小路径、单一真相源、系统写入权、API/Signal、Resource 只读、TEST_ONLY、ID、验证、Git 规则。
-下一步文档：`《公会》AGENTS.md v0.2`
-定位：新 Godot 仓库根目录 Agent 行为规范。
-当前确认修订：
-1. 不承担策划真源，只约束工程行为。
-2. 项目阶段与当前真源保持一致：概念验证与前期创作阶段。
-3. 禁止项改为“当前阶段禁止擅自引入”。
-4. 删除过强的 Scene 实现限制。
-5. 保留单一真相源、系统写入权、API/Signal、Resource 只读、TEST_ONLY 隔离、ID 稳定、验证流程、Git 纪律。
+
 ## 十二、冻结补充：运行时对象模型 v0.1
 当前冻结以下运行时对象关系：
 ```javascript
@@ -651,4 +533,4 @@ Settlement流程
 GuildState
 ```
 CharacterAsset 继续保持最小读取接口，不在本阶段扩展完整角色编辑结构。
-</content>
+

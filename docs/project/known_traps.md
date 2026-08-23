@@ -1,48 +1,8 @@
 # 《公会》known_traps
 
-> 本文件是 Notion 项目真源的本地工作镜像。
->
-> 来源：https://app.notion.com/p/3c07fb71ada4819391eaefbecabc326e?pvs=204
->
+> 项目真源：https://app.notion.com/p/3c07fb71ada4819391eaefbecabc326e?pvs=204
 > 同步时间：2026-08-18T06:51:27.039Z
->
-> 用途：已知架构陷阱；历史错误记录。
-
-## Notion 页面属性
-
-```json
-{
-  "date:最后核对日期:is_datetime": 0,
-  "date:最后核对日期:start": "2026-08-18",
-  "url": "https://app.notion.com/p/3c07fb71ada4819391eaefbecabc326e",
-  "一句话用途": "《公会今日照常营业》Godot 正式开发的已知陷阱与自查清单；只保留旧项目中仍适用的坑和当前架构新增风险。",
-  "名称": "《公会》known_traps",
-  "文档类型": "知识条目",
-  "最近编辑": "2026-08-18T09:19:34.939Z",
-  "状态": "当前使用",
-  "真源级别": "有效参考",
-  "类型": "规则",
-  "说明": "新项目 known_traps。旧仓库记录仅作为来源；与当前架构无关的废土、搜刮、NPC 等业务陷阱不继承。",
-  "重要度": "核心",
-  "页面成熟度": "暂时冻结",
-  "项目": "公会今日照常营业",
-  "领域": "游戏开发"
-}
-```
-
-## Notion 原始层级
-
-```text
-<parent-data-source url="collection://2927fb71-ada4-8029-8ebe-000b0239169a" name="个人知识/数据库"/>
-<ancestor-2-database url="https://app.notion.com/p/2927fb71ada48014b856fed0516676ad" title=""/>
-```
-
-## 正文
-
-<content>
-<callout color="yellow_bg">
-	**生效日期：2026-08-18。** 本页是当前项目的踩坑库，不是设计文档。只记录仍适用于《公会》的工程风险。旧仓库 `w7775p/2D-pixel-TrashSur` 的业务专属陷阱不继承。
-</callout>
+> 职责：Godot、资源、状态边界和回归问题的编号化排错记录。
 ## 一、Godot / 生命周期
 <table fit-page-width="true" header-row="true">
 <tr>
@@ -210,5 +170,12 @@
 - 数据加载 / ID 问题：KT-11～KT-17。
 - `.tres / .tscn` 解析问题：KT-18～KT-20。
 - 重构后编译或引用异常：KT-21～KT-23。
-来源参考：旧仓库 [known_traps.md](https://github.com/w7775p/2D-pixel-TrashSur/blob/main/docs/superpowers/%E6%A1%86%E6%9E%B6/known_traps.md) 与 [AGENTS.md](https://github.com/w7775p/2D-pixel-TrashSur/blob/main/docs/superpowers/%E6%A1%86%E6%9E%B6/AGENTS.md)。旧项目业务专属条目不自动继承。
-</content>
+
+
+## 附录 A：Godot 生命周期提醒
+- Autoload 名称不得与 `class_name` 冲突。
+- 新增 Autoload 后核对 `project.godot`。
+- `PackedScene.instantiate()` 后，节点未进入树时不得假设 `@onready` 已初始化。
+- 关键 Task / Dispatch 清理必须显式完成，不依赖 `_exit_tree()` 等销毁副作用。
+- UI 只提交请求和显示事实，不直接写业务状态。
+
