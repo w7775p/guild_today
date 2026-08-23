@@ -1,5 +1,13 @@
 # 项目发现与约束
 
+## 2026-08-23 V2 Task 11 DispatchSystem 结论
+
+- `DispatchSystem` 使用 Node 独占 DispatchInstance 集合；创建、读取与状态迁移都经过系统公开 API。
+- 角色占用由全部 ACTIVE 实例的 `character_refs` 实时推导，没有维护可独立修改的 `is_busy` 第二真源。
+- ENDED 实例保留在派遣历史中，同时立即释放角色；同一角色随后可加入新的 ACTIVE 派遣。
+- 派遣 ID 由任务实例 ID 与系统内递增序列确定性生成；当前没有引入未冻结的时间字段。
+- 任务结果选择继续属于 Task 12，本系统只处理派遣合法性、持有和 ACTIVE/ENDED 生命周期。
+
 ## 2026-08-23 V2 Task 10 TaskSystem 结论
 
 - `TaskSystem` 使用 Node 承担 TaskInstance 的创建、持有和最终结果写入权，实例集合保持私有。

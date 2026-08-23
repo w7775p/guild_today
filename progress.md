@@ -1,5 +1,17 @@
 # 进度日志
 
+## 2026-08-23：完成 V2 Task 11 DispatchSystem
+
+- 已新增 `runtime/dispatch/dispatch_system.gd`，类型为 Node，独占保存 DispatchInstance 历史。
+- 已提供 `create_dispatch()`、`get_dispatch_instance()`、`end_dispatch()` 与 `is_character_occupied()` 四个最小公开 API。
+- 已验证同一角色参加 ACTIVE 派遣时，第二次派遣创建返回空值；显式结束第一次派遣后，该角色可参加新的 ACTIVE 派遣。
+- 角色占用通过扫描 ACTIVE DispatchInstance 实时推导；ENDED 实例继续保留为历史，但不再占用角色。
+- Godot 编辑器无界面扫描生成了 `dispatch_system.gd.uid`；扫描因 `--quit-after 8` 结束时出现一次 `Scan thread aborted` 警告，不影响类缓存与 UID 生成。
+- Godot 4.7.2 对 `dispatch_system.gd` 与 `vertical_slice_test.gd` 的单脚本检查退出码均为 0。
+- Godot 4.7.2 主场景运行退出码为 0，输出 `DispatchSystem occupancy success: first=test_task_instance_001_dispatch_1, second=test_task_instance_002_dispatch_2, released=true`。
+- 未增加独立 `is_busy` 副本或时间字段，未实现任务结果判定；未执行 Task 12；未 push。
+- 下一步：只执行 Task 12 的 TaskResolutionSystem。
+
 ## 2026-08-23：完成 V2 Task 10 TaskSystem
 
 - 已新增 `runtime/tasks/task_system.gd`，类型为 Node，独占保存与修改本局 TaskInstance。

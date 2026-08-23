@@ -21,9 +21,10 @@
 - Task 8：已完成 DispatchInstance 与派遣成员唯一真源验收。
 - Task 9：已完成 ResultInstance 与静态结果隔离验收。
 - Task 10：已完成 TaskSystem 创建、持有与最终结果写入验收。
-- Task 11–16：Jackie 已授权按 V2 顺序逐项执行，尚未开始。
+- Task 11：已完成 DispatchSystem 与 ACTIVE 派遣占用验收。
+- Task 12–16：Jackie 已授权按 V2 顺序逐项执行，尚未开始。
 - DOC-1～DOC-5：已完成，历史保存在 `progress.md` 与 `findings.md`，不再混入功能 Task 清单。
-- Task 1–10 均已形成可回退的本地提交检查点；尚未 push。
+- Task 1–11 均已形成可回退的本地提交检查点；尚未 push。
 
 ## 状态标记
 
@@ -166,12 +167,13 @@
 - 验收证据：Godot 4.7.2 对 TaskSystem 与验收脚本的单脚本检查均为 0；系统实际创建并保存两个唯一实例，只给指定实例写入成功结果 ID。
 - 不包含：每日刷新、生成条件框架、派遣、结果选择、完整生命周期枚举。
 
-### [ ] Task 11：实现 DispatchSystem
+### [x] Task 11：实现 DispatchSystem
 
 - 单一目标：创建、保存和结束合法 DispatchInstance。
 - 实现：`runtime/dispatch/dispatch_system.gd`。
 - 最小职责：创建派遣、维护 ACTIVE/ENDED、从 ACTIVE Dispatch 推导角色占用。
 - 验收：同一角色不能同时进入第二个 ACTIVE 派遣；结束第一次派遣后可再次派遣。
+- 验收证据：Godot 4.7.2 对 DispatchSystem 与验收脚本的单脚本检查均为 0；运行时拒绝角色进入第二个 ACTIVE 派遣，结束首次派遣后成功创建新的 ACTIVE 派遣。
 - 不包含：独立 `is_busy` 副本、时间系统、任务结果判定。
 
 ### [ ] Task 12：实现 TaskResolutionSystem
@@ -239,4 +241,4 @@
 
 ## 当前下一步
 
-下一次只执行 Task 11 的 DispatchSystem。
+下一次只执行 Task 12 的 TaskResolutionSystem。

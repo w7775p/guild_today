@@ -14,6 +14,7 @@ func _ready() -> void:
 	_validate_dispatch_instance()
 	_validate_result_instance()
 	_validate_task_system()
+	_validate_dispatch_system()
 
 
 # 通过实际加载 TEST_ONLY 资源，验证 Task 1 的静态字段和稳定 ID。
@@ -207,3 +208,31 @@ func _validate_task_system() -> void:
 	assert(second_instance.final_result_id.is_empty(), "TaskSystem 污染了另一个任务实例")
 	print("TaskSystem ownership success: first=%s, second=%s, result=%s" % [first_instance.instance_id, second_instance.instance_id, first_instance.final_result_id])
 	task_system.queue_free()
+
+
+# 验证 ACTIVE 派遣阻止角色重复占用，显式结束后同一角色可以再次派遣。
+func _validate_dispatch_system() -> void:
+	var character: CharacterAsset = load("res://tests/fixtures/character_a.tres") as CharacterAsset
+	assert(character != null, "DispatchSystem 所需角色加载失败")
+	var party: Array[CharacterAsset] = [character]
+	var dispatch_system := DispatchSystem.new()
+	add_child(dispatch_system)
+
+	var first_dispatch := dispatch_system.create_dispatch(&"test_task_instance_001", party)
+	assert(first_dispatch != null, "DispatchSystem 第一次派遣创建失败")
+	assert(first_dispatch.status == &"ACTIVE", "第一次派遣应为 ACTIVE")
+	assert(dispatch_system.get_dispatch_instance(first_dispatch.dispatch_instance_id) == first_dispatch, "DispatchSystem 未保存第一次派遣")
+	assert(dispatch_system.is_character_occupied(character.id), "ACTIVE 派遣应占用角色")
+
+	var blocked_dispatch := dispatch_system.create_dispatch(&"test_task_instance_002", party)
+	assert(blocked_dispatch == null, "同一角色不得同时进入第二个 ACTIVE 派遣")
+	assert(dispatch_system.end_dispatch(first_dispatch.dispatch_instance_id), "DispatchSystem 结束第一次派遣失败")
+	assert(first_dispatch.status == &"ENDED", "第一次派遣应变为 ENDED")
+	assert(not dispatch_system.is_character_occupied(character.id), "ENDED 派遣不应继续占用角色")
+
+	var second_dispatch := dispatch_system.create_dispatch(&"test_task_instance_002", party)
+	assert(second_dispatch != null, "角色释放后应允许再次派遣")
+	assert(second_dispatch.status == &"ACTIVE", "第二次派遣应为 ACTIVE")
+	assert(second_dispatch.dispatch_instance_id != first_dispatch.dispatch_instance_id, "两次派遣必须使用不同实例 ID")
+	print("DispatchSystem occupancy success: first=%s, second=%s, released=true" % [first_dispatch.dispatch_instance_id, second_dispatch.dispatch_instance_id])
+	dispatch_system.queue_free()
