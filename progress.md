@@ -1,5 +1,18 @@
 # 进度日志
 
+## 2026-08-23：完成 V2 Task 13 GuildState 与 StateValue
+
+- 已新增 `runtime/guild/state_value.gd` 与 `runtime/guild/guild_state.gd`，两者均为 Node。
+- `GuildState` 只注册 `gold` 与 `total_reputation` 两个稳定状态 ID，并提供冻结架构要求的 `has_state()`、`get_value()`、`restore_value()`、`set_value()`、`add_value()` API。
+- `StateValue` 内部持有稳定 ID 与当前整数，通过 `value_changed` 通知普通设置和增减事实；恢复入口不发送运行期变化通知。
+- 已将 StateValue 的配置、读取和写入方法收紧为内部命名，外部状态访问统一经过 GuildState。
+- 已实际验证金币设置为 25、恢复为 0，再从 0 增加到 100；总声望从 0 增加到 5，并按稳定 ID 读回。
+- Godot 编辑器无界面扫描生成了两个新脚本的 `.uid`；扫描因 `--quit-after 8` 结束时出现一次 `Scan thread aborted` 警告，不影响类缓存与 UID 生成。
+- Godot 4.7.2 对 `state_value.gd`、`guild_state.gd` 与 `vertical_slice_test.gd` 的单脚本检查退出码均为 0。
+- Godot 4.7.2 主场景运行退出码为 0，输出 `GuildState values success: gold=100, total_reputation=5`；日志中的零命中与多命中错误来自 Task 12 的预期异常分支，Task 13 没有新增错误。
+- 未实现库存、设施、债务、评级、地区声望或存档；未执行 Task 14；未 push。
+- 下一步：只执行 Task 14 的 ResultSettlementSystem。
+
 ## 2026-08-23：完成 V2 Task 12 TaskResolutionSystem
 
 - 已新增 `runtime/tasks/task_resolution_system.gd`，类型为 Node；公开 API `resolve_result()` 只返回唯一命中的静态 `result_id`。

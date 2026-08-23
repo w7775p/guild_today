@@ -23,9 +23,10 @@
 - Task 10：已完成 TaskSystem 创建、持有与最终结果写入验收。
 - Task 11：已完成 DispatchSystem 与 ACTIVE 派遣占用验收。
 - Task 12：已完成 TaskResolutionSystem 唯一结果选择验收。
-- Task 13–16：Jackie 已授权按 V2 顺序逐项执行，尚未开始。
+- Task 13：已完成 GuildState 与 StateValue 稳定 ID 状态读写验收。
+- Task 14–16：Jackie 已授权按 V2 顺序逐项执行，尚未开始。
 - DOC-1～DOC-5：已完成，历史保存在 `progress.md` 与 `findings.md`，不再混入功能 Task 清单。
-- Task 1–12 均已形成可回退的本地提交检查点；尚未 push。
+- Task 1–13 均已形成可回退的本地提交检查点；尚未 push。
 
 ## 状态标记
 
@@ -186,12 +187,13 @@
 - 验收证据：Godot 4.7.2 对 TaskResolutionSystem 与验收脚本的单脚本检查均为 0；实际运行分别选择成功、失败结果，零命中与多命中各输出明确错误并返回空 ID。
 - 不包含：效果执行、GuildState 修改、报告生成、优先级排序。
 
-### [ ] Task 13：实现 GuildState 与 StateValue
+### [x] Task 13：实现 GuildState 与 StateValue
 
 - 单一目标：通过稳定 state_id 保存和修改公会金币与总声望。
 - 实现：`runtime/guild/state_value.gd`、`runtime/guild/guild_state.gd`。
 - 最小状态：Gold、TotalReputation；外部只能通过 GuildState 公开 API 读写。
 - 验收：金币从 0 增加到 100、总声望从 0 增加到 5，并能按稳定 state_id 正确读取。
+- 验收证据：Godot 4.7.2 对 StateValue、GuildState 与验收脚本的单脚本检查均为 0；实际运行通过 `gold`、`total_reputation` 稳定 ID 读回 100 与 5。
 - 不包含：库存、设施、债务、评级、地区声望或存档。
 
 ### [ ] Task 14：实现 ResultSettlementSystem
@@ -243,4 +245,4 @@
 
 ## 当前下一步
 
-下一次只执行 Task 13 的 GuildState 与 StateValue。
+下一次只执行 Task 14 的 ResultSettlementSystem。

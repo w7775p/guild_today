@@ -1,5 +1,13 @@
 # 项目发现与约束
 
+## 2026-08-23 V2 Task 13 GuildState 与 StateValue 结论
+
+- `GuildState` 是金币与总声望的唯一公开读写边界；稳定 ID 固定为 `gold` 与 `total_reputation`。
+- 每个 `StateValue` Node 只持有一个状态 ID 和整数当前值，普通设置与增减通过 `value_changed` 通知已经发生的变化。
+- `restore_value()` 直接恢复已保存事实，不模拟一次游戏内数值变化；SaveSystem 与具体存档格式仍未进入当前范围。
+- GuildState 在创建时注册两个 StateValue 子节点；状态集合保持私有，未知 ID 会明确报错。
+- 当前没有加入库存、设施、债务、评级、地区声望、特殊货币或通用状态 Schema。
+
 ## 2026-08-23 V2 Task 12 TaskResolutionSystem 结论
 
 - `TaskResolutionSystem` 是无持久状态的 Node；输入为 DispatchInstance 与 ResultGroupAsset，输出只保留稳定 `result_id`。

@@ -16,6 +16,7 @@ func _ready() -> void:
 	_validate_task_system()
 	_validate_dispatch_system()
 	_validate_task_resolution_system()
+	_validate_guild_state()
 
 
 # 通过实际加载 TEST_ONLY 资源，验证 Task 1 的静态字段和稳定 ID。
@@ -287,3 +288,25 @@ func _validate_task_resolution_system() -> void:
 
 	print("TaskResolutionSystem selection success: success=%s, failure=%s, zero_error=true, multiple_error=true" % [success_result_id, failure_result_id])
 	resolution_system.queue_free()
+
+
+# 验证金币与总声望只能通过 GuildState 的稳定 ID 接口从 0 增加到目标值。
+func _validate_guild_state() -> void:
+	var guild_state := GuildState.new()
+	add_child(guild_state)
+	assert(guild_state.has_state(GuildState.GOLD_STATE_ID), "GuildState 缺少金币状态")
+	assert(guild_state.has_state(GuildState.TOTAL_REPUTATION_STATE_ID), "GuildState 缺少总声望状态")
+	assert(guild_state.get_value(GuildState.GOLD_STATE_ID) == 0, "GuildState 金币初始值应为 0")
+	assert(guild_state.get_value(GuildState.TOTAL_REPUTATION_STATE_ID) == 0, "GuildState 总声望初始值应为 0")
+
+	# 先验证设置与恢复入口，再从恢复后的 0 执行本 Task 的增量验收。
+	guild_state.set_value(GuildState.GOLD_STATE_ID, 25)
+	assert(guild_state.get_value(GuildState.GOLD_STATE_ID) == 25, "GuildState 金币设置结果不正确")
+	guild_state.restore_value(GuildState.GOLD_STATE_ID, 0)
+	assert(guild_state.get_value(GuildState.GOLD_STATE_ID) == 0, "GuildState 金币恢复结果不正确")
+	guild_state.add_value(GuildState.GOLD_STATE_ID, 100)
+	guild_state.add_value(GuildState.TOTAL_REPUTATION_STATE_ID, 5)
+	assert(guild_state.get_value(GuildState.GOLD_STATE_ID) == 100, "GuildState 金币增加结果不正确")
+	assert(guild_state.get_value(GuildState.TOTAL_REPUTATION_STATE_ID) == 5, "GuildState 总声望增加结果不正确")
+	print("GuildState values success: gold=%d, total_reputation=%d" % [guild_state.get_value(GuildState.GOLD_STATE_ID), guild_state.get_value(GuildState.TOTAL_REPUTATION_STATE_ID)])
+	guild_state.queue_free()
