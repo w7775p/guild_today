@@ -1,5 +1,12 @@
 # 项目发现与约束
 
+## 2026-08-23 V2 Task 8 DispatchInstance 结论
+
+- `DispatchInstance` 使用 `RefCounted` 保存一次派遣决定，并以 `Array[CharacterAsset]` 强类型保存实际角色引用。
+- 派遣成员运行真源只在 `DispatchInstance.character_refs`；TaskInstance 继续没有 `party_member_ids` 或任何可变成员副本。
+- `status` 暂用 `StringName` 保存当前冻结的 ACTIVE/ENDED 状态值；状态迁移与角色占用推导留给 Task 11 的 DispatchSystem。
+- `started_at / ended_at` 的类型与单位仍未冻结，本 Task 没有添加时间字段。
+
 ## 2026-08-23 V2 Task 7 TaskInstance 结论
 
 - `TaskInstance` 使用 `RefCounted` 表达单局中一次已经发生的任务实例事实，静态 `TaskAsset` 保持只读。

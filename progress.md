@@ -1,5 +1,16 @@
 # 进度日志
 
+## 2026-08-23：完成 V2 Task 8 DispatchInstance
+
+- 已新增 `runtime/dispatch/dispatch_instance.gd`，类型为 `RefCounted`，只保存 `dispatch_instance_id`、`task_instance_id`、`character_refs` 与 `status`。
+- 已在主场景验收脚本中创建一次 TEST_ONLY 派遣，实际保存并读回角色 A、B、C 三个 CharacterAsset 引用。
+- 已验证 TaskInstance 没有 `party_member_ids`，派遣成员运行事实只存在于 DispatchInstance。
+- Godot 编辑器无界面扫描生成了 `dispatch_instance.gd.uid`；扫描因 `--quit-after 8` 结束时出现一次 `Scan thread aborted` 警告，不影响类缓存与 UID 生成。
+- Godot 4.7.2 对 `dispatch_instance.gd` 与 `vertical_slice_test.gd` 的单脚本检查退出码均为 0。
+- Godot 4.7.2 主场景运行退出码为 0，输出 `DispatchInstance refs success: id=test_dispatch_instance_001, task=test_task_instance_001, characters=[&"test_character_a", &"test_character_b", &"test_character_c"]`。
+- 未猜测 `started_at / ended_at` 类型，未实现派遣合法性、角色占用或结果判定；未执行 Task 9；未 push。
+- 下一步：只执行 Task 9 的 ResultInstance。
+
 ## 2026-08-23：完成 V2 Task 7 TaskInstance
 
 - 已新增 `runtime/tasks/task_instance.gd`，类型为 `RefCounted`，只保存 `instance_id`、`task_id`、`lifecycle_state`、`final_result_id` 与 `runtime_progress`。

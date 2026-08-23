@@ -11,6 +11,7 @@ func _ready() -> void:
 	_validate_result_asset()
 	_validate_result_group_asset()
 	_validate_task_instance()
+	_validate_dispatch_instance()
 
 
 # 通过实际加载 TEST_ONLY 资源，验证 Task 1 的静态字段和稳定 ID。
@@ -128,3 +129,31 @@ func _validate_task_instance() -> void:
 	assert(first_instance.runtime_progress[&"investigation"] == 2, "第一个实例进度不正确")
 	assert(second_instance.runtime_progress[&"investigation"] == 3, "第二个实例进度被污染")
 	print("TaskInstance isolation success: first=%s, second=%s, task=%s" % [first_instance.instance_id, second_instance.instance_id, first_instance.task_id])
+
+
+# 创建三个 TEST_ONLY 角色引用，验证派遣成员只保存在 DispatchInstance。
+func _validate_dispatch_instance() -> void:
+	var character_a: CharacterAsset = load("res://tests/fixtures/character_a.tres") as CharacterAsset
+	assert(character_a != null, "DispatchInstance 角色 A 加载失败")
+	var character_b := CharacterAsset.new()
+	character_b.id = &"test_character_b"
+	character_b.name = "角色B"
+	var character_c := CharacterAsset.new()
+	character_c.id = &"test_character_c"
+	character_c.name = "角色C"
+
+	var dispatch := DispatchInstance.new()
+	dispatch.dispatch_instance_id = &"test_dispatch_instance_001"
+	dispatch.task_instance_id = &"test_task_instance_001"
+	dispatch.character_refs.assign([character_a, character_b, character_c])
+	dispatch.status = &"ACTIVE"
+
+	assert(dispatch.dispatch_instance_id == &"test_dispatch_instance_001", "DispatchInstance ID 不正确")
+	assert(dispatch.task_instance_id == &"test_task_instance_001", "DispatchInstance 任务实例 ID 不正确")
+	assert(dispatch.character_refs.size() == 3, "DispatchInstance 应保存三个角色引用")
+	assert(dispatch.character_refs[0] == character_a, "DispatchInstance 角色 A 引用不正确")
+	assert(dispatch.character_refs[1] == character_b, "DispatchInstance 角色 B 引用不正确")
+	assert(dispatch.character_refs[2] == character_c, "DispatchInstance 角色 C 引用不正确")
+	assert(dispatch.status == &"ACTIVE", "DispatchInstance 状态不正确")
+	assert(not "party_member_ids" in TaskInstance.new(), "TaskInstance 不得保存可变派遣成员副本")
+	print("DispatchInstance refs success: id=%s, task=%s, characters=%s" % [dispatch.dispatch_instance_id, dispatch.task_instance_id, [dispatch.character_refs[0].id, dispatch.character_refs[1].id, dispatch.character_refs[2].id]])

@@ -18,9 +18,10 @@
 - Task 5：已完成 ResultAsset 验收。
 - Task 6：已完成 ResultGroupAsset 与互补结果分支验收。
 - Task 7：已完成 TaskInstance 与运行事实隔离验收。
-- Task 8–16：Jackie 已授权按 V2 顺序逐项执行，尚未开始。
+- Task 8：已完成 DispatchInstance 与派遣成员唯一真源验收。
+- Task 9–16：Jackie 已授权按 V2 顺序逐项执行，尚未开始。
 - DOC-1～DOC-5：已完成，历史保存在 `progress.md` 与 `findings.md`，不再混入功能 Task 清单。
-- Task 1–7 均已形成可回退的本地提交检查点；尚未 push。
+- Task 1–8 均已形成可回退的本地提交检查点；尚未 push。
 
 ## 状态标记
 
@@ -135,13 +136,14 @@
 - 验收证据：Godot 4.7.2 对 TaskInstance 与验收脚本的单脚本检查均为 0；两个实例引用同一任务，实例 ID 不同，生命周期、最终结果与进度事实保持隔离。
 - 不包含：`party_member_ids` 真源、正式生命周期枚举、任务生成系统、派遣与结算。
 
-### [ ] Task 8：实现 DispatchInstance
+### [x] Task 8：实现 DispatchInstance
 
 - 单一目标：记录一次派遣决定，并成为派遣成员唯一运行真源。
 - 实现：`runtime/dispatch/dispatch_instance.gd`，类型为 `RefCounted`。
 - 字段：`dispatch_instance_id`、`task_instance_id`、`character_refs[]`、`status`。
 - 当前边界：`started_at / ended_at` 的类型与单位未冻结，本 Task 不猜测实现。
 - 验收：三个角色引用可保存并读取；TaskInstance 不保存可变成员副本。
+- 验收证据：Godot 4.7.2 对 DispatchInstance 与验收脚本的单脚本检查均为 0；一次派遣实际保存并读回三个 CharacterAsset 引用，TaskInstance 没有 `party_member_ids`。
 - 不包含：派遣合法性、角色占用、结果判定。
 
 ### [ ] Task 9：实现 ResultInstance
@@ -233,4 +235,4 @@
 
 ## 当前下一步
 
-下一次只执行 Task 8 的 DispatchInstance。
+下一次只执行 Task 9 的 ResultInstance。
