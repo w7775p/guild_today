@@ -1,5 +1,17 @@
 # 进度日志
 
+## 2026-08-23：完成 V2 Task 6 ResultGroupAsset
+
+- Jackie 已允许补充最小 `AbilityBelowCondition`；成功条件使用 `investigation >= 10`，失败条件使用 `investigation < 10`。
+- 已新增 `result_group_asset.gd`、`ability_below_condition.gd`、失败结果与结果组 TEST_ONLY fixture，并把 `TaskAsset.result_group` 收紧为 `ResultGroupAsset`。
+- 已将废弃医院任务 fixture 绑定到结果组；验收沿 `TaskAsset → ResultGroupAsset → ResultAsset[]` 读出成功、失败两个结果。
+- Task 6 开工前创建本地基线提交 `92017f0`，保存 DOC 重构与已完成 Task 1–5；没有 push。
+- 首次 Godot 验收调用因权限自动审核超时而未启动；缩短命令后按规则重试一次成功。
+- Godot 4.7.2 对 `ability_below_condition.gd`、`result_group_asset.gd`、`task_asset.gd`、`vertical_slice_test.gd` 的单脚本检查退出码均为 0。
+- Godot 4.7.2 主场景运行退出码为 0，输出 `ResultGroupAsset load success: id=test_abandoned_hospital_results, success=test_abandoned_hospital_success, failure=test_abandoned_hospital_failure`。
+- 未实现结果优先级、结果选择或效果执行；未执行 Task 7；未 push。
+- 下一步：只执行 Task 7 的 TaskInstance。
+
 ## 2026-08-23：V2 Task 6 因互斥条件表达不足暂停
 
 - 开工检查确认 ResultGroup 内结果条件必须互斥、不得依赖优先级，并应避免零命中。

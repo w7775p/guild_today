@@ -9,6 +9,7 @@ func _ready() -> void:
 	_validate_ability_condition()
 	_validate_effect_resources()
 	_validate_result_asset()
+	_validate_result_group_asset()
 
 
 # 通过实际加载 TEST_ONLY 资源，验证 Task 1 的静态字段和稳定 ID。
@@ -31,7 +32,7 @@ func _validate_task_asset() -> void:
 	assert(task.title == "废弃医院调查", "TaskAsset 标题不正确")
 	assert(task.description == "调查废弃医院中的异常情况。", "TaskAsset 描述不正确")
 	assert(task.repeatable == false, "TaskAsset repeatable 不正确")
-	assert(task.result_group == null, "TaskAsset 不应提前绑定 ResultGroup")
+	assert(task.result_group is ResultGroupAsset, "TaskAsset 应绑定 ResultGroupAsset")
 	assert(task.event_reference == null, "TaskAsset 不应提前绑定 EventAsset")
 	print("TaskAsset load success: id=%s, title=%s, repeatable=%s" % [task.id, task.title, task.repeatable])
 
@@ -77,3 +78,23 @@ func _validate_result_asset() -> void:
 	assert((result.effects[1] as ReputationEffect).amount == 5, "ResultAsset 声望效果值不正确")
 	assert(result.report_text == "废弃医院调查完成", "ResultAsset 报告文本不正确")
 	print("ResultAsset load success: id=%s, conditions=1, effects=2, report=%s" % [result.id, result.report_text])
+
+
+# 沿 TaskAsset 引用读取结果组及两个结果，不在本 Task 执行筛选或排序。
+func _validate_result_group_asset() -> void:
+	var task: TaskAsset = load("res://tests/fixtures/abandoned_hospital.tres") as TaskAsset
+	assert(task != null, "TaskAsset fixture 加载失败")
+	var result_group: ResultGroupAsset = task.result_group
+	assert(result_group != null, "ResultGroupAsset fixture 加载失败")
+	assert(String(result_group.id) == "test_abandoned_hospital_results", "ResultGroupAsset ID 不正确")
+	assert(result_group.results.size() == 2, "ResultGroupAsset 结果数量不正确")
+	assert(String(result_group.results[0].id) == "test_abandoned_hospital_success", "成功结果 ID 不正确")
+	assert(String(result_group.results[1].id) == "test_abandoned_hospital_failure", "失败结果 ID 不正确")
+	assert(result_group.results[0].conditions[0] is AbilityCondition, "成功结果条件类型不正确")
+	assert(result_group.results[1].conditions[0] is AbilityBelowCondition, "失败结果条件类型不正确")
+	var success_condition := result_group.results[0].conditions[0] as AbilityCondition
+	var failure_condition := result_group.results[1].conditions[0] as AbilityBelowCondition
+	assert(failure_condition.value == 10, "失败结果阈值不正确")
+	assert(not success_condition.is_met(9) and failure_condition.is_met(9), "调查能力 9 应只满足失败条件")
+	assert(success_condition.is_met(10) and not failure_condition.is_met(10), "调查能力 10 应只满足成功条件")
+	print("ResultGroupAsset load success: id=%s, success=%s, failure=%s" % [result_group.id, result_group.results[0].id, result_group.results[1].id])

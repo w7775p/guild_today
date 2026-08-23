@@ -6,5 +6,5 @@ extends Resource
 @export var title: String = ""
 @export_multiline var description: String = ""
 @export var repeatable: bool = false
-@export var result_group: Resource = null
+@export var result_group: ResultGroupAsset = null
 @export var event_reference: Resource = null

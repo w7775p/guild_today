@@ -1,5 +1,11 @@
 # 项目发现与约束
 
+## 2026-08-23 V2 Task 6 ResultGroupAsset 结论
+
+- Jackie 已确认允许最小互补条件；新增 `AbilityBelowCondition` 后，`>= 10` 与 `< 10` 将整数调查能力域完整分为成功、失败两支，不需要 fallback、优先级、OR/NOT 或通用规则引擎。
+- `TaskAsset.result_group` 已从通用 Resource 收紧为 `ResultGroupAsset`；任务 fixture 可沿强类型引用读取两个 ResultAsset。
+- ResultGroupAsset 当前只保存 `id` 与 `Array[ResultAsset]`，不执行筛选或排序；结果选择仍归 Task 12。
+
 ## 2026-08-23 V2 Task 6 条件完备性阻塞
 
 - 二元结果要同时满足“互斥”和“无遗漏”，条件集合必须能表达一对互补谓词，例如 `investigation >= 10` 与 `investigation < 10`。

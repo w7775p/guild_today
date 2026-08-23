@@ -9,14 +9,14 @@
 ## 当前状态
 
 - 唯一项目目录：`D:\Godot\guild_today`。
-- 当前执行任务：Task 6：等待互斥条件方案决策。
+- 当前执行任务：无。
 - Task 0：已完成。
 - Task 1：已完成目录校准与重新验收。
 - Task 2：已完成目录校准与重新验收。
 - Task 3：已完成最小 ConditionResource 与 AbilityCondition 验收。
 - Task 4：已完成最小 EffectResource、GoldEffect 与 ReputationEffect 验收。
 - Task 5：已完成 ResultAsset 验收。
-- Task 6：已授权，因成功/失败条件无法互斥且完备而暂停。
+- Task 6：已完成 ResultGroupAsset 与互补结果分支验收。
 - Task 7–16：Jackie 已授权按 V2 顺序逐项执行，尚未开始。
 - DOC-1～DOC-5：已完成，历史保存在 `progress.md` 与 `findings.md`，不再混入功能 Task 清单。
 - 当前工作区存在未提交的文档、Task 1–2 代码与 fixture 变更；本计划不代表已经 commit 或 push。
@@ -114,14 +114,15 @@
 - 验收证据：Godot 4.7.2 对 ResultAsset 与验收脚本的单脚本检查均为 0；成功结果 Resource 实际加载一项 AbilityCondition、两项 EffectResource 与报告文本“废弃医院调查完成”。
 - 不包含：条件判断、效果执行、结果选择。
 
-### [+] Task 6：创建 ResultGroupAsset
+### [x] Task 6：创建 ResultGroupAsset
 
 - 单一目标：让一个任务引用一组互斥结果。
-- 实现：`assets/types/result_group_asset.gd`，并把 `TaskAsset.result_group` 收紧为明确的 ResultGroupAsset 引用。
+- 实现：`assets/types/result_group_asset.gd`，并把 `TaskAsset.result_group` 收紧为明确的 ResultGroupAsset 引用；补充 `AbilityBelowCondition` 形成互补失败条件。
 - 字段：`id`、`results: Array[ResultAsset]`。
 - 测试数据：成功与失败两个 ResultAsset，以及一个废弃医院 ResultGroup。
 - 验收：Godot 加载任务 fixture 后，可沿 `TaskAsset → ResultGroupAsset → ResultAsset[]` 读出成功、失败两个结果。
-- 当前阻塞：现有 AbilityCondition 只能表达 `investigation >= value`，无法为同一阈值同时表达互斥且完备的成功与失败条件；在补充条件契约前不生成逻辑无效的 ResultGroup fixture。
+- 验收证据：Godot 4.7.2 对 AbilityBelowCondition、ResultGroupAsset、TaskAsset 与验收脚本的单脚本检查均为 0；任务 fixture 实际读出成功、失败两个结果，阈值 10 两侧互斥且完备。
+- 已确认方案：成功使用 `investigation >= 10`，失败使用 `investigation < 10`，两者互斥且完备。
 - 不包含：优先级、结果选择、条件执行。
 
 ### [ ] Task 7：实现 TaskInstance
@@ -230,4 +231,4 @@
 
 ## 当前下一步
 
-等待 Jackie 决定 Task 6 的最小互斥条件补充方案，再继续 ResultGroupAsset。
+下一次只执行 Task 7 的 TaskInstance。

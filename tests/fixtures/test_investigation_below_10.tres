@@ -1,0 +1,8 @@
+; TEST_ONLY：Task 6 用于表达调查能力低于成功阈值的互补失败条件。
+[gd_resource type="Resource" script_class="AbilityBelowCondition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://assets/types/ability_below_condition.gd" id="1_ability_below_condition"]
+
+[resource]
+script = ExtResource("1_ability_below_condition")
+value = 10

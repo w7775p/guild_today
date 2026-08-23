@@ -1,0 +1,12 @@
+; TEST_ONLY：Task 6 用于验证废弃医院失败结果的静态配置。
+[gd_resource type="Resource" script_class="ResultAsset" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://assets/types/result_asset.gd" id="1_result_asset"]
+[ext_resource type="Script" path="res://assets/types/condition_resource.gd" id="2_condition_type"]
+[ext_resource type="Resource" path="res://tests/fixtures/test_investigation_below_10.tres" id="3_condition"]
+
+[resource]
+script = ExtResource("1_result_asset")
+id = &"test_abandoned_hospital_failure"
+conditions = Array[ExtResource("2_condition_type")]([ExtResource("3_condition")])
+report_text = "废弃医院调查失败"

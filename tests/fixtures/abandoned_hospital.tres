@@ -1,7 +1,8 @@
 ; TEST_ONLY：Task 2 用于验证 TaskAsset 加载的最小任务资产。
-[gd_resource type="Resource" script_class="TaskAsset" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="TaskAsset" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://assets/types/task_asset.gd" id="1_task_asset"]
+[ext_resource type="Resource" path="res://tests/fixtures/test_abandoned_hospital_result_group.tres" id="2_result_group"]
 
 [resource]
 script = ExtResource("1_task_asset")
@@ -9,5 +10,5 @@ id = &"test_abandoned_hospital"
 title = "废弃医院调查"
 description = "调查废弃医院中的异常情况。"
 repeatable = false
-result_group = null
+result_group = ExtResource("2_result_group")
 event_reference = null

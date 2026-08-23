@@ -1,0 +1,12 @@
+; TEST_ONLY：Task 6 用于连接废弃医院任务与互斥的成功、失败结果。
+[gd_resource type="Resource" script_class="ResultGroupAsset" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://assets/types/result_group_asset.gd" id="1_result_group_asset"]
+[ext_resource type="Script" path="res://assets/types/result_asset.gd" id="2_result_type"]
+[ext_resource type="Resource" path="res://tests/fixtures/test_abandoned_hospital_success.tres" id="3_success"]
+[ext_resource type="Resource" path="res://tests/fixtures/test_abandoned_hospital_failure.tres" id="4_failure"]
+
+[resource]
+script = ExtResource("1_result_group_asset")
+id = &"test_abandoned_hospital_results"
+results = Array[ExtResource("2_result_type")]([ExtResource("3_success"), ExtResource("4_failure")])
