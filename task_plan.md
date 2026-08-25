@@ -9,7 +9,7 @@
 ## 当前状态
 
 - 唯一项目目录：`D:\Godot\guild_today`。
-- 当前执行任务：无。
+- 当前执行任务：无；V2 Task 0–16 已全部完成验收。
 - Task 0：已完成。
 - Task 1：已完成目录校准与重新验收。
 - Task 2：已完成目录校准与重新验收。
@@ -26,9 +26,9 @@
 - Task 13：已完成 GuildState 与 StateValue 稳定 ID 状态读写验收。
 - Task 14：已完成 ResultSettlementSystem 效果分发与重复保护验收。
 - Task 15：已完成 ReportIntelSystem 确定性文本输出验收。
-- Task 16：Jackie 已授权按 V2 顺序执行，尚未开始。
+- Task 16：完整 Vertical Slice 已通过自动验收与 Jackie 人工验收。
 - DOC-1～DOC-5：已完成，历史保存在 `progress.md` 与 `findings.md`，不再混入功能 Task 清单。
-- Task 1–15 均已形成可回退的本地提交检查点；尚未 push。
+- Task 1–16 已形成完整运行时骨架；当前按 Jackie 明确授权创建 Task 16 完成提交并 push。
 
 ## 状态标记
 
@@ -215,12 +215,13 @@
 - 验收证据：Godot 4.7.2 对 ReportIntelSystem 与验收脚本的单脚本检查均为 0；效果结算后实际生成三行确定性文本“废弃医院调查完成”“获得金币100”“声望提升5”。
 - 不包含：独立 ReportAsset、UI、富文本、历史报告数据库或情报扩展系统。
 
-### [ ] Task 16：完整 Vertical Slice 自动验收
+### [x] Task 16：完整 Vertical Slice 自动验收
 
 - 单一目标：只组装 Task 0–15 已有能力，证明第一条运行链真实闭环。
 - 固定输入：角色 A，`investigation = 12`；废弃医院任务；成功效果 `gold +100`、`reputation +5`。
 - 完整链：`TaskAsset → TaskInstance → DispatchInstance → TaskResolutionSystem → ResultGroupAsset → ResultAsset → ResultInstance → ResultSettlementSystem → GuildState → ReportIntelSystem`。
 - 验收：Godot 4.7.2 实际运行退出码为 0；唯一命中成功结果；最终金币 100、总声望 5；输出确定报告；无解析错误、断言失败或运行时错误。
+- 验收证据：独立 `runtime_chain_test.tscn` 在 Godot 4.7.2 中退出码为 0，唯一命中成功结果，金币 100、总声望 5，输出确定报告并释放角色；日志无 ERROR、解析错误或断言失败；2026-08-25 Jackie 使用 F6 运行当前场景，人工确认得到预期完整链输出。
 - 不包含：完整 UI、编辑器工具、Importer、存档、随机、事件链或未冻结扩展。
 
 ## 依赖顺序
@@ -249,4 +250,4 @@
 
 ## 当前下一步
 
-下一次只执行 Task 16 的完整 Vertical Slice 自动验收。
+V2 Task 0–16 已全部完成；没有 Task 17，后续开发等待新计划。

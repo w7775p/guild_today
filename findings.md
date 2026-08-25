@@ -1,5 +1,14 @@
 # 项目发现与约束
 
+## 2026-08-23 V2 Task 16 完整 Vertical Slice 结论
+
+- 最终验收使用独立 `runtime_chain_test.tscn`，只运行成功链，避免 Task 12 与 Task 14 的预期错误分支污染“零运行时错误”证据。
+- TEST_ONLY 角色 A 在验收脚本中以调查 12 创建，没有改写 CharacterAsset fixture 或静态 Resource。
+- ResultGroupAsset 负责结果筛选入口，TaskResolutionSystem 返回稳定 result_id；验收脚本只按该 ID 读取对应 ResultAsset 引用。
+- ResultInstance 保存本次结果与已确定效果，ResultSettlementSystem 通过 GuildState 写入 100/5，ReportIntelSystem 再生成确定报告。
+- 派遣在链尾通过 DispatchSystem 显式结束，角色占用随 ACTIVE 状态消失，没有第二占用真源。
+- Task 0–16 的功能能力已在 Godot 4.7.2 中形成完整、确定、无随机的运行时垂直切片；2026-08-25 Jackie 通过 F6 人工运行独立场景并确认预期输出。当前 V2 到 Task 16 为止，不创建 Task 17。
+
 ## 2026-08-23 V2 Task 15 ReportIntelSystem 结论
 
 - `ReportIntelSystem` 当前是无持久状态的薄 Node，只把一个已确定结果转换为玩家可读纯文本。

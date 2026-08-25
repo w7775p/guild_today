@@ -1,5 +1,24 @@
 # 进度日志
 
+## 2026-08-25：完成 V2 Task 16 完整 Vertical Slice
+
+- Jackie 在 Godot 4.7.2 中打开 `runtime_chain_test.tscn` 并使用 F6 运行当前场景，人工确认出现预期 `Runtime vertical slice success` 输出。
+- V2 Task 0–16 的第一阶段运行时骨架已完成；Jackie 已明确授权创建 Task 16 本地完成提交并 push。
+
+## 2026-08-23：V2 Task 16 自动验收通过
+
+- 已新增 `tests/runtime_chain_test.gd` 与 `tests/runtime_chain_test.tscn`，独立运行无异常分支的完整成功链。
+- 固定输入为 TEST_ONLY 角色 A、`investigation = 12` 与废弃医院任务；没有修改静态 fixture 或扩展 CharacterAsset Schema。
+- 完整链实际经过 `TaskAsset → TaskInstance → DispatchInstance → TaskResolutionSystem → ResultGroupAsset → ResultAsset → ResultInstance → ResultSettlementSystem → GuildState → ReportIntelSystem`。
+- 已验证唯一命中 `test_abandoned_hospital_success`，TaskSystem 写入最终结果 ID，金币为 100，总声望为 5，报告为“废弃医院调查完成”“获得金币100”“声望提升5”。
+- 已显式结束 DispatchInstance，并验证角色 A 从 ACTIVE 占用中释放。
+- Godot 编辑器无界面扫描生成了 `runtime_chain_test.gd.uid`；扫描因 `--quit-after 8` 结束时出现一次 `Scan thread aborted` 警告，不影响类缓存与 UID 生成。
+- Godot 4.7.2 对 `runtime_chain_test.gd` 的单脚本检查退出码为 0。
+- Godot 4.7.2 独立运行 `runtime_chain_test.tscn` 退出码为 0，输出 `Runtime vertical slice success: task=test_abandoned_hospital_instance_1, dispatch=test_abandoned_hospital_instance_1_dispatch_1, result=test_abandoned_hospital_success, gold=100, total_reputation=5, report=废弃医院调查完成 | 获得金币100 | 声望提升5`；日志无 ERROR、解析错误或断言失败。
+- 必需验收通过后尝试额外运行旧汇总场景，工具因本轮自动授权额度耗尽而拒绝启动；未绕过限制重试。该进程没有运行，Task 15 已有旧场景回归证据，Task 16 的独立完整链证据有效。
+- 未实现完整 UI、编辑器工具、Importer、存档、随机、事件链或未冻结扩展；未 push。
+- 暂存首次因 `.git/index.lock` 写权限不足失败；随后请求 `.git` 写权限未获授予，按规则进行一次提权重试，又因自动审批额度耗尽被拒绝；2026-08-25 Jackie 在知情后重新明确授权完成提交与 push。
+
 ## 2026-08-23：完成 V2 Task 15 ReportIntelSystem
 
 - 已新增 `runtime/reports/report_intel_system.gd`，类型为 Node；公开 API `build_report()` 返回确定性纯文本。
