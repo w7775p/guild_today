@@ -1,5 +1,10 @@
-; Godot 引擎配置文件。
-; 优先通过编辑器修改，避免手动填写不完整的引擎参数。
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
 
 config_version=5
 
