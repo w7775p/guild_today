@@ -1,9 +1,10 @@
 class_name AbilityBelowCondition
 extends ConditionResource
 
-# 只表达调查能力低于阈值，用于与 AbilityCondition 组成互补结果分支。
+@export var ability_id: StringName = &"investigation"
 @export var value: int = 0
 
 
-func is_met(investigation_value: int) -> bool:
-	return investigation_value < value
+# 条件只比较系统传入的指定能力值，能力来源由 TaskResolutionSystem 统一选择。
+func is_met(ability_value: int) -> bool:
+	return ability_value < value

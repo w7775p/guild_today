@@ -464,3 +464,17 @@
 - 当前占位项：阿斯特里德职业、五个结果完整报告文本，以及结果条件、效果、任务终态、伤势规则、关系/声望具体变化和后续救援 ID。
 - 当前推测项：`repeatable = false` 依据“单次唯一测试任务”工作性落地；延迟报酬 60 金币、完整成功评价 `+5`、搜索失败信任 `-5`、带伤目标规则与伤势等级仍仅记录在工作输入文档，未写入本 Task 的正式效果。
 - 未实现：结果判定、最高能力计算、结果效果、运行状态、日期、GameSession、UI、JSON Importer。
+
+## 2026-08-29：完成 V3 Task 2 真实队伍能力判定
+
+- 本轮只实现真实队伍能力判定：`TaskResolutionSystem` 从 `DispatchInstance.character_refs[]` 即时读取战斗、调查、交涉三项最高值；未保存合计值或最高值副本。
+- `AbilityCondition` 与 `AbilityBelowCondition` 增加 `ability_id`，区间使用多个明确条件的 AND 组合；未引入 RuleEngine、DSL、表达式解析器或隐式优先级。
+- 五个正式结果已配置当前 V3 工作规则：搜索失败（调查 < 5）、完整成功（调查 ≥ 7 且战斗 ≥ 6）、延迟成功（调查 5–6 且战斗 ≥ 6）、带伤救回（调查 ≥ 5 且战斗 4–5）、查明位置（调查 ≥ 5 且战斗 < 4）。
+- 已新增 `tests/v3_task2_resolution_test.gd` 与场景，覆盖六名正式角色、11 组派遣、带伤边界，以及队伍取最高值与唯一结果命中。
+- Godot 4.7.2 单脚本检查：`condition_resource.gd`、`ability_condition.gd`、`ability_below_condition.gd`、`task_resolution_system.gd`、`v3_task2_resolution_test.gd` 均退出码 0。
+- Godot 4.7.2 Task 2 专项测试退出码 0，输出 `V3 Task 2 resolution success: matrix=11, max_ability=true, unique_results=true`。
+- Task 1 专项回归与 V2 `runtime_chain_test.tscn` 均退出码 0；输出分别为 `V3 Task 1 content success` 与 `Runtime vertical slice success`。
+- 旧引用搜索未发现 `ability_totals`、`investigation_total` 或 `res://resources/`；`git diff --check` 退出码 0；差异审计仅包含 Task 2 条件、判定、测试与三份规划记录。
+- 当前占位项：五个结果完整报告文本、五个结果效果、延迟报酬、完整成功评价、搜索失败信任、带伤救回目标与伤势、查明位置任务终态与后续救援 ID；Task 3 的伤势、关系/声望、情报状态拥有者仍需按真实策划确认。
+- 当前推测项：五结果阈值 `4/5/6/7` 与区间组合沿 V3 计划作为工作性推测落地，尚未获得 Jackie 对 Task 1 策划缺口的确认。
+- 未实现：结果效果执行、状态持久化、时间推进、GameSession、UI、第二张任务。
