@@ -1,253 +1,819 @@
-# 《今日公会照常营业》运行时垂直切片计划 V2
+# 《今日公会照常营业》V3 可玩游戏循环执行计划
 
-## 计划意图
+## 1. 计划定位
 
-基于 `D:\Godot\guild_today` 当前文件、DOC-1～DOC-5 重构结果和冻结架构，重新排列 Task 0–16，使每个 Task 只引入一个可验证能力，并最终跑通：
+V2 Task 0–16 已完成，证明 TEST_ONLY 运行时骨架能够跑通：
 
 `TaskAsset → TaskInstance → DispatchInstance → TaskResolutionSystem → ResultGroupAsset → ResultAsset → ResultInstance → ResultSettlementSystem → GuildState → ReportIntelSystem`
 
-## 当前状态
+V3 的目标是把测试骨架推进为一段可实际操作、可人工判断、可产生持续后果的真实游戏循环：
+
+`阅读真实委托与角色 → 选择队伍 → 确认派遣 → 等待两日 → 唯一结果判定 → 结算持续后果 → 阅读报告 → 后果影响下一次选择`
+
+V3 只使用已经存在的真实策划资产验证产品，不继续扩充角色数量与任务数量。
+
+## 2. 当前事实
 
 - 唯一项目目录：`D:\Godot\guild_today`。
-- 当前执行任务：无；V2 Task 0–16 已全部完成验收。
-- Task 0：已完成。
-- Task 1：已完成目录校准与重新验收。
-- Task 2：已完成目录校准与重新验收。
-- Task 3：已完成最小 ConditionResource 与 AbilityCondition 验收。
-- Task 4：已完成最小 EffectResource、GoldEffect 与 ReputationEffect 验收。
-- Task 5：已完成 ResultAsset 验收。
-- Task 6：已完成 ResultGroupAsset 与互补结果分支验收。
-- Task 7：已完成 TaskInstance 与运行事实隔离验收。
-- Task 8：已完成 DispatchInstance 与派遣成员唯一真源验收。
-- Task 9：已完成 ResultInstance 与静态结果隔离验收。
-- Task 10：已完成 TaskSystem 创建、持有与最终结果写入验收。
-- Task 11：已完成 DispatchSystem 与 ACTIVE 派遣占用验收。
-- Task 12：已完成 TaskResolutionSystem 唯一结果选择验收。
-- Task 13：已完成 GuildState 与 StateValue 稳定 ID 状态读写验收。
-- Task 14：已完成 ResultSettlementSystem 效果分发与重复保护验收。
-- Task 15：已完成 ReportIntelSystem 确定性文本输出验收。
-- Task 16：完整 Vertical Slice 已通过自动验收与 Jackie 人工验收。
-- DOC-1～DOC-5：已完成，历史保存在 `progress.md` 与 `findings.md`，不再混入功能 Task 清单。
-- Task 1–16 已形成完整运行时骨架；当前按 Jackie 明确授权创建 Task 16 完成提交并 push。
+- 禁止操作：`D:\Godot\guild-workbench`。
+- V2 Task 0–16：已完成并已推送。
+- 当前执行任务：无。
+- V3 有效编号：Task 1–8，共 8 个 Task。
+- V3 Task 1–8 当前均未授权执行。
+- 第一张正式任务：`task_missing_caravan`，显示名“失踪商队调查”。
+- 第一批正式角色：
+  - `hero_aelius`
+  - `hero_rin`
+  - `hero_dai`
+  - `hero_patrick`
+  - `hero_astrid`
+  - `hero_viletta`
+- 第一张正式结果组：`result_group_missing_caravan`，包含 5 个结果。
+- 第二张结构反例：`task_collapsed_mine_rescue`，显示名“塌方矿井”。
+- 当前 `project.godot` 主场景仍是测试场景；正式 `GameSession` 与核心循环 UI 尚未建立。
+- 当前 `TaskResolutionSystem` 使用队伍能力求和；真实任务要求读取队伍最高战斗、最高调查和最高交涉。
 
-## 状态标记
+## 3. 策划与工程真源
+
+### 3.1 Notion 策划入口
+
+- 当前项目真源：`https://app.notion.com/p/3bb7fb71ada4814888f9ea8e28e501d4`
+- 当前角色池：`https://app.notion.com/p/3c87fb71ada48046859dd6319bf6d491`
+- 当前任务池：`https://app.notion.com/p/3cb7fb71ada480809a6ec11c2a5e10b2`
+- 当前结果组池：`https://app.notion.com/p/3cb7fb71ada4812e96c7ee9a3672827f`
+- Demo 美术资产清单：`https://app.notion.com/p/3cb7fb71ada481bd8e3aeb2ababdef26`
+
+### 3.2 本地工程入口
+
+每次开工必须完整读取：
+
+1. `AGENTS.md`
+2. `docs/project/workflow.md`
+3. `docs/project/architecture.md`
+4. `docs/project/engineering_rules.md`
+5. `docs/project/known_traps.md`
+6. `task_plan.md`
+7. `progress.md`
+8. `findings.md`
+9. 当前 Task 直接涉及的代码、测试与资产
+
+策划内容冲突时，Jackie 最新明确决定优先；Notion 对应当前页面其次。本地代码只能证明现状，不能覆盖策划与冻结架构。
+
+## 4. 新对话接力协议
+
+新对话中的 Agent 必须执行以下顺序：
+
+1. 完整读取第 3.2 节列出的本地文件。
+2. 检查 `git status --short --branch`，识别 Jackie 已有改动。
+3. 从本文件确认 Jackie 指定的 V3 Task。
+4. 只把该 Task 标为 `[>] 执行中`。
+5. 只实现该 Task 的单一目标。
+6. 完成对应单脚本检查、相关 Godot 测试、旧引用搜索与 `git diff` 审计。
+7. 验收通过后更新 `task_plan.md`、`progress.md`、`findings.md`。
+8. 为该 Task 自动创建一次本地完成提交。
+9. 停止；等待 Jackie 明确授权下一个 Task。
+
+若 Jackie 只说“继续”，执行最靠前的 `[+] 已授权待执行` Task；若没有已授权 Task，停下询问。
+
+## 5. 状态标记
 
 - `[ ] 待授权`：尚未获得执行许可。
-- `[~] 待校准验收`：核心能力已验证，但当前实现不满足最新架构或目录契约。
 - `[+] 已授权待执行`：Jackie 已授权，尚未开工。
-- `[>] 执行中`：正在执行当前唯一 Task。
-- `[x] 已完成`：满足本 Task 全部验收条件并有 Godot 实际运行证据。
+- `[>] 执行中`：当前唯一执行 Task。
+- `[!] 阻塞`：存在必须由 Jackie 决定的策划或架构问题。
+- `[x] 已完成`：满足全部 Godot 4.7.2 验收条件，并已有本地完成提交。
 
-## 执行闸门
+## 6. V3 通用执行闸门
 
-- 本文件是计划，不自动授予执行权限；只有 Jackie 明确说“执行 Task X”后才能执行。
-- 每次只执行一个 Task，不顺手实现后续能力。
+### 6.1 一次只做一件事
+
+- 每次只执行一个 Task。
+- 当前 Task 验收完成后停止。
+- 禁止顺手实现下一 Task。
+- 后续 Task 所需文件可以在计划中列出，但当前 Task 不得提前创建。
+
+### 6.2 决策阻塞
+
+遇到以下情况必须停止并询问 Jackie：
+
+- 真实策划内容缺少精确数值、稳定 ID、任务终态或报告文本。
+- 同一内容在角色池、任务池、结果组池之间冲突。
+- 实现需要新增计划外的状态系统、规则类型或目录。
+- 一个结果出现零命中、多命中或持续后果没有明确拥有者。
+- 需要改变玩家可见规则或任务设计。
+
+禁止凭经验补值、用默认值掩盖缺口、把“待定”翻译成程序规则。
+
+### 6.3 工程边界
+
 - 所有新增或修改代码必须带简明中文注释。
-- 静态检查、空壳类和文件存在均不能算完成；每个 Task 必须通过 Godot 4.7.2 实际加载或运行验收。
-- TEST_ONLY fixture 统一放在 `tests/fixtures/`，ID 使用 `test_` 前缀，不得反向冻结正式策划 Schema。
-- 禁止擅自创建通用 RuleEngine、Condition/Effect DSL、万能执行器、EventBus、ServiceLocator 或未冻结目录。
-- 未获 Jackie 明确授权，禁止 git commit、git push、合并、强推或删除分支。
-- 完成后固定报告：做了什么、没做什么、验证结果、下一步建议。
+- Resource 只保存静态定义，运行时不得写回。
+- 派遣成员只以 `DispatchInstance.character_refs[]` 为运行真源。
+- UI 只读取状态和提交命令。
+- API 负责命令，Signal 只通知已发生事实。
+- 禁止新增通用 `RuleEngine`、DSL、万能执行器、`EventBus`、`ServiceLocator`。
+- 禁止提前实现完整 Importer、编辑器、存档、设施、库存、天气、小时制日历。
+- V3 判定保持确定性，不引入随机。
+- 正常人工验收场景必须零 ERROR；预期失败分支放入独立自动测试，避免污染人工验收控制台。
 
-## V1 → V2 编号调整
+### 6.4 每个 Task 的固定验证
 
-| V1 能力 | V2 Task | 调整原因 |
-|---|---:|---|
-| Task 0 项目入口 | 0 | 保持不变 |
-| Task 1 CharacterAsset | 1 | 增加 `assets/types/` 目录校准 |
-| Task 2 TaskAsset | 2 | 增加 `assets/types/` 目录校准 |
-| Task 10 Condition | 3 | 提前，解除 ResultAsset 强类型依赖倒置 |
-| Task 12 Effect | 4 | 提前，解除 ResultAsset 强类型依赖倒置 |
-| Task 3 ResultAsset | 5 | 等待 Condition/Effect 最小类型存在 |
-| Task 4 ResultGroupAsset | 6 | 等待 ResultAsset 存在 |
-| Task 5–9 Runtime 与创建系统 | 7–11 | 按冻结目录与数据流重排 |
-| Task 11 Resolution | 12 | 等待 ResultGroup、Condition、Dispatch 全部存在 |
-| Task 13–14 Guild/Settlement | 13–14 | 保持结算依赖顺序 |
-| Task 15 ReportSystem | 15 | 对齐为 `ReportIntelSystem` 薄边界 |
-| Task 16 Vertical Slice | 16 | 补全 ResultGroupAsset 与 ResultAsset 链路 |
+1. 对新增或修改的每个 `.gd` 执行 Godot 4.7.2 单脚本 `--check-only --script`。
+2. 运行当前 Task 的专项测试。
+3. 运行受影响的既有 V2 回归测试。
+4. 搜索旧 ID、旧方法、旧路径与已删除字段。
+5. 执行 `git diff --check`。
+6. 审计 `git diff --stat` 与 `git diff`，确认没有无关改动。
+7. 确认 `.godot/` 未进入提交，必要的 `.uid` 已纳入提交。
 
-## Task 清单
+### 6.5 Git 规则
 
-### [x] Task 0：确认项目与文档基线
+- Jackie 授权执行某个 V3 Task，即同时授权该 Task 验收通过后创建一次本地完成提交。
+- 一个 Task 只允许一个完成提交。
+- 失败、阻塞或验收未完成时禁止提交。
+- 提交范围只包含当前 Task 与三份规划记录的必要更新。
+- 禁止自动 push；push 永远等待 Jackie 明确授权。
+- 禁止合并、强推、删除分支或改写历史。
 
-- 单一目标：确认唯一仓库是可实际启动、可按规则协作的 Godot 项目。
-- 范围：`project.godot`、主场景、启动脚本、根 `AGENTS.md`、`docs/project/`。
-- 验收：Godot 4.7.2 成功加载并运行主场景，输出 `Guild Today Open As Usual boot success`；文档入口与链接检查通过。
-- 已有证据：Godot 编辑器加载成功，无界面运行退出码为 0；DOC-1～DOC-5 已完成。
-- 不包含：任何业务 Resource、Runtime 或 System 能力。
+## 7. V3 Task 清单
 
-### [x] Task 1：校准 CharacterAsset
+### [ ] V3 Task 1：建立首轮正式内容资产
 
-- 单一目标：让已验收的 CharacterAsset 落到冻结目录并保持原能力不变。
-- 实现：将脚本收敛到 `assets/types/character_asset.gd`，同步更新 `.uid` 与 `tests/fixtures/character_a.tres` 引用。
-- 字段：`id`、`name`、`battle`、`investigation`、`negotiation`。
-- 验收：Godot 4.7.2 从新路径加载 `character_a.tres`，读出“角色A”和 `investigation = 10`；全局无旧 `res://resources/character/` 引用。
-- 验收证据：Godot 4.7.2 单脚本检查与主场景运行退出码均为 0；新路径 fixture 读出“角色A”和 `investigation = 10`；旧资源路径无代码或资源引用。
-- 不包含：扩展角色 Schema、角色运行状态、派遣或任务判定。
+#### 单一目标
 
-### [x] Task 2：校准 TaskAsset
+让六名正式角色、“失踪商队调查”、结果组及五个结果以正式 Godot Resource 形式加载，并形成可追踪的稳定引用链。
 
-- 单一目标：让已验收的 TaskAsset 落到冻结目录并保持原能力不变。
-- 实现：将脚本收敛到 `assets/types/task_asset.gd`，同步更新 `.uid` 与 `tests/fixtures/abandoned_hospital.tres` 引用。
-- 字段：`id`、`title`、`description`、`repeatable`、`result_group`、`event_reference`。
-- 当前边界：`result_group` 在 Task 6 前允许保持最小 Resource 引用；`event_reference` 保持空引用，不提前实现 EventAsset。
-- 验收：Godot 4.7.2 从新路径加载任务 fixture 并读出正确字段；全局无旧 `res://resources/task/` 引用。
-- 验收证据：Godot 4.7.2 单脚本检查与主场景运行退出码均为 0；新路径 fixture 读出废弃医院任务的正确字段；旧资源路径无代码或资源引用。
-- 不包含：任务实例化、ResultGroup 绑定、事件运行逻辑。
+#### 开工输入
 
-### [x] Task 3：实现最小 ConditionResource
+- 当前角色池中的六张正式角色卡。
+- 当前任务池中的“失踪商队调查”。
+- 当前结果组池中的 `result_group_missing_caravan`。
+- 现有 `CharacterAsset`、`TaskAsset`、`ResultGroupAsset`、`ResultAsset`、`ConditionResource`、`EffectResource`。
 
-- 单一目标：提供 ResultAsset 可强类型引用的最小条件能力。
-- 实现：`assets/types/condition_resource.gd`、`assets/types/ability_condition.gd`。
-- 第一条具体规则：`AbilityCondition` 判断一个明确能力值是否达到阈值；只验证 `investigation >= value`。
-- 验收：Godot 实际运行中，能力值 12 对阈值 10 返回 `true`，对阈值 13 返回 `false`；Resource 可保存并加载。
-- 验收证据：Godot 4.7.2 对两个类型脚本与验收脚本的单脚本检查均为 0；两个 TEST_ONLY Resource 实际加载成功，并输出 `investigation=12, threshold_10=true, threshold_13=false`。
-- 不包含：Dispatch 聚合、ResultGroup 遍历、OR/NOT、ConditionGroup、通用规则引擎或 DSL。
+#### 开工前策划闸门
 
-### [x] Task 4：实现最小 EffectResource
+必须确认以下缺口已有明确答案；任何一项仍待定时，将本 Task 标为 `[!]` 并询问 Jackie：
 
-- 单一目标：提供 ResultAsset 可强类型引用的最小效果数据。
-- 实现：`assets/types/effect_resource.gd`、`assets/types/gold_effect.gd`、`assets/types/reputation_effect.gd`。
-- 字段：具体效果只保存确定性的 `amount`；Effect 不直接写入任何状态。
-- 验收：Godot 可保存并加载 `gold +100` 与 `reputation +5` 两个 TEST_ONLY 效果资源，并读出正确类型和值。
-- 验收证据：Godot 4.7.2 对三个类型脚本与验收脚本的单脚本检查均为 0；两个 TEST_ONLY Resource 实际加载成功，并输出 `gold=100, reputation=5`。
-- 不包含：GuildState、效果执行、结算编排、通用 EffectExecutor 或 DSL。
+1. 五个结果对应的任务终态。
+2. “延迟成功”的具体金币报酬。
+3. “完整成功”和“搜索失败”的商会信任或声望变化数值及状态归属。
+4. “带伤救回”的受伤角色选择规则与伤势等级。
+5. “查明位置”是否完成当前任务，以及后续救援使用的稳定任务或解锁 ID。
+6. 五个结果最终展示给玩家的完整报告文本。
+7. Notion 当前项目真源的角色数量与当前角色池六人记录冲突如何处理。
+8. 当前任务池中“结果组待建立”旧文案是否按现有结果组引用校准。
 
-### [x] Task 5：创建 ResultAsset
+#### 允许修改
 
-- 单一目标：定义一个具体任务结果的静态配置。
-- 实现：`assets/types/result_asset.gd`。
-- 字段：`id`、`conditions: Array[ConditionResource]`、`effects: Array[EffectResource]`、`report_text`。
-- 当前边界：`report_text` 只服务首轮 TEST_ONLY 闭环，不冻结完整报告资产 Schema。
-- 验收：Godot 可保存并加载一个成功结果，正确读出条件、金币效果、声望效果和报告文本引用内容。
-- 验收证据：Godot 4.7.2 对 ResultAsset 与验收脚本的单脚本检查均为 0；成功结果 Resource 实际加载一项 AbilityCondition、两项 EffectResource 与报告文本“废弃医院调查完成”。
-- 不包含：条件判断、效果执行、结果选择。
+- `assets/types/character_asset.gd`
+- `assets/types/task_asset.gd`
+- `assets/types/result_asset.gd`
+- `assets/types/result_group_asset.gd`
+- 当前内容实际需要的最小 Condition / Effect 静态字段
+- `assets/data/characters/`
+- `assets/data/tasks/`
+- `assets/data/results/`
+- Task 1 专项测试
+- 三份规划记录
 
-### [x] Task 6：创建 ResultGroupAsset
+#### 最小字段工作集
 
-- 单一目标：让一个任务引用一组互斥结果。
-- 实现：`assets/types/result_group_asset.gd`，并把 `TaskAsset.result_group` 收紧为明确的 ResultGroupAsset 引用；补充 `AbilityBelowCondition` 形成互补失败条件。
-- 字段：`id`、`results: Array[ResultAsset]`。
-- 测试数据：成功与失败两个 ResultAsset，以及一个废弃医院 ResultGroup。
-- 验收：Godot 加载任务 fixture 后，可沿 `TaskAsset → ResultGroupAsset → ResultAsset[]` 读出成功、失败两个结果。
-- 验收证据：Godot 4.7.2 对 AbilityBelowCondition、ResultGroupAsset、TaskAsset 与验收脚本的单脚本检查均为 0；任务 fixture 实际读出成功、失败两个结果，阈值 10 两侧互斥且完备。
-- 已确认方案：成功使用 `investigation >= 10`，失败使用 `investigation < 10`，两者互斥且完备。
-- 不包含：优先级、结果选择、条件执行。
+CharacterAsset 只允许加入首张任务判定和首轮 UI 明确需要的字段：
 
-### [x] Task 7：实现 TaskInstance
+- `id`
+- `name`
+- `profession`
+- `battle`
+- `investigation`
+- `negotiation`
 
-- 单一目标：表达“某个 TaskAsset 在本局实际发生了一次”。
-- 实现：`runtime/tasks/task_instance.gd`，类型为 `RefCounted`。
-- 字段：`instance_id`、`task_id`、`lifecycle_state`、`final_result_id`、`runtime_progress`。
-- 验收：同一任务可手动生成两个不同 `instance_id` 的实例，互不污染运行事实。
-- 验收证据：Godot 4.7.2 对 TaskInstance 与验收脚本的单脚本检查均为 0；两个实例引用同一任务，实例 ID 不同，生命周期、最终结果与进度事实保持隔离。
-- 不包含：`party_member_ids` 真源、正式生命周期枚举、任务生成系统、派遣与结算。
+TaskAsset 只允许加入首张任务展示、派遣和等待明确需要的字段：
 
-### [x] Task 8：实现 DispatchInstance
+- `id`
+- `title`
+- `commissioner`
+- `description`
+- `objective`
+- `promised_reward`
+- `duration_days`
+- `min_party_size`
+- `max_party_size`
+- `repeatable`
+- `result_group`
 
-- 单一目标：记录一次派遣决定，并成为派遣成员唯一运行真源。
-- 实现：`runtime/dispatch/dispatch_instance.gd`，类型为 `RefCounted`。
-- 字段：`dispatch_instance_id`、`task_instance_id`、`character_refs[]`、`status`。
-- 当前边界：`started_at / ended_at` 的类型与单位未冻结，本 Task 不猜测实现。
-- 验收：三个角色引用可保存并读取；TaskInstance 不保存可变成员副本。
-- 验收证据：Godot 4.7.2 对 DispatchInstance 与验收脚本的单脚本检查均为 0；一次派遣实际保存并读回三个 CharacterAsset 引用，TaskInstance 没有 `party_member_ids`。
-- 不包含：派遣合法性、角色占用、结果判定。
+玩家可见风险、推荐能力和公开情报若无法由现有文本字段表达，先确认 UI 的实际消费方式，再增加最小字段。禁止复制整张策划卡的全部字段。
 
-### [x] Task 9：实现 ResultInstance
+#### 实施步骤
 
-- 单一目标：记录一次已经确定的结果事实。
-- 实现：`runtime/results/result_instance.gd`，类型为 `RefCounted`。
-- 字段：命中的 `result_asset_id`、对应 `dispatch_instance_id`、本次确定的 `resolved_effects`。
-- 验收：实例可保存并读取结果 ID、派遣 ID 与两个已确定效果引用，且不修改 ResultAsset。
-- 验收证据：Godot 4.7.2 对 ResultInstance 与验收脚本的单脚本检查均为 0；实例实际读回结果 ID、派遣 ID 与两个 EffectResource 引用，运行数组变化没有污染 ResultAsset.effects。
-- 不包含：结果选择、效果执行、报告生成、未冻结的完整结算记录 Schema。
+1. 建立“策划字段 → Godot 字段 → 消费方”映射。
+2. 处理第一个任务的策划缺口。
+3. 扩展最小 Resource 类型。
+4. 在 `assets/data/characters/` 创建六名正式角色资源。
+5. 在 `assets/data/tasks/` 创建 `task_missing_caravan.tres`。
+6. 在 `assets/data/results/` 创建一个结果组与五个结果资源。
+7. 校验 `TaskAsset → ResultGroupAsset → ResultAsset[]` 的全部稳定引用。
+8. 保留 V2 TEST_ONLY fixture，证明正式数据与测试数据可以并存。
 
-### [x] Task 10：实现 TaskSystem
+#### 验收
 
-- 单一目标：由 TaskAsset 创建并拥有 TaskInstance 运行事实。
-- 实现：`runtime/tasks/task_system.gd`。
-- 最小职责：生成唯一实例 ID、保存实例、通过公开 API 记录 `final_result_id`。
-- 验收：系统从废弃医院 TaskAsset 创建两个独立 TaskInstance，并能给指定实例记录最终结果 ID。
-- 验收证据：Godot 4.7.2 对 TaskSystem 与验收脚本的单脚本检查均为 0；系统实际创建并保存两个唯一实例，只给指定实例写入成功结果 ID。
-- 不包含：每日刷新、生成条件框架、派遣、结果选择、完整生命周期枚举。
+- Godot 4.7.2 实际加载六名正式角色，三项能力值与策划卡一致。
+- 实际加载 `task_missing_caravan`，正确读出委托人、目标、90 金币、两日、1–2 人。
+- 沿任务引用读取 `result_group_missing_caravan` 和五个稳定结果 ID。
+- 正式资源均位于 `assets/data/`，ID 无 `test_` 前缀。
+- TEST_ONLY 资源仍只位于 `tests/fixtures/`。
+- 本 Task 不执行结果判定。
 
-### [x] Task 11：实现 DispatchSystem
+#### 不包含
 
-- 单一目标：创建、保存和结束合法 DispatchInstance。
-- 实现：`runtime/dispatch/dispatch_system.gd`。
-- 最小职责：创建派遣、维护 ACTIVE/ENDED、从 ACTIVE Dispatch 推导角色占用。
-- 验收：同一角色不能同时进入第二个 ACTIVE 派遣；结束第一次派遣后可再次派遣。
-- 验收证据：Godot 4.7.2 对 DispatchSystem 与验收脚本的单脚本检查均为 0；运行时拒绝角色进入第二个 ACTIVE 派遣，结束首次派遣后成功创建新的 ACTIVE 派遣。
-- 不包含：独立 `is_busy` 副本、时间系统、任务结果判定。
+- 最高能力计算。
+- 五结果唯一选择。
+- 伤势、关系、情报运行状态。
+- 时间推进。
+- GameSession。
+- UI。
+- JSON Importer。
 
-### [x] Task 12：实现 TaskResolutionSystem
+#### 完成提交
 
-- 单一目标：根据 DispatchInstance 在 ResultGroup 中唯一选择 ResultAsset。
-- 实现：`runtime/tasks/task_resolution_system.gd`。
-- 流程：读取派遣角色 → 汇总三项能力 → 检查 ResultAsset 条件 → 要求唯一命中 → 返回 `result_id`。
-- 验收：调查能力满足阈值时选择成功结果，不满足时选择失败结果；零命中或多命中明确报错。
-- 验收证据：Godot 4.7.2 对 TaskResolutionSystem 与验收脚本的单脚本检查均为 0；实际运行分别选择成功、失败结果，零命中与多命中各输出明确错误并返回空 ID。
-- 不包含：效果执行、GuildState 修改、报告生成、优先级排序。
+`feat(v3): 建立首轮正式内容资产`
 
-### [x] Task 13：实现 GuildState 与 StateValue
+---
 
-- 单一目标：通过稳定 state_id 保存和修改公会金币与总声望。
-- 实现：`runtime/guild/state_value.gd`、`runtime/guild/guild_state.gd`。
-- 最小状态：Gold、TotalReputation；外部只能通过 GuildState 公开 API 读写。
-- 验收：金币从 0 增加到 100、总声望从 0 增加到 5，并能按稳定 state_id 正确读取。
-- 验收证据：Godot 4.7.2 对 StateValue、GuildState 与验收脚本的单脚本检查均为 0；实际运行通过 `gold`、`total_reputation` 稳定 ID 读回 100 与 5。
-- 不包含：库存、设施、债务、评级、地区声望或存档。
+### [ ] V3 Task 2：实现真实队伍能力判定
 
-### [x] Task 14：实现 ResultSettlementSystem
+#### 单一目标
 
-- 单一目标：把 ResultInstance 中已确定效果分发到其状态拥有者。
-- 实现：`runtime/results/result_settlement_system.gd`。
-- 首轮范围：GoldEffect 与 ReputationEffect 只能通过 GuildState API 生效。
-- 验收：结算成功结果后，金币为 100、总声望为 5；重复结算必须被阻止或明确失败。
-- 验收证据：Godot 4.7.2 对 ResultSettlementSystem 与验收脚本的单脚本检查均为 0；首次结算得到金币 100、总声望 5，第二次结算明确失败且数值不再增加。
-- 不包含：结果选择、角色状态、关系状态、报告排版、通用效果执行器。
+让 `TaskResolutionSystem` 按“失踪商队调查”的真实规则读取队伍最高能力，并在五个结果中唯一命中。
 
-### [x] Task 15：实现 ReportIntelSystem 薄边界
+#### 前置条件
 
-- 单一目标：把已确定结果与已结算效果转换为玩家可读报告。
-- 实现：`runtime/reports/report_intel_system.gd`。
-- 验收：确定性输出“废弃医院调查完成”“获得金币100”“声望提升5”等内容。
-- 验收证据：Godot 4.7.2 对 ReportIntelSystem 与验收脚本的单脚本检查均为 0；效果结算后实际生成三行确定性文本“废弃医院调查完成”“获得金币100”“声望提升5”。
-- 不包含：独立 ReportAsset、UI、富文本、历史报告数据库或情报扩展系统。
+- V3 Task 1 已完成。
+- 五个结果条件已经能由调查与战斗能力明确表达。
 
-### [x] Task 16：完整 Vertical Slice 自动验收
+#### 当前差距
 
-- 单一目标：只组装 Task 0–15 已有能力，证明第一条运行链真实闭环。
-- 固定输入：角色 A，`investigation = 12`；废弃医院任务；成功效果 `gold +100`、`reputation +5`。
-- 完整链：`TaskAsset → TaskInstance → DispatchInstance → TaskResolutionSystem → ResultGroupAsset → ResultAsset → ResultInstance → ResultSettlementSystem → GuildState → ReportIntelSystem`。
-- 验收：Godot 4.7.2 实际运行退出码为 0；唯一命中成功结果；最终金币 100、总声望 5；输出确定报告；无解析错误、断言失败或运行时错误。
-- 验收证据：独立 `runtime_chain_test.tscn` 在 Godot 4.7.2 中退出码为 0，唯一命中成功结果，金币 100、总声望 5，输出确定报告并释放角色；日志无 ERROR、解析错误或断言失败；2026-08-25 Jackie 使用 F6 运行当前场景，人工确认得到预期完整链输出。
-- 不包含：完整 UI、编辑器工具、Importer、存档、随机、事件链或未冻结扩展。
+- V2 使用三项能力求和。
+- 当前 Condition 接口只接收一个调查整数。
+- 真实任务分别读取队伍最高调查与最高战斗。
+- 真实任务包含能力区间和两阶段组合。
 
-## 依赖顺序
+#### 允许修改
 
-`0 → 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10 → 11 → 12 → 13 → 14 → 15 → 16`
+- `assets/types/condition_resource.gd`
+- `assets/types/ability_condition.gd`
+- `assets/types/ability_below_condition.gd`
+- `runtime/tasks/task_resolution_system.gd`
+- 首张任务的五个 ResultAsset 条件资源
+- Task 2 专项测试
+- 受影响的 V2 fixture 与测试
+- 三份规划记录
 
-默认严格按顺序执行。若要跳过依赖，必须由 Jackie 明确批准，并在 `findings.md` 记录原因与风险。
+#### 实现边界
 
-## 单 Task 完成报告
+1. `TaskResolutionSystem` 从 `DispatchInstance.character_refs[]` 即时计算：
+   - 最高战斗
+   - 最高调查
+   - 最高交涉
+2. `AbilityCondition` 增加稳定 `ability_id`，表达“指定能力达到阈值”。
+3. `AbilityBelowCondition` 增加稳定 `ability_id`，表达“指定能力低于阈值”。
+4. 区间通过多个明确条件的 AND 组合表达。
+5. 禁止创建通用比较运算 DSL、表达式解析器或优先级系统。
 
-### 这次做了什么
+#### 五结果目标规则
 
-- 只列当前 Task 实际完成内容。
+- 搜索失败：最高调查 < 5。
+- 完整成功：最高调查 ≥ 7 且最高战斗 ≥ 6。
+- 延迟成功：最高调查 5–6 且最高战斗 ≥ 6。
+- 带伤救回：最高调查 ≥ 5 且最高战斗 4–5。
+- 查明位置：最高调查 ≥ 5 且最高战斗 < 4。
 
-### 这次没做什么
+最终规则以 Jackie 对 Task 1 策划闸门的确认结果为准。
 
-- 明确列出刻意未触碰的后续能力。
+#### 测试矩阵
 
-### 验证结果
+至少覆盖当前任务卡中的下列派遣：
 
-- 写明 Godot 版本、执行方式、预期、实际输出与退出码。
+- 维蕾塔单人。
+- 阿斯特里德单人。
+- 埃利乌斯单人。
+- 凛单人。
+- 戴禛单人。
+- 帕特里克单人。
+- 维蕾塔＋一名战斗角色。
+- 戴禛或帕特里克＋埃利乌斯或凛。
+- 戴禛＋帕特里克。
+- 埃利乌斯＋凛。
 
-### 下一步建议
+#### 验收
 
-- 只建议一个最靠前的未完成 Task，不自动执行。
+- 每组派遣只命中一个预期结果。
+- 零命中与多命中在独立自动测试中明确失败。
+- 正常人工场景不主动触发预期错误分支。
+- 组队能力采用最高值，未保存合计值或最高值副本。
+- V2 既有成功/失败 fixture 经校准后继续通过。
 
-## 当前下一步
+#### 不包含
 
-V2 Task 0–16 已全部完成；没有 Task 17，后续开发等待新计划。
+- 结果效果执行。
+- 状态持久化。
+- 时间推进。
+- UI。
+- 特殊职业、角色行为、OR 组或随机。
+
+#### 完成提交
+
+`feat(v3): 支持真实队伍能力判定`
+
+---
+
+### [ ] V3 Task 3：持久化首张任务的结果后果
+
+#### 单一目标
+
+让五个结果的已确认后果写入各自运行状态，并让报告系统保存玩家可读取的结果记录。
+
+#### 前置条件
+
+- V3 Task 2 已完成。
+- Task 1 的所有结果效果数值、目标和状态归属已经确认。
+
+#### 状态所有权
+
+- 金币与总声望：`GuildState`。
+- 角色伤势：本 Task 新增的最小角色运行状态拥有者。
+- 商会信任或关系：`StateRelationshipSystem`。
+- 已获得情报与后续内容解锁：`ReportIntelSystem` 或经架构确认的最小拥有者。
+- 已发生结果：`ResultInstance`。
+- 报告记录：`ReportIntelSystem`。
+
+若真实效果无法落入以上所有者，停止并进行架构决策，禁止临时塞入 `Dictionary`、TaskInstance 或 UI。
+
+#### 允许修改
+
+- 当前结果实际需要的具体 EffectResource。
+- `runtime/results/result_settlement_system.gd`
+- `runtime/characters/` 下最小角色运行状态类型与系统。
+- `runtime/characters/state_relationship_system.gd`
+- `runtime/reports/report_intel_system.gd`
+- 首张任务五个结果资源。
+- Task 3 专项测试。
+- 三份规划记录。
+
+#### 实施原则
+
+1. Effect 只描述已确认的静态变化。
+2. ResultSettlementSystem 先验证全部效果，再请求各状态拥有者写入。
+3. 任一效果无法执行时，整次结算不得产生半写入。
+4. 同一 DispatchInstance 继续只允许结算一次。
+5. 角色伤势写入运行状态，禁止改写 CharacterAsset。
+6. 报告记录至少关联 `result_asset_id`、`dispatch_instance_id` 与确定文本。
+7. 报告说明“发生了什么、为什么发生、产生什么后果”，避免只列数字。
+
+#### 验收
+
+- 五个结果均可生成 ResultInstance 并完成一次结算。
+- 完整成功正确增加确定金币与已确认声望/信任。
+- 延迟成功使用已确认的部分报酬。
+- 带伤救回只修改明确目标角色的运行伤势。
+- 查明位置写入已确认情报或后续解锁。
+- 搜索失败写入已确认关系或声望后果。
+- 重复结算被拒绝，任何状态不二次变化。
+- 报告可由 ReportIntelSystem 按派遣记录读取。
+
+#### 不包含
+
+- 通用状态机。
+- 疲劳、死亡、恢复、状态叠加规则。
+- 完整关系网。
+- 事件系统。
+- 时间推进。
+- UI 排版。
+
+#### 完成提交
+
+`feat(v3): 持久化首张任务结果后果`
+
+---
+
+### [ ] V3 Task 4：实现最小日期与任务生命周期
+
+#### 单一目标
+
+让两日任务真实经历“派遣中 → 到期 → 可结算 → 结束”，并在完成前持续占用角色。
+
+#### 前置条件
+
+- V3 Task 3 已完成。
+- Jackie 接受 V3 的最小时间单位为“整数游戏日”。
+
+#### 架构冻结
+
+本 Task 允许正式引入最小日期拥有者，建议路径：
+
+- `runtime/time/day_system.gd`
+
+最小职责：
+
+- 保存 `current_day`。
+- 提供 `advance_day()`。
+- 通知日期已经变化。
+
+派遣时间事实由 DispatchInstance 保存：
+
+- `started_day`
+- `due_day`
+- `ended_day`
+
+`due_day = started_day + duration_days`。任务到期只表示可以进入结算链，日期系统不直接修改任务、派遣、结果或公会状态。
+
+#### 允许修改
+
+- `docs/project/architecture.md`，记录 V3 最小日期边界。
+- `runtime/time/day_system.gd`
+- `runtime/dispatch/dispatch_instance.gd`
+- `runtime/dispatch/dispatch_system.gd`
+- 必要的 TaskInstance 生命周期公开 API。
+- Task 4 专项测试。
+- 三份规划记录。
+
+#### 验收
+
+- 第 1 日派遣两日任务，`due_day` 确定为第 3 日。
+- 第 1、2 日角色保持 ACTIVE 占用。
+- 到第 3 日时 DispatchSystem 可明确查询该派遣已到期。
+- 到期前禁止结算。
+- 显式结束派遣后角色释放，`ended_day` 被记录。
+- 日期推进不直接执行判定和结算。
+
+#### 不包含
+
+- 小时、分钟、现实日期、月份、季节、天气。
+- 每日随机事件。
+- 每日任务刷新。
+- 自动存档。
+- UI。
+
+#### 完成提交
+
+`feat(v3): 实现最小日期与任务生命周期`
+
+---
+
+### [ ] V3 Task 5：组装正式 GameSession
+
+#### 单一目标
+
+用一个正式 GameSession 编排 Task 1–4 已存在的系统，跑通无 UI 的真实“失踪商队调查”会话。
+
+#### 前置条件
+
+- V3 Task 4 已完成。
+- 六名角色、一张任务、五个结果和全部运行状态可独立验收。
+
+#### 计划文件
+
+- `runtime/game_session.gd`
+- `runtime/game_session.tscn`
+- Task 5 正式会话测试
+
+#### GameSession 职责
+
+- 装配并引用各 System。
+- 发布首张正式 TaskInstance。
+- 向调用方提供正式角色与任务的只读查询。
+- 接收派遣请求并调用 TaskSystem 与 DispatchSystem。
+- 接收推进日期请求并调用日期系统。
+- 查询到期派遣。
+- 对到期派遣依次调用：
+  1. TaskResolutionSystem
+  2. ResultInstance 创建
+  3. TaskSystem 记录最终结果
+  4. ResultSettlementSystem
+  5. ReportIntelSystem
+  6. DispatchSystem 显式结束派遣
+- 向外通知任务、日期、状态和报告已经变化。
+
+#### 禁止的职责
+
+- GameSession 不直接修改各系统内部状态。
+- GameSession 不保存角色占用、金币、日期或结果的第二副本。
+- GameSession 不包含 UI 控件引用。
+- GameSession 不读取 TEST_ONLY fixture。
+- GameSession 不作为 Autoload。
+
+#### 建议公开 API
+
+具体签名在开工时结合现有代码确认，至少覆盖：
+
+- 查询正式角色。
+- 查询已发布任务。
+- 提交派遣。
+- 推进一天。
+- 查询 ACTIVE 派遣。
+- 查询未读或最新报告。
+
+#### 验收
+
+- 使用正式六名角色与 `task_missing_caravan`，不读取 `tests/fixtures/`。
+- 能创建任务、派遣 1–2 人、推进两日、唯一选择结果、结算、生成报告、结束派遣。
+- 至少验证完整成功、查明位置、搜索失败三条端到端路线。
+- 角色到期结算后释放。
+- 正常测试日志零 ERROR。
+- V2 `runtime_chain_test.tscn` 继续通过。
+
+#### 不包含
+
+- UI。
+- 主场景切换。
+- 存档。
+- JSON Importer。
+- 其余五张任务。
+
+#### 完成提交
+
+`feat(v3): 组装正式游戏会话`
+
+---
+
+### [ ] V3 Task 6：实现核心循环 UI
+
+#### 单一目标
+
+让玩家通过正式界面完成查看、选人、派遣、等待和阅读报告。
+
+#### 前置条件
+
+- V3 Task 5 已完成。
+- 执行本 Task 的 Agent 必须读取 `godot-ui-architect:godot-ui` skill。
+- 美术未完成时允许使用明确标记的占位资产。
+
+#### 界面主干
+
+`公会主界面 → 打开任务文件 → 查看角色 → 选择 1–2 人 → 确认派遣 → 返回主界面 → 推进日期 → 打开报告`
+
+#### 建议目录
+
+- `ui/main/guild_main.tscn`
+- `ui/main/guild_main.gd`
+- `ui/tasks/task_document_view.tscn`
+- `ui/characters/character_card_view.tscn`
+- `ui/dispatch/dispatch_panel.tscn`
+- `ui/reports/report_view.tscn`
+- `ui/shared/` 下当前界面实际复用的最小组件
+
+目录可在开工审计后收紧，禁止为了“以后方便”创建空目录或空组件。
+
+#### 最低可见信息
+
+任务文件：
+
+- 名称
+- 委托人
+- 描述
+- 目标
+- 报酬
+- 持续天数
+- 推荐能力或风险提示
+- 派遣人数限制
+
+角色卡：
+
+- 名称
+- 职业
+- 战斗
+- 调查
+- 交涉
+- 当前是否被占用
+- 当前已实现的持续状态
+
+公会状态：
+
+- 当前日期
+- 金币
+- 总声望
+- ACTIVE 派遣
+- 待阅读报告
+
+#### 交互边界
+
+- UI 只调用 GameSession 公开 API。
+- 无效派遣在确认前给出明确原因。
+- 已占用角色无法被选中。
+- 到期前不展示最终结果。
+- 报告必须展示结果事实、关键判定依据和持续后果。
+- 关闭报告只改变报告阅读状态，不触发结算。
+
+#### 视觉范围
+
+首轮允许：
+
+- 占位公会背景。
+- 占位纸张与边框。
+- 占位角色肖像。
+- 文本或单色图标。
+
+首轮禁止：
+
+- 在 UI Task 中制作完整角色像素画。
+- 粒子特效、复杂动画、全套主题系统。
+- 多分辨率大规模适配。
+
+#### 验收
+
+- Jackie 可以只用鼠标完成完整循环。
+- 1–2 人派遣限制生效。
+- ACTIVE 角色状态及时更新。
+- 连续推进两日后报告出现。
+- 报告关闭后主界面的金币、声望、角色状态与情报反馈正确。
+- UI 没有直接写入业务字段。
+- `project.godot` 在本 Task 验收末尾切换到正式主场景。
+- 正式主场景人工运行日志零 ERROR。
+
+#### 不包含
+
+- 最终美术品质。
+- 音效与配乐。
+- 存档与读档。
+- 设置菜单。
+- 新手教程。
+- 其他任务接入。
+
+#### 完成提交
+
+`feat(v3): 实现核心循环界面`
+
+---
+
+### [ ] V3 Task 7：完成首张真实任务可玩验收
+
+#### 单一目标
+
+证明“失踪商队调查”从玩家信息、派遣判断、等待、报告到持续后果已经形成可重复验收的游戏体验。
+
+#### 前置条件
+
+- V3 Task 6 已完成。
+- 正式主场景可以操作。
+
+#### 自动验收
+
+新增独立正式内容测试，至少覆盖：
+
+- 六名角色资源全部加载。
+- 五个结果各有一条确定性派遣命中。
+- 两日等待前后生命周期正确。
+- 五个结果结算后状态与报告正确。
+- 重复结算、重复占用、到期前结算被拒绝。
+- 正式运行路径不依赖 TEST_ONLY fixture。
+- 正常端到端测试零 ERROR。
+
+#### Jackie 人工验收脚本
+
+Jackie 至少完成三轮：
+
+1. 明确成功路线。
+2. 部分成功或查明位置路线。
+3. 搜索失败路线。
+
+每轮检查：
+
+- 派遣前能看出角色差异。
+- 派遣选择有清晰理由。
+- 等待期间无法提前得知结果。
+- 报告能解释“选择 → 判定 → 结果”。
+- 后果在主界面继续存在。
+- 下一轮选择会受到占用、伤势、资源、关系或情报变化影响。
+
+#### 通过标准
+
+- Jackie 明确确认“首张真实任务可玩循环通过”。
+- 自动测试与人工验收均通过。
+- 发现的问题只在本 Task 范围内修复。
+- 若问题要求新系统或改变策划规则，本 Task 标为 `[!]`，先询问 Jackie。
+
+#### 不包含
+
+- 第二张任务。
+- Schema 最终冻结。
+- JSON Importer。
+- 存档。
+- 最终美术。
+
+#### 完成提交
+
+`test(v3): 完成首张真实任务可玩验收`
+
+---
+
+### [ ] V3 Task 8：用第二张结构反例验证并冻结契约
+
+#### 单一目标
+
+接入“塌方矿井”，验证现有资产与判定结构能够表达单能力路线和双能力复合路线，然后冻结 V3 正式数据契约。
+
+#### 选择“塌方矿井”的原因
+
+- 它同时使用调查、交涉、战斗。
+- 它包含单能力结果与双能力复合结果。
+- 它继续使用队伍最高能力与默认 AND。
+- 它不要求角色专属行为、职业特例或情报购买系统。
+- 它能检验首张任务结构是否过拟合，同时保持本 Task 只验证数据表达能力。
+
+#### 前置条件
+
+- V3 Task 7 已完成。
+- “塌方矿井”的任务卡与结果组卡具有明确稳定 ID、互斥结果、精确效果、任务终态和报告文本。
+
+#### 允许修改
+
+- `assets/data/tasks/` 下的第二张正式任务。
+- `assets/data/results/` 下的第二个结果组及结果。
+- 现有最小 Resource 与 Condition 类型确实无法表达时，进行最小扩展。
+- `docs/project/architecture.md`，记录经过两张不同结构任务验证的 V3 字段契约。
+- Task 8 专项测试。
+- 三份规划记录。
+
+#### 判定覆盖
+
+至少覆盖：
+
+- 只满足调查：通风道救援。
+- 只满足交涉：侧井救援。
+- 只满足战斗：强行开路。
+- 调查＋战斗：安全清巢。
+- 调查＋交涉：测绘侧井。
+- 交涉＋战斗：协同开路。
+- 三项均不足：任务失败。
+
+若三项能力全部满足时存在多结果命中，必须回到策划结果互斥规则处理；禁止在 TaskResolutionSystem 中增加隐式优先级。
+
+#### 验收
+
+- 第二张任务沿现有正式链完成发布、派遣、等待、判定、结算和报告。
+- 七类派遣分别唯一命中预期结果。
+- 第一张“失踪商队调查”全部回归通过。
+- 没有新增通用 RuleEngine、DSL 或结果优先级。
+- `docs/project/architecture.md` 明确区分：
+  - 已经由两张真实任务证明的正式字段。
+  - 仍待角色行为题、职业题、情报购买题验证的字段。
+- Jackie 人工确认第二张任务至少一条路线可完成。
+
+#### V3 结束后仍不冻结
+
+- 角色拒绝、违抗与自主行为。
+- 职业特例。
+- 可购买情报。
+- OR / NOT / 嵌套 ConditionGroup。
+- 随机权重。
+- Event 链。
+- 完整 JSON Importer。
+- SaveSystem。
+- 完整角色卡 Schema。
+
+#### 完成提交
+
+`feat(v3): 用第二张任务验证并冻结数据契约`
+
+## 8. 依赖顺序
+
+`V3 Task 1 → Task 2 → Task 3 → Task 4 → Task 5 → Task 6 → Task 7 → Task 8`
+
+默认严格按顺序执行。跳过依赖必须由 Jackie 明确批准，并在 `findings.md` 记录原因与风险。
+
+## 9. 单 Task 完成报告
+
+每次完成后只报告：
+
+1. 本 Task 实际完成的单一能力。
+2. 修改的文件范围。
+3. Godot 4.7.2 验收命令、预期、实际与退出码。
+4. 明确未实现的后续内容。
+5. 本地完成提交哈希。
+6. 当前最靠前的下一 Task。
+
+若失败或阻塞，报告必须在开头加粗显示“失败”或“阻塞”，并写清：
+
+1. 已验证事实。
+2. 真实错误。
+3. 未发生的状态写入。
+4. 需要 Jackie 决定的唯一问题。
+
+## 10. V3 完成定义
+
+同时满足以下条件，V3 才可标记完成：
+
+- 八个 Task 全部 `[x]`。
+- “失踪商队调查”与“塌方矿井”均使用正式资产。
+- 玩家可通过正式 UI 完成派遣、等待、结算与报告。
+- 结果后果会进入下一次判断。
+- 两张不同结构任务均保持唯一结果命中。
+- 正常人工场景零 ERROR。
+- V2 回归测试继续通过。
+- 每个 Task 有且只有一个本地完成提交。
+- Jackie 完成人工验收。
+
+V3 完成后停止。下一阶段应重新制定 V4 计划，再决定 JSON Importer、SaveSystem、角色行为题、职业特例、情报购买与最终美术生产。
+
+## 11. 当前下一步
+
+等待 Jackie 明确说：`执行 V3 Task 1`。
