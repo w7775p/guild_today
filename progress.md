@@ -445,4 +445,22 @@
 | 接下来去哪里？ | 等待 Jackie 明确授权某个 Task |
 | 总目标是什么？ | 跑通第一阶段 Godot 最小垂直切片 |
 | 已知什么？ | Task 0 已验收，Task 1–16 待授权；本地初始提交已创建 |
-| 已经做了什么？ | 建立任务清单、完成 Task 0、初始化本地 Git；远端尚未发布 |
+| 已经做了什么？ | 建立任务清单、完成 V2 Task 0–16、完成 V3 Task 1、初始化本地 Git |
+
+## 2026-08-29：完成 V3 Task 1 首轮正式内容资产
+
+- Jackie 明确授权开始 V3 Task 1，并要求所有未确定内容统一使用 `【占位占位】`；未确定数值允许工作性推测，但必须在每次工作日志中单独列出。
+- 已读取 Notion《公会》策划案数据库及当前项目真源、当前角色池、当前任务池、当前结果组池；本地快照保存在本次任务输出目录的四份 Markdown 文件中。
+- 已扩展 `CharacterAsset` 的最小静态字段，增加 `profession`。
+- 已扩展 `TaskAsset` 的最小静态字段，增加 `commissioner`、`objective`、`promised_reward`、`duration_days`、`min_party_size`、`max_party_size`。
+- 已创建六名正式角色资源：`hero_aelius`、`hero_rin`、`hero_dai`、`hero_patrick`、`hero_astrid`、`hero_viletta`。
+- 已创建正式任务 `task_missing_caravan`，沿引用读取 `result_group_missing_caravan` 与五个正式 ResultAsset。
+- 已创建五个正式结果资源，稳定 ID 与 Notion 结果组池一致；本 Task 未执行结果判定或效果结算。
+- 已新增 `tests/v3_task1_content_test.gd` 与场景，实际加载并核对六名角色、任务主干、结果组和五个结果引用。
+- Godot 4.7.2 单脚本检查：`character_asset.gd`、`task_asset.gd`、`v3_task1_content_test.gd` 均退出码 0。
+- Godot 4.7.2 Task 1 专项测试退出码 0，输出 `V3 Task 1 content success: characters=6, task=task_missing_caravan, results=5, placeholders=report_text|astrid_profession`。
+- Godot 4.7.2 V2 `runtime_chain_test.tscn` 回归退出码 0，输出 `Runtime vertical slice success`。
+- `git diff --check` 退出码 0；旧路径搜索没有发现 `res://resources/` 残留。
+- 当前占位项：阿斯特里德职业、五个结果完整报告文本，以及结果条件、效果、任务终态、伤势规则、关系/声望具体变化和后续救援 ID。
+- 当前推测项：`repeatable = false` 依据“单次唯一测试任务”工作性落地；延迟报酬 60 金币、完整成功评价 `+5`、搜索失败信任 `-5`、带伤目标规则与伤势等级仍仅记录在工作输入文档，未写入本 Task 的正式效果。
+- 未实现：结果判定、最高能力计算、结果效果、运行状态、日期、GameSession、UI、JSON Importer。

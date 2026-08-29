@@ -1,0 +1,15 @@
+; 正式内容资产：失踪商队调查的五个结果稳定引用。
+[gd_resource type="Resource" script_class="ResultGroupAsset" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://assets/types/result_group_asset.gd" id="1_result_group_asset"]
+[ext_resource type="Script" path="res://assets/types/result_asset.gd" id="2_result_asset"]
+[ext_resource type="Resource" path="res://assets/data/results/result_missing_caravan_full_success.tres" id="3_full_success"]
+[ext_resource type="Resource" path="res://assets/data/results/result_missing_caravan_delayed_success.tres" id="4_delayed_success"]
+[ext_resource type="Resource" path="res://assets/data/results/result_missing_caravan_injured_rescue.tres" id="5_injured_rescue"]
+[ext_resource type="Resource" path="res://assets/data/results/result_missing_caravan_location_confirmed.tres" id="6_location_confirmed"]
+[ext_resource type="Resource" path="res://assets/data/results/result_missing_caravan_search_failed.tres" id="7_search_failed"]
+
+[resource]
+script = ExtResource("1_result_group_asset")
+id = &"result_group_missing_caravan"
+results = Array[ExtResource("2_result_asset")]([ExtResource("3_full_success"), ExtResource("4_delayed_success"), ExtResource("5_injured_rescue"), ExtResource("6_location_confirmed"), ExtResource("7_search_failed")])

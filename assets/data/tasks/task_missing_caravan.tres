@@ -1,0 +1,20 @@
+; 正式内容资产：失踪商队调查。结果条件与效果留给后续 Task 2、Task 3。
+[gd_resource type="Resource" script_class="TaskAsset" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://assets/types/task_asset.gd" id="1_task_asset"]
+[ext_resource type="Resource" path="res://assets/data/results/result_group_missing_caravan.tres" id="2_result_group"]
+
+[resource]
+script = ExtResource("1_task_asset")
+id = &"task_missing_caravan"
+title = "失踪商队调查"
+description = "灰鸦商会的一支运盐车队在断脊渡口附近失去联系。请确认商队下落，查明失踪原因，并尽可能带回人员与货物。"
+commissioner = "灰鸦商会"
+objective = "确认商队位置；查明失踪原因；带回幸存者与可回收货物。"
+promised_reward = 90
+duration_days = 2
+min_party_size = 1
+max_party_size = 2
+repeatable = false
+result_group = ExtResource("2_result_group")
+event_reference = null

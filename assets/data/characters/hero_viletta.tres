@@ -1,0 +1,13 @@
+; 正式内容资产：维蕾塔。未纳入运行时伤势、疲劳和关系事实。
+[gd_resource type="Resource" script_class="CharacterAsset" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://assets/types/character_asset.gd" id="1_character_asset"]
+
+[resource]
+script = ExtResource("1_character_asset")
+id = &"hero_viletta"
+name = "维蕾塔"
+profession = "猎魔人"
+battle = 6
+investigation = 7
+negotiation = 1

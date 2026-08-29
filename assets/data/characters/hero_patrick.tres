@@ -1,0 +1,13 @@
+; 正式内容资产：帕特里克。未纳入运行时伤势、疲劳和关系事实。
+[gd_resource type="Resource" script_class="CharacterAsset" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://assets/types/character_asset.gd" id="1_character_asset"]
+
+[resource]
+script = ExtResource("1_character_asset")
+id = &"hero_patrick"
+name = "帕特里克"
+profession = "税务官"
+battle = 3
+investigation = 5
+negotiation = 9

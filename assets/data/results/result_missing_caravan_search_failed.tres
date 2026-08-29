@@ -1,0 +1,9 @@
+; 正式内容资产：搜索失败。信任变化、效果与完整报告文本仍为占位。
+[gd_resource type="Resource" script_class="ResultAsset" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://assets/types/result_asset.gd" id="1_result_asset"]
+
+[resource]
+script = ExtResource("1_result_asset")
+id = &"result_missing_caravan_search_failed"
+report_text = "【占位占位】"

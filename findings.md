@@ -334,3 +334,15 @@
 - TEST_ONLY 资源位于 `tests/fixtures/character_a.tres`，稳定 ID 为 `test_character_a`。
 - 手写 `.tres` 仅声明 `ext_resource` 还不够，`[resource]` 必须显式写入 `script = ExtResource(...)`，否则加载结果只是普通 `Resource`，无法转换成 `CharacterAsset`。
 - Godot 4.7.2 已实际加载该 fixture 并读出名称“角色A”和 `investigation = 10`；Task 1 可标记完成。
+
+## 2026-08-29 V3 Task 1 首轮正式内容资产发现
+
+- Notion 当前角色池明确列出六名首轮角色及稳定 ID；当前项目真源的概述仍写“五名正式角色”，数量冲突保留为 `【占位占位】`，本 Task 按角色池六人建立资源。
+- 正式角色最小字段采用 `id`、`name`、`profession`、`battle`、`investigation`、`negotiation`；阿斯特里德职业在 Notion 中仍为暂定内容，因此资源写入 `【占位占位】`。
+- 正式任务最小字段采用 `id`、`title`、`commissioner`、`description`、`objective`、`promised_reward`、`duration_days`、`min_party_size`、`max_party_size`、`repeatable`、`result_group`；`repeatable = false` 是依据“单次唯一测试任务”的工作性推测。
+- `TaskAsset → ResultGroupAsset → ResultAsset[]` 已由正式 `.tres` 稳定引用串起；五个 ResultAsset 的 `report_text` 统一写入 `【占位占位】`。
+- Task 1 只建立资产与引用，不提前写入结果条件和效果；Task 2、Task 3 负责真实判定与后果落地。
+- 手写 `.tres` 继续遵循 `[gd_resource] → [ext_resource] → [resource]` 顺序，避免资源前向引用陷阱。
+- Task 1 专项测试成功覆盖六名角色、任务核心字段、结果组 ID、五个结果 ID 和占位报告文本；V2 `runtime_chain_test.tscn` 回归成功。
+- 本 Task 的占位内容：阿斯特里德职业、五个报告文本、结果条件、结果效果、任务终态、伤势目标与等级、关系/声望变化和后续救援 ID。
+- 本 Task 的数值推测：延迟报酬 60、完整成功评价 `+5`、搜索失败信任 `-5`、伤势等级 1；这些数值尚未进入正式 ResultEffect 资源，后续日志必须继续标注推测来源。

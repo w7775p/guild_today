@@ -1,0 +1,7 @@
+; TEST_ONLY：V3 Task 1 正式角色、任务、结果组与结果引用验收场景。
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://tests/v3_task1_content_test.gd" id="1_v3_task1_content"]
+
+[node name="V3Task1ContentTest" type="Node"]
+script = ExtResource("1_v3_task1_content")
