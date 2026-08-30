@@ -37,9 +37,13 @@ func _ready() -> void:
 	content.add_child(_close_button)
 
 
-func show_report(report: ReportRecord, dispatch_instance: DispatchInstance) -> void:
+func show_report(report: ReportRecord, dispatch_instance: DispatchInstance) -> bool:
 	if report == null or dispatch_instance == null:
-		return
+		return false
+	if report.report_id.is_empty() or report.result_asset_id.is_empty() or report.dispatch_instance_id.is_empty() or report.text.strip_edges().is_empty():
+		return false
+	if report.report_id != report.dispatch_instance_id or report.dispatch_instance_id != dispatch_instance.dispatch_instance_id:
+		return false
 	_report_id = report.report_id
 	var character_names: Array[String] = []
 	var highest_battle := 0
@@ -61,6 +65,7 @@ func show_report(report: ReportRecord, dispatch_instance: DispatchInstance) -> v
 		report.text,
 	]
 	visible = true
+	return true
 
 
 func get_content_text() -> String:

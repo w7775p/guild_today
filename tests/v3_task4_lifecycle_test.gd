@@ -57,7 +57,9 @@ func _run_lifecycle_case() -> bool:
 	var pending_result := ResultInstance.new()
 	pending_result.result_asset_id = &"test_pending_result"
 	pending_result.dispatch_instance_id = dispatch_instance.dispatch_instance_id
-	var early_settlement := settlement_system.settle_result(pending_result, guild_state, null, null, null, null, null, dispatch_instance, day_system.get_current_day())
+	var pending_asset := ResultAsset.new()
+	pending_asset.id = pending_result.result_asset_id
+	var early_settlement := settlement_system.settle_result(pending_result, guild_state, null, null, null, null, null, dispatch_instance, day_system.get_current_day(), pending_asset)
 	passed = _check(passed, not early_settlement, "到期前不应允许结算")
 
 	day_system.advance_day()

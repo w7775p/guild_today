@@ -78,6 +78,7 @@ func _run_case(task_asset: TaskAsset, expected_result_id: StringName, party: Arr
 	var task_instance := task_system.create_task_instance(task_asset)
 	if task_instance == null:
 		return _cleanup_and_return([task_system, dispatch_system, resolution_system, guild_state, relationship_system, character_state_system, report_system, settlement_system], false)
+	passed = _check(passed, task_system.start_task_instance(task_instance.instance_id), "任务进入进行中失败")
 	var dispatch_instance := dispatch_system.create_dispatch(task_instance.instance_id, party)
 	passed = _check(passed, task_instance != null and dispatch_instance != null, "创建任务或派遣失败")
 	if not passed:
@@ -93,7 +94,7 @@ func _run_case(task_asset: TaskAsset, expected_result_id: StringName, party: Arr
 	result_instance.dispatch_instance_id = dispatch_instance.dispatch_instance_id
 	result_instance.resolved_effects.assign(result_asset.effects)
 	passed = _check(passed, task_system.record_final_result(task_instance.instance_id, actual_result_id), "最终结果写入失败")
-	passed = _check(passed, settlement_system.settle_result(result_instance, guild_state, relationship_system, character_state_system, report_system, task_system, task_instance, dispatch_instance), "结果结算失败：%s" % actual_result_id)
+	passed = _check(passed, settlement_system.settle_result(result_instance, guild_state, relationship_system, character_state_system, report_system, task_system, task_instance, dispatch_instance, -1, result_asset), "结果结算失败：%s" % actual_result_id)
 	var report := report_system.record_report(result_asset, result_instance)
 	passed = _check(passed, report != null, "报告记录创建失败：%s" % actual_result_id)
 	if report == null:
@@ -102,7 +103,7 @@ func _run_case(task_asset: TaskAsset, expected_result_id: StringName, party: Arr
 	passed = _check(passed, report.dispatch_instance_id == dispatch_instance.dispatch_instance_id, "报告派遣 ID 不正确")
 	passed = _check(passed, not report.text.is_empty(), "报告文本不应为空")
 	passed = _check(passed, report_system.get_report(dispatch_instance.dispatch_instance_id) == report, "报告应可按派遣 ID 读取")
-	passed = _check(passed, not settlement_system.settle_result(result_instance, guild_state, relationship_system, character_state_system, report_system, task_system, task_instance, dispatch_instance), "重复结算必须被拒绝")
+	passed = _check(passed, not settlement_system.settle_result(result_instance, guild_state, relationship_system, character_state_system, report_system, task_system, task_instance, dispatch_instance, -1, result_asset), "重复结算必须被拒绝")
 	passed = _check(passed, task_instance.lifecycle_state == TERMINAL_STATE_IDS[actual_result_id], "结果终态占位 ID 错误")
 	if actual_result_id == &"result_missing_caravan_full_success":
 		passed = _check(passed, guild_state.get_value(GuildState.GOLD_STATE_ID) == 90, "完整成功金币应为 90")

@@ -148,6 +148,13 @@ func _connect_session_notifications() -> void:
 
 
 func _initialize_content() -> void:
+	if not _session.is_initialized():
+		_task_view.visible = false
+		_workspace.visible = false
+		_open_task_button.disabled = true
+		_advance_day_button.disabled = true
+		_report_button.disabled = true
+		return
 	var published_tasks := _session.get_published_tasks()
 	if published_tasks.size() == 1:
 		_task_instance_id = published_tasks[0].instance_id
@@ -161,6 +168,15 @@ func _initialize_content() -> void:
 
 
 func _refresh_ui() -> void:
+	if not _session.is_initialized():
+		_day_label.text = "会话初始化失败"
+		_gold_label.text = "金币 -"
+		_reputation_label.text = "总声望 -"
+		_active_label.text = "进行中派遣 -"
+		_advance_day_button.disabled = true
+		_report_button.text = "报告（不可用）"
+		_report_button.disabled = true
+		return
 	_day_label.text = "第 %d 日" % _session.get_current_day()
 	_gold_label.text = "金币 %d" % _session.get_guild_value(GuildState.GOLD_STATE_ID)
 	_reputation_label.text = "总声望 %d" % _session.get_guild_value(GuildState.TOTAL_REPUTATION_STATE_ID)
@@ -221,19 +237,24 @@ func _on_report_pressed() -> void:
 		return
 	var report := unread_reports[0]
 	var dispatch_instance := _session.get_dispatch_instance(report.dispatch_instance_id)
+	if not _report_view.show_report(report, dispatch_instance):
+		_refresh_ui()
+		return
 	_task_view.visible = false
 	_workspace.visible = false
 	_open_task_button.disabled = true
-	_report_view.show_report(report, dispatch_instance)
 
 
 func _on_close_report(report_id: StringName) -> void:
 	if _session.mark_report_read(report_id):
 		_report_view.visible = false
-		_workspace.visible = true
-		_open_task_button.disabled = false
-		_open_task_button.text = "打开任务文件"
-		_refresh_ui()
+	else:
+		# 关闭失败时仍恢复工作区，避免异常报告把界面永久锁在阅读态。
+		_report_view.visible = false
+	_workspace.visible = true
+	_open_task_button.disabled = not _session.is_initialized()
+	_open_task_button.text = "打开任务文件"
+	_refresh_ui()
 
 
 func _get_character(character_id: StringName) -> CharacterAsset:

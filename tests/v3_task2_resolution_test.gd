@@ -45,6 +45,7 @@ func _run_resolution_matrix() -> bool:
 		for character_id in case_data["party"]:
 			party.append(characters[character_id])
 		var dispatch := DispatchInstance.new()
+		dispatch.status = &"ACTIVE"
 		dispatch.character_refs.assign(party)
 		var result_id := resolution_system.resolve_result(dispatch, task_asset.result_group)
 		passed = _check(passed, result_id == case_data["expected"], "%s 结果错误：%s" % [case_data["label"], result_id])
@@ -54,6 +55,7 @@ func _run_resolution_matrix() -> bool:
 	injured_character.battle = 5
 	injured_character.investigation = 5
 	var injured_dispatch := DispatchInstance.new()
+	injured_dispatch.status = &"ACTIVE"
 	injured_dispatch.character_refs.assign([injured_character])
 	var injured_result_id := resolution_system.resolve_result(injured_dispatch, task_asset.result_group)
 	passed = _check(passed, injured_result_id == &"result_missing_caravan_injured_rescue", "边界队伍应命中带伤救回")

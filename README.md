@@ -20,6 +20,14 @@ Task 8 人工验收已通过。复验入口为 `D:\Godot\guild_today\ui\main\col
 
 当前测试入口会在 Output 输出启动信息和已验收资源的加载结果。
 
+## Demo Readiness 审计
+
+使用同一 Godot 可执行文件运行 `res://tests/demo_readiness_audit_test.tscn`，该入口枚举正式资源并覆盖角色/任务加载、ID 与引用完整性、非法数据、派遣、结果判定、权威效果、防篡改、结算回滚、生命周期、报告引用和内存恢复边界，并以进程退出码报告失败。
+
+当前仍有明确范围：`SaveSystem`、EventAsset、Importer、标准终态映射、后续任务消费者和最终策划文案属于 **NOT IMPLEMENTED / UNVERIFIED**；Task8 承诺报酬 120 尚未绑定具体结果效果。
+
+审计场景会输出预期拒绝分支的 `ERROR`；当前机器还会提示 `user://logs/godot.log` 与根证书仓库环境告警，判断测试结果以进程退出码和业务断言为准。
+
 ## 文档地图
 
 - [Agent 入口](AGENTS.md)：AI 读取路由、执行闸门和项目边界。

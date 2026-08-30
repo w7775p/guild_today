@@ -8,7 +8,7 @@ func _ready() -> void:
 	# 专项测试通过正式按钮和选择控件走完一轮完整成功路线。
 	var passed := _run_mouse_flow()
 	if passed:
-		print("V3 Task 6 UI success: mouse_flow=true, party_limit=true, report_read=true, errors=0")
+		print("V3 Task 6 UI success: signal_flow=true, party_limit=true, report_read=true")
 	else:
 		push_error("V3 Task 6 UI failed")
 	get_tree().quit(0 if passed else 1)

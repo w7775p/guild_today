@@ -35,7 +35,7 @@ Node System = 负责运行、读取和修改这些事实的系统
 ```plain text
 CharacterAsset : Resource
 TaskAsset : Resource
-EventAsset : Resource
+EventAsset : Resource（V4 规划项，当前 NOT IMPLEMENTED）
 ResultGroupAsset : Resource
 ResultAsset : Resource
 ```
@@ -81,6 +81,7 @@ INVALIDATED
 - 已发布但尚未开始执行的任务可以主动放弃。
 - 任务进入进行中后，玩家不能主动放弃。
 - 当前参考迁移：`已发布 → 进行中 / 放弃 / 过期 / 失效`；`进行中 → 完成 / 失败 / 失效`。
+- V3 运行实现已收紧迁移入口：最终结果只能写入 `IN_PROGRESS`，终态效果只能在已有最终结果后写入；终态值仍沿用 `TaskOutcomeEffect.terminal_state_id` 占位符，标准枚举映射留待 V4 冻结。
 ### 2.5 任务生成边界
 `TaskSystem` 只接受“合法的任务生成检查触发”，不在任务系统内部写死“每日刷新”等具体来源。
 收到合法触发后，任务系统读取任务自身生成条件并请求对应系统判断；通过后才创建 / 发布任务实例。任务系统不自行复制或维护其他系统的状态真源。
@@ -91,7 +92,8 @@ INVALIDATED
 - 实际金币、损失、人物变化、关系变化、情报变化及其他后果由最终命中的具体 `ResultAsset` 定义。
 - `TaskResolutionSystem` 决定最终命中的具体 `result_id`。
 - `TaskSystem` 将 `final_result_id` 写入对应 `TaskInstance`。
-- `ResultSettlementSystem` 读取 `ResultAsset` 并协调后果分发。
+- 上层先从 `ResultAsset` 构造已验证的 `ResultInstance`，`ResultSettlementSystem` 校验关联并协调后果分发。
+- `ResultSettlementSystem.settle_result()` 必须接收同 ID、同效果快照的权威 `ResultAsset`；任务结算要求恰好一个 `TaskOutcomeEffect`，失败路径可回滚已写入状态。
 - `GuildState / StateRelationshipSystem / ReportIntelSystem` 各自拥有并实际写入自己的运行时状态。
 ```plain text
 TaskAsset
@@ -290,14 +292,14 @@ res://runtime/
 ├── tasks/
 │   ├── task_system.gd
 │   ├── task_instance.gd
-│   └── task_resolution_system.gd       # 只建薄接口
+│   └── task_resolution_system.gd       # 最小判定实现与结果组边界校验
 ├── dispatch/
 │   ├── dispatch_system.gd
 │   └── dispatch_instance.gd
 ├── time/
 │   └── day_system.gd                # V3 整数游戏日拥有者
 ├── results/
-│   └── result_settlement_system.gd     # 只建薄接口
+│   └── result_settlement_system.gd     # 权威结果校验、结算与失败回滚
 ├── characters/
 │   ├── character_runtime_state.gd      # 当前只保存伤势事实
 │   └── character_state_system.gd       # 角色运行状态拥有者
@@ -308,7 +310,7 @@ res://runtime/
 res://assets/types/
 ├── character_asset.gd                  # 薄类型，不先拆六个子模块
 ├── task_asset.gd
-├── event_asset.gd
+├── event_asset.gd                      # V4 规划项（当前文件未创建，NOT IMPLEMENTED）
 ├── result_group_asset.gd
 └── result_asset.gd
 ```
@@ -363,17 +365,17 @@ res://
 ### 目录职责
 - `runtime/`：正式运行时系统与 Instance。
 - `assets/types/`：已确认的静态 Resource 类型脚本。
-- `assets/data/`：正式 `.tres` 数据资产；现阶段允许为空。
+- `assets/data/`：当前包含已验证的正式 `.tres` 数据资产；新增内容仍需完成字段、ID、引用和运行链审计。
 - `ui/`：正式 UI Scene 与脚本。
-- `tests/`：GdUnit4 自动测试。
+- `tests/`：Godot headless 场景脚本测试，脚本以退出码报告失败。
 - `tests/fixtures/`：全部 `TEST_ONLY` 测试资产。
-- `addons/`：GdUnit4 等第三方插件。
+- `addons/`：当前未安装第三方测试插件；若后续引入 GdUnit4，再单独冻结插件与 CI 契约。
 - `docs/`：从对应 Notion 工程页面导出的冻结架构与规则；执行状态由仓库根目录三份规划记录维护。
 - `runtime/save/`：V3 不创建，是否进入正式运行时留到 V4 决定。
 ### 当前禁止预建
 不得提前创建 `rules/`、独立 `events/` 运行模块、`inventory/`、`editor/`、`importer/`、`dialogue/`、`managers/` 等尚未被当前闭环证明需要的目录；`time/` 仅允许存放当前 V3 的最小 `day_system.gd`。
 ### 角色 / 任务 / 结果资产边界
-`CharacterAsset / TaskAsset / EventAsset / ResultGroupAsset / ResultAsset` 的类型脚本可以位于 `assets/types/`；正式内容资产未冻结前不生产正式 `.tres`。测试内容只进入 `tests/fixtures/`，不得进入 `assets/data/`。
+`CharacterAsset / TaskAsset / ResultGroupAsset / ResultAsset` 的类型脚本和已冻结正式数据位于 `assets/`；`EventAsset` 当前仍是 V4 规划项。未冻结内容继续使用 `tests/fixtures/` 与语义占位符，禁止将 fixture 反向升级为正式资产。
 ### 下一阶段文档要求
 
 ## 十二、冻结补充：运行时对象模型 v0.1
@@ -531,7 +533,7 @@ ResultAsset 不使用固定字段堆叠条件，采用组合资源：
 ResultAsset
 ├─ conditions : Array[ConditionResource]
 ├─ effects : Array[EffectResource]
-└─ report_reference
+└─ report_text
 ```
 Condition：
 - 默认逻辑为 AND。

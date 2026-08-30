@@ -73,6 +73,14 @@ func get_report(report_id: StringName) -> ReportRecord:
 	return _reports.get(report_id) as ReportRecord
 
 
+# 结算事务失败时撤销本次尚未对玩家展示的报告记录。
+func remove_report(report_id: StringName) -> bool:
+	if report_id.is_empty() or not _reports.has(report_id):
+		return false
+	_reports.erase(report_id)
+	return true
+
+
 # 未读报告从报告真源即时筛选，供 GameSession 和后续 UI 查询。
 func get_unread_reports() -> Array[ReportRecord]:
 	var unread_reports: Array[ReportRecord] = []
@@ -97,13 +105,38 @@ func record_intel(intel_id: StringName, unlock_task_id: StringName) -> bool:
 	if intel_id.is_empty() or unlock_task_id.is_empty():
 		push_error("ReportIntelSystem 情报效果缺少稳定引用")
 		return false
+	if _intel_unlocks.has(intel_id):
+		if _intel_unlocks[intel_id] == unlock_task_id:
+			return true
+		push_error("ReportIntelSystem 拒绝覆盖已有情报解锁：%s" % intel_id)
+		return false
 	_intel_unlocks[intel_id] = unlock_task_id
 	return true
+
+
+# 结算前检查情报写入是否为首次写入或同值幂等写入。
+func can_record_intel(intel_id: StringName, unlock_task_id: StringName) -> bool:
+	if intel_id.is_empty() or unlock_task_id.is_empty():
+		return false
+	return not _intel_unlocks.has(intel_id) or _intel_unlocks[intel_id] == unlock_task_id
 
 
 # 读取情报对应的后续解锁 ID。
 func get_unlocked_task_id(intel_id: StringName) -> StringName:
 	return StringName(_intel_unlocks.get(intel_id, &""))
+
+
+# 事务快照需要区分未出现的情报与已有同值解锁。
+func has_intel(intel_id: StringName) -> bool:
+	return _intel_unlocks.has(intel_id)
+
+
+# 结算事务失败时恢复情报解锁映射，避免留下半写入后续任务入口。
+func restore_intel(intel_id: StringName, previous_unlock_task_id: StringName, previously_present: bool) -> void:
+	if previously_present:
+		_intel_unlocks[intel_id] = previous_unlock_task_id
+	else:
+		_intel_unlocks.erase(intel_id)
 
 
 # 报告支持当前 Task 3 的具体效果类型，不引入通用文案注册表。

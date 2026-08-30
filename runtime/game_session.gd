@@ -18,6 +18,8 @@ const FORMAL_CHARACTER_IDS: Array[StringName] = [
 	&"hero_astrid",
 	&"hero_viletta",
 ]
+const VALID_ABILITY_IDS: Array[StringName] = [&"battle", &"investigation", &"negotiation"]
+const VALID_INJURY_TARGET_RULE: StringName = &"highest_battle_member"
 
 
 @export var task_asset_path: String = FORMAL_TASK_PATH
@@ -124,7 +126,7 @@ func submit_dispatch(task_instance_id: StringName, character_ids: Array[StringNa
 	if dispatch_instance == null:
 		return null
 	if not task_system.start_task_instance(task_instance.instance_id):
-		dispatch_system.end_dispatch(dispatch_instance.dispatch_instance_id, day_system.get_current_day())
+		dispatch_system.cancel_dispatch(dispatch_instance.dispatch_instance_id)
 		return null
 	task_changed.emit(task_instance.instance_id)
 	dispatch_changed.emit(dispatch_instance.dispatch_instance_id)
@@ -193,21 +195,104 @@ func get_unlocked_task_id(intel_id: StringName) -> StringName:
 # 首次进入场景时加载正式资产并发布首张 TaskInstance。
 func _initialize_formal_content() -> bool:
 	# 通过场景配置选择一张正式任务，默认仍为首张任务，保持同一套 GameSession 链路。
-	_formal_task = load(task_asset_path) as TaskAsset
-	if _formal_task == null or _formal_task.result_group == null:
-		push_error("GameSession 无法加载正式任务：%s" % task_asset_path)
+	_formal_characters.clear()
+	_formal_task = null
+	_task_instance = null
+	var normalized_task_path := task_asset_path.simplify_path()
+	if normalized_task_path != task_asset_path or normalized_task_path.is_empty() or not normalized_task_path.begins_with("res://assets/data/tasks/"):
+		push_error("GameSession 正式任务路径必须位于 assets/data/tasks：%s" % task_asset_path)
 		return false
+	_formal_task = load(normalized_task_path) as TaskAsset
+	if _formal_task == null or not _validate_formal_task(_formal_task):
+		push_error("GameSession 无法加载正式任务：%s" % normalized_task_path)
+		return false
+	var loaded_characters: Dictionary[StringName, CharacterAsset] = {}
 	for character_id in FORMAL_CHARACTER_IDS:
 		var character := load(FORMAL_CHARACTER_PATH_PATTERN % character_id) as CharacterAsset
-		if character == null or character.id != character_id:
+		if character == null or not _validate_formal_character(character, character_id):
 			push_error("GameSession 无法加载正式角色：%s" % character_id)
 			return false
-		_formal_characters[character_id] = character
+		loaded_characters[character_id] = character
+	_formal_characters = loaded_characters
 	_task_instance = task_system.create_task_instance(_formal_task)
 	if _task_instance == null:
 		return false
 	task_changed.emit(_task_instance.instance_id)
 	return true
+
+
+# 正式场景只接受字段完整、引用闭合且可由当前运行时执行的资源集合。
+func _validate_formal_task(task_asset: TaskAsset) -> bool:
+	if task_asset.id.is_empty() or task_asset.title.strip_edges().is_empty() or task_asset.description.strip_edges().is_empty():
+		return false
+	if task_asset.commissioner.strip_edges().is_empty() or task_asset.objective.strip_edges().is_empty():
+		return false
+	if task_asset.promised_reward < 0 or task_asset.duration_days < 1:
+		return false
+	if task_asset.min_party_size < 1 or task_asset.max_party_size < task_asset.min_party_size or task_asset.max_party_size > FORMAL_CHARACTER_IDS.size():
+		return false
+	var result_group := task_asset.result_group
+	if result_group == null or result_group.id.is_empty() or result_group.results.is_empty():
+		return false
+	var result_ids: Dictionary[StringName, bool] = {}
+	for result_asset in result_group.results:
+		if result_asset == null or result_asset.id.is_empty() or result_ids.has(result_asset.id):
+			return false
+		result_ids[result_asset.id] = true
+		if result_asset.report_text.strip_edges().is_empty() or result_asset.conditions.is_empty() or result_asset.effects.is_empty():
+			return false
+		for condition in result_asset.conditions:
+			if not _is_formal_condition_valid(condition):
+				return false
+		var terminal_effect_count := 0
+		for effect in result_asset.effects:
+			if effect is TaskOutcomeEffect:
+				terminal_effect_count += 1
+			if not _is_formal_effect_valid(effect):
+				return false
+		if terminal_effect_count != 1:
+			return false
+	return true
+
+
+func _validate_formal_character(character: CharacterAsset, expected_id: StringName) -> bool:
+	if character == null or character.id != expected_id:
+		return false
+	if character.name.strip_edges().is_empty() or character.profession.strip_edges().is_empty():
+		return false
+	return character.battle >= 0 and character.investigation >= 0 and character.negotiation >= 0
+
+
+func _is_formal_condition_valid(condition: ConditionResource) -> bool:
+	if condition == null:
+		return false
+	var ability_id: StringName = &""
+	var threshold := 0
+	if condition is AbilityCondition:
+		ability_id = (condition as AbilityCondition).ability_id
+		threshold = (condition as AbilityCondition).value
+	elif condition is AbilityBelowCondition:
+		ability_id = (condition as AbilityBelowCondition).ability_id
+		threshold = (condition as AbilityBelowCondition).value
+	else:
+		return false
+	return VALID_ABILITY_IDS.has(ability_id) and threshold >= 0
+
+
+func _is_formal_effect_valid(effect: EffectResource) -> bool:
+	if effect is GoldEffect or effect is ReputationEffect:
+		return true
+	if effect is RelationshipEffect:
+		return not (effect as RelationshipEffect).relationship_id.is_empty()
+	if effect is InjuryEffect:
+		var injury_effect := effect as InjuryEffect
+		return injury_effect.target_rule == VALID_INJURY_TARGET_RULE and injury_effect.severity > 0
+	if effect is IntelEffect:
+		var intel_effect := effect as IntelEffect
+		return not intel_effect.intel_id.is_empty() and not intel_effect.unlock_task_id.is_empty()
+	if effect is TaskOutcomeEffect:
+		return not (effect as TaskOutcomeEffect).terminal_state_id.is_empty()
+	return false
 
 
 # 严格按 Resolution → ResultInstance → Task → Settlement → Report → Dispatch 顺序编排。
@@ -216,6 +301,8 @@ func _settle_due_dispatch(dispatch_instance: DispatchInstance, current_day: int)
 		return false
 	var task_instance := task_system.get_task_instance(dispatch_instance.task_instance_id)
 	if task_instance == null or task_instance != _task_instance:
+		return false
+	if not dispatch_system.can_end_dispatch(dispatch_instance.dispatch_instance_id, current_day):
 		return false
 	var result_id := resolution_system.resolve_result(dispatch_instance, _formal_task.result_group)
 	if result_id.is_empty():
@@ -234,6 +321,10 @@ func _settle_due_dispatch(dispatch_instance: DispatchInstance, current_day: int)
 		return false
 	if not task_system.record_final_result(task_instance.instance_id, result_id):
 		return false
+	var report := report_system.record_report(result_asset, result_instance)
+	if report == null:
+		task_system.clear_final_result(task_instance.instance_id)
+		return false
 	if not settlement_system.settle_result(
 		result_instance,
 		guild_state,
@@ -243,14 +334,28 @@ func _settle_due_dispatch(dispatch_instance: DispatchInstance, current_day: int)
 		task_system,
 		task_instance,
 		dispatch_instance,
-		current_day
+		current_day,
+		result_asset
 	):
+		report_system.remove_report(report.report_id)
+		task_system.clear_final_result(task_instance.instance_id)
 		return false
-	var report := report_system.record_report(result_asset, result_instance)
-	if report == null:
-		return false
+	var previous_ended_day := dispatch_instance.ended_day
 	if not dispatch_system.end_dispatch(dispatch_instance.dispatch_instance_id, current_day):
+		report_system.remove_report(report.report_id)
+		settlement_system.rollback_settlement(
+			result_instance,
+			guild_state,
+			relationship_system,
+			character_state_system,
+			report_system,
+			task_system,
+			task_instance
+		)
+		if dispatch_instance.status == &"ENDED":
+			dispatch_system.restore_active_dispatch(dispatch_instance.dispatch_instance_id, previous_ended_day)
 		return false
+	settlement_system.finalize_settlement(dispatch_instance.dispatch_instance_id)
 
 	task_changed.emit(task_instance.instance_id)
 	state_changed.emit()

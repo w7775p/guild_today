@@ -34,17 +34,41 @@ func get_dispatch_instance(dispatch_instance_id: StringName) -> DispatchInstance
 	return _dispatch_instances.get(dispatch_instance_id) as DispatchInstance
 
 
-# 显式结束 ACTIVE 派遣，使其角色立即从占用推导中释放；有日期的派遣会记录结束日。
+# 显式结束 ACTIVE 派遣，使其角色立即从占用推导中释放；定时派遣只能在到期日结束。
 func end_dispatch(dispatch_instance_id: StringName, ended_day: int = -1) -> bool:
 	var dispatch_instance := get_dispatch_instance(dispatch_instance_id)
-	if dispatch_instance == null or dispatch_instance.status != &"ACTIVE":
+	if not _can_end_dispatch(dispatch_instance, ended_day):
 		return false
 	if ended_day >= 1:
-		if dispatch_instance.started_day >= 1 and ended_day < dispatch_instance.started_day:
-			return false
 		dispatch_instance.ended_day = ended_day
 	dispatch_instance.status = &"ENDED"
 	return true
+
+
+# 派遣创建后的任务启动失败只走回滚入口，避免把“提前结束”混入正式完成语义。
+func cancel_dispatch(dispatch_instance_id: StringName) -> bool:
+	var dispatch_instance := get_dispatch_instance(dispatch_instance_id)
+	if dispatch_instance == null or dispatch_instance.status != &"ACTIVE":
+		return false
+	dispatch_instance.status = &"CANCELLED"
+	if dispatch_instance.started_day >= 1:
+		dispatch_instance.ended_day = dispatch_instance.started_day
+	return true
+
+
+# 结算事务最后一步失败时恢复仍处于已结束状态的派遣。
+func restore_active_dispatch(dispatch_instance_id: StringName, previous_ended_day: int = -1) -> bool:
+	var dispatch_instance := get_dispatch_instance(dispatch_instance_id)
+	if dispatch_instance == null or dispatch_instance.status != &"ENDED":
+		return false
+	dispatch_instance.status = &"ACTIVE"
+	dispatch_instance.ended_day = previous_ended_day
+	return true
+
+
+# GameSession 在执行结算写入前使用同一规则预检结束操作，避免最后一步失败。
+func can_end_dispatch(dispatch_instance_id: StringName, ended_day: int = -1) -> bool:
+	return _can_end_dispatch(get_dispatch_instance(dispatch_instance_id), ended_day)
 
 
 # 只有仍在 ACTIVE 且达到 due_day 的派遣才允许进入结算链。
@@ -61,6 +85,8 @@ func get_due_dispatches(current_day: int) -> Array[DispatchInstance]:
 	var due_dispatches: Array[DispatchInstance] = []
 	for value in _dispatch_instances.values():
 		var dispatch_instance := value as DispatchInstance
+		if dispatch_instance == null:
+			continue
 		if is_dispatch_due(dispatch_instance.dispatch_instance_id, current_day):
 			due_dispatches.append(dispatch_instance)
 	return due_dispatches
@@ -71,6 +97,8 @@ func get_active_dispatches() -> Array[DispatchInstance]:
 	var active_dispatches: Array[DispatchInstance] = []
 	for value in _dispatch_instances.values():
 		var dispatch_instance := value as DispatchInstance
+		if dispatch_instance == null:
+			continue
 		if dispatch_instance.status == &"ACTIVE":
 			active_dispatches.append(dispatch_instance)
 	return active_dispatches
@@ -82,10 +110,12 @@ func is_character_occupied(character_id: StringName) -> bool:
 		return false
 	for value in _dispatch_instances.values():
 		var dispatch_instance := value as DispatchInstance
+		if dispatch_instance == null:
+			continue
 		if dispatch_instance.status != &"ACTIVE":
 			continue
 		for character in dispatch_instance.character_refs:
-			if character.id == character_id:
+			if character != null and character.id == character_id:
 				return true
 	return false
 
@@ -110,3 +140,16 @@ func _is_timing_valid(started_day: int, duration_days: int) -> bool:
 	if not has_timing:
 		return started_day == -1 and duration_days == -1
 	return started_day >= 1 and duration_days >= 1
+
+
+# 定时派遣没有“提前放弃”状态，防止结束后永远失去结算入口；无日期派遣保留 V2 兼容路径。
+func _can_end_dispatch(dispatch_instance: DispatchInstance, ended_day: int) -> bool:
+	if dispatch_instance == null or dispatch_instance.status != &"ACTIVE":
+		return false
+	if dispatch_instance.started_day < 1:
+		return ended_day == -1 or ended_day >= 1
+	if ended_day < 1:
+		return false
+	if ended_day < dispatch_instance.started_day or ended_day < dispatch_instance.due_day:
+		return false
+	return true

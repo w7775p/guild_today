@@ -15,13 +15,13 @@ const TERMINAL_STATE_IDS: Dictionary = {
 
 
 func _ready() -> void:
-	# 三个独立正式会话覆盖成功、查明位置和失败路线，正常日志不触发 ERROR。
+	# 三个独立正式会话覆盖成功、查明位置和失败路线；环境告警不计入业务错误。
 	var passed := true
 	passed = _run_route(&"full_success", [&"hero_viletta"], &"result_missing_caravan_full_success", passed)
 	passed = _run_route(&"location_confirmed", [&"hero_dai"], &"result_missing_caravan_location_confirmed", passed)
 	passed = _run_route(&"search_failed", [&"hero_aelius"], &"result_missing_caravan_search_failed", passed)
 	if passed:
-		print("V3 Task 5 GameSession success: routes=3, formal_assets=true, reports=3, errors=0")
+		print("V3 Task 5 GameSession success: routes=3, formal_assets=true, reports=3")
 	else:
 		push_error("V3 Task 5 GameSession failed")
 	get_tree().quit(0 if passed else 1)

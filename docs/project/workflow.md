@@ -15,7 +15,7 @@
 → Result
 → 结算
 → 阅读报告
-→ 状态变化进入后续判断
+→ 状态变化写入当前运行时（后续任务消费留待 V4）
 ```
 ## 2. 开工前读取顺序
 1. 仓库根目录 `AGENTS.md`。
@@ -37,14 +37,16 @@
 - `DispatchSystem / DispatchInstance`
 - `TaskResolutionSystem`
 - `ResultSettlementSystem`
-- `StateRelationshipSystem` 壳
-- `ReportIntelSystem` 壳
+- `StateRelationshipSystem` 最小关系状态拥有者
+- `ReportIntelSystem` 报告与情报状态拥有者
 - V3 最小 `DaySystem`
 - `SaveSystem` 保留前序架构记录，V3 不创建；是否进入运行时留到 V4 决定
 - 已确认的静态 Resource 类型声明；**不得因此补全未冻结字段 Schema**
-- GdUnit4 自动测试
+- Godot headless 场景脚本测试（当前仓库未安装 GdUnit4）
 - 核心循环 UI 壳
 - `TEST_ONLY` 测试资产
+
+正式结算调用必须同时传入与 `ResultInstance` 同 ID、同效果快照的权威 `ResultAsset`，避免调用方伪造效果。
 ## 4. 当前阶段禁止擅自引入
 除非真实需求出现并重新冻结，否则不要引入：
 - 通用 `RuleEngine / Condition / Effect / Flag` DSL
@@ -63,7 +65,7 @@
 4. 确认已有相关测试。
 ## 6. 修改后
 1. 对修改的 `.gd` 执行对应 parse / `--check-only --script` 检查。
-2. 运行相关 GdUnit4 测试。
+2. 运行相关 Godot headless 场景脚本测试，并检查进程退出码。
 3. 重命名后搜索旧 ID / 方法 / Signal 残留。
 4. 检查 `git diff`，只保留本次必要改动。
 5. 对照 known_traps 做同类陷阱自查。

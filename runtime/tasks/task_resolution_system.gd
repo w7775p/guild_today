@@ -2,10 +2,16 @@ class_name TaskResolutionSystem
 extends Node
 
 
+const VALID_ABILITY_IDS: Array[StringName] = [&"battle", &"investigation", &"negotiation"]
+
+
 # 根据派遣角色能力检查结果组，并只接受唯一命中的静态结果。
 func resolve_result(dispatch_instance: DispatchInstance, result_group: ResultGroupAsset) -> StringName:
 	if dispatch_instance == null or result_group == null:
 		push_error("TaskResolutionSystem 缺少派遣实例或结果组")
+		return &""
+	if dispatch_instance.status != &"ACTIVE":
+		push_error("TaskResolutionSystem 只接受 ACTIVE 派遣")
 		return &""
 	if dispatch_instance.character_refs.is_empty():
 		push_error("TaskResolutionSystem 派遣实例没有角色")
@@ -14,12 +20,13 @@ func resolve_result(dispatch_instance: DispatchInstance, result_group: ResultGro
 		if character == null:
 			push_error("TaskResolutionSystem 派遣实例包含空角色引用")
 			return &""
+		if not _are_character_values_valid(character):
+			return &""
+	if not _validate_result_group(result_group):
+		return &""
 	var ability_maxima := _get_ability_maxima(dispatch_instance.character_refs)
 	var matched_results: Array[ResultAsset] = []
 	for result_asset in result_group.results:
-		if result_asset == null:
-			push_error("TaskResolutionSystem 结果组包含空结果引用")
-			return &""
 		if _are_conditions_met(result_asset.conditions, ability_maxima):
 			matched_results.append(result_asset)
 	if matched_results.size() != 1:
@@ -66,3 +73,47 @@ func _get_condition_ability_id(condition: ConditionResource) -> StringName:
 		return (condition as AbilityBelowCondition).ability_id
 	push_error("TaskResolutionSystem 不支持的条件类型：%s" % condition.get_class())
 	return &""
+
+
+# 结果组在匹配前整体校验，避免空 ID、重复 ID 或未知条件被合法结果掩盖。
+func _validate_result_group(result_group: ResultGroupAsset) -> bool:
+	if result_group.id.is_empty() or result_group.results.is_empty():
+		push_error("TaskResolutionSystem 结果组缺少稳定 ID 或结果")
+		return false
+	var result_ids: Dictionary[StringName, bool] = {}
+	for result_asset in result_group.results:
+		if result_asset == null or result_asset.id.is_empty() or result_ids.has(result_asset.id):
+			push_error("TaskResolutionSystem 结果组包含空或重复结果 ID")
+			return false
+		result_ids[result_asset.id] = true
+		if result_asset.conditions.is_empty():
+			push_error("TaskResolutionSystem 结果缺少条件：%s" % result_asset.id)
+			return false
+		for condition in result_asset.conditions:
+			if not _is_condition_valid(condition):
+				return false
+	return true
+
+
+func _is_condition_valid(condition: ConditionResource) -> bool:
+	if condition == null:
+		push_error("TaskResolutionSystem 条件集合包含空引用")
+		return false
+	var ability_id := _get_condition_ability_id(condition)
+	if not VALID_ABILITY_IDS.has(ability_id):
+		push_error("TaskResolutionSystem 条件引用未知能力：%s" % ability_id)
+		return false
+	if condition is AbilityCondition and (condition as AbilityCondition).value < 0:
+		push_error("TaskResolutionSystem 达标条件阈值不能为负数")
+		return false
+	if condition is AbilityBelowCondition and (condition as AbilityBelowCondition).value < 0:
+		push_error("TaskResolutionSystem 低于条件阈值不能为负数")
+		return false
+	return true
+
+
+func _are_character_values_valid(character: CharacterAsset) -> bool:
+	if character.battle < 0 or character.investigation < 0 or character.negotiation < 0:
+		push_error("TaskResolutionSystem 角色能力不能为负数：%s" % character.id)
+		return false
+	return true

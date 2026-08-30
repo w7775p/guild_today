@@ -146,12 +146,12 @@
 <tr>
 <td>测试角色</td>
 <td>2</td>
-<td>`id, name, profession, combat, investigation, negotiation, rank, public_traits, archive_text`</td>
+<td>`id, name, profession, battle, investigation, negotiation`；缺口角色可用无特殊字段的临时 `CharacterAsset`</td>
 </tr>
 <tr>
 <td>测试任务</td>
 <td>1</td>
-<td>`id, title, commissioner, description, objective, promised_reward, min_party_size, max_party_size, result_group_id`</td>
+<td>`id, title, commissioner, description, objective, promised_reward, duration_days, min_party_size, max_party_size, repeatable, result_group`</td>
 </tr>
 <tr>
 <td>测试结果组</td>
@@ -161,7 +161,7 @@
 <tr>
 <td>测试结果</td>
 <td>2</td>
-<td>`result_id, report_text, guild_gold_change`</td>
+<td>`id, conditions, effects, report_text`；金币变化使用 `GoldEffect.amount`</td>
 </tr>
 <tr>
 <td>测试事件</td>
@@ -170,7 +170,7 @@
 </tr>
 </table>
 ### 测试判定边界
-首轮允许在测试代码 / fixture 中使用简单、明确的临时判定，例如 `combat_sum >= X`，仅用于命中不同 `Result`。不得据此创建通用 `Condition / Rule / Flag / Weight` 引擎或正式条件 Schema。
+首轮允许在测试代码 / fixture 中使用简单、明确的临时判定，例如 `battle_sum >= 10`，仅用于命中不同 `Result`。不得据此创建通用 `Condition / Rule / Flag / Weight` 引擎或正式条件 Schema。
 ### 测试闭环
 ```plain text
 看任务
@@ -183,9 +183,8 @@
 → 显示 Result.report_text
 ```
 ### 明确边界
-- `public_traits` 与 `archive_text` 首轮仅展示，不自动参与判定。
-- `rank` 首轮仅展示。
-- 不实现隐藏面、行为优先级、拒绝 / 违抗、自主行为、关系规则、疲劳伤势、Flag、揭露规则。
+- 当前最小角色资源只包含 `id/name/profession/battle/investigation/negotiation`；未冻结字段继续使用类型语义占位符。
+- 不实现隐藏面、行为优先级、拒绝 / 违抗、自主行为、复杂关系规则、疲劳、Flag、揭露规则；当前只保留已验证的最小伤势效果。
 - 报告首轮直接显示 `Result.report_text`，不建立独立 `ReportAsset`。
 - 所有测试数据必须明确标记 `TEST_ONLY`，正式策划资产出现后可以直接替换。
 

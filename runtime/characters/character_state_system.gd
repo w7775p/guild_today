@@ -24,6 +24,21 @@ func get_injury_level(character_id: StringName) -> int:
 	return state.injury_level if state != null else 0
 
 
+# 事务快照需要区分“未初始化”和“已初始化但伤势为 0”的角色状态。
+func has_character_state(character_id: StringName) -> bool:
+	return _states.has(character_id)
+
+
+# 结算事务失败时恢复角色伤势；原先没有状态的角色回到未初始化状态。
+func restore_injury(character_id: StringName, previous_level: int, previously_present: bool) -> void:
+	if previously_present:
+		var state := ensure_character(character_id)
+		if state != null:
+			state.injury_level = previous_level
+	else:
+		_states.erase(character_id)
+
+
 # 伤势只通过角色运行状态系统累加，保留后续可替换空间。
 func add_injury(character_id: StringName, severity: int) -> bool:
 	if severity <= 0:
@@ -56,7 +71,8 @@ func get_injury_target(dispatch_instance: DispatchInstance, effect: InjuryEffect
 		return null
 	var target: CharacterAsset = null
 	for character in dispatch_instance.character_refs:
-		if character == null:
+		if character == null or character.id.is_empty():
+			push_error("CharacterStateSystem 伤势目标缺少稳定角色 ID")
 			return null
 		if target == null or character.battle > target.battle:
 			target = character

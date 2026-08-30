@@ -75,14 +75,14 @@
 - 正式 `GameSession` 只编排现有状态拥有者；角色占用、金币、日期、结果和报告仍由对应 System 持有。
 - `GameSession` 加载六名正式角色与首张任务，不读取 `tests/fixtures/`，也不注册为 Autoload。
 - 完整成功、查明位置、搜索失败三条路线均完成两日等待、唯一判定、结算、报告、派遣结束和角色释放。
-- Task 5 正常专项日志零 ERROR；Task 3/4 与 V2 `runtime_chain` 回归通过。
+- Task 5 正常专项业务错误输出为 0；Task 3/4 与 V2 `runtime_chain` 回归通过，Godot 环境告警另列。
 
 ## Task 6 验证结论
 
 - 核心循环 UI 只通过 `GameSession` 查询状态和提交命令，没有直接写入 Task、Dispatch、Guild、Character 或 Report 字段。
 - `GameSession.validate_dispatch()` 提供玩家可见失败原因；界面确认按钮仅在 1–2 名合法角色时启用。
 - 报告进入独占阅读态，展示结果 ID、派遣队伍最高能力和已结算后果；关闭只修改报告阅读状态。
-- Task 6 专项、正式主场景启动、Task 5 与 V2 `runtime_chain` 回归均通过，正常日志零 ERROR。
+- Task 6 专项、正式主场景启动、Task 5 与 V2 `runtime_chain` 回归均通过；业务错误输出为 0，Godot 环境告警另列。
 
 ## Task 7 数值覆盖前置结论
 
@@ -114,3 +114,44 @@ Task 8 已完成：接入“塌方矿井”并验证第二张任务结构；结�
 ## 历史归档
 
 旧版重复发现记录已移至用户输出归档 `C:\Users\lvy\Documents\Codex\2026-08-29\shi\outputs\context_archive_2026-08-30\findings_legacy.md`，需要追溯时再查阅。
+
+## Demo Readiness 深度审计（2026-08-31）
+
+### 实际结构图
+
+`assets/types（Resource 契约） → assets/data（6 角色、2 任务、2 结果组、13 结果） → runtime（Guild / Task / Dispatch / Resolution / Settlement / Report / Day） → ui（正式主界面与四类面板） → tests（12 个 headless 场景与 TEST_ONLY fixtures）`。
+
+仓库当前共 47 个 GDScript、19 个场景和 34 个 `.tres` 资源；`addons/` 未安装第三方测试插件，`runtime/save/` 不存在。
+
+### 本轮已实施
+
+- `runtime/tasks/task_system.gd`：最终结果只允许写入 `IN_PROGRESS` 任务，拒绝覆盖结果；终态要求已有最终结果；增加失败预检用的结果清理入口。
+- `runtime/dispatch/dispatch_system.gd`：定时派遣只能在到期日结束，增加结束预检，空角色引用不会触发占用扫描异常。
+- `runtime/tasks/task_resolution_system.gd`：只接受 `ACTIVE` 派遣；整体校验结果组 ID、条件类型、能力引用和非负能力值，拒绝空条件、重复结果和未知能力。
+- `runtime/results/result_settlement_system.gd`：结算必须携带匹配的权威 `ResultAsset`，逐项拒绝篡改效果；核对 Result/Dispatch/Task 关联、派遣状态、任务生命周期与最终结果；拒绝空效果、同批次情报冲突和多个终态，并保存事务快照供后续失败回滚，成功结束后显式提交并释放快照。
+- `runtime/game_session.gd`：正式任务路径限制在规范化 `assets/data/tasks/`，加载时校验正式任务、结果组、条件、效果（每个结果恰好一个终态）和六名角色；结算前预检派遣结束条件，报告先行记录，后续失败时清理报告、任务和状态快照。
+- `ui/reports/report_view.gd`、`ui/main/guild_main.gd`：异常报告引用不会把工作区留在隐藏状态。
+- `tests/runtime_chain_test.gd`、`tests/vertical_slice_test.gd`：测试脚本改为汇总失败并返回真实退出码；新增 `tests/demo_readiness_audit_test.tscn`，覆盖角色/任务加载、引用完整性、非法字段、派遣、结果判定、权威效果、防篡改、冲突情报、终态数量、结算、异常数据、生命周期和内存恢复边界。
+- 文档真源：架构与流程文档统一使用 `report_text`、`battle`，测试描述改为 Godot headless 场景脚本测试。
+
+### 已发现但暂未处理
+
+- `SaveSystem`：**NOT IMPLEMENTED**。仓库没有磁盘存档脚本；本轮只验证 `GuildState.restore_value()` 的内存恢复入口。
+- 伤势、关系、情报尚未被后续任务判定消费：**NOT IMPLEMENTED**。当前只记录和查询运行时状态。
+- `EventAsset`、JSON/Excel Importer、正式 Runtime Schema 和标准任务终态枚举：**NOT IMPLEMENTED / UNVERIFIED**。
+- Task8 的 `promised_reward = 120` 尚未映射为结果效果，八份报告和终态仍为策划占位符：**UNVERIFIED**，未擅自补数值。
+- UI 自动测试仍通过信号触发，真实鼠标、焦点、禁用控件和窗口布局需要人工验收：**UNVERIFIED**。
+- `TaskAsset.repeatable` 仍未在低层 `TaskSystem` 执行，重复发布策略需 V4 冻结：**UNVERIFIED**。
+- 低层 `TaskSystem.record_final_result()` 已核对结果 ID 必须属于创建任务的 `result_group`；不完整 `TaskAsset` 的通用 schema 仍由正式 `GameSession` 校验，低层统一校验留待 V4。
+
+### 二次审查关注点
+
+- 当前结算入口已强制保持 Result/Dispatch/Task 三者关联，并在正式路径使用权威 `ResultAsset`；后续新增入口需复用同一校验。
+- 引入存档前仍需冻结终态、序列号、报告阅读和结算去重字段。
+- 正式文案和奖励冻结后，补充 Task8 八路线的金币与报告断言。
+
+### 最终验证记录
+
+- 47 个 GDScript 单文件检查通过；12 个 headless 测试场景全部退出码 0；`guild_main.tscn` 与 `collapsed_mine_guild_main.tscn` 启动退出码 0。
+- 正式 `assets/data` 共 23 个 `.tres`，静态 ID 重复数为 0；场景和资源的现有引用未发现缺失。
+- Godot 仍输出 `user://logs/godot.log` 写入失败、根证书仓库读取失败等环境告警；这些告警不计入业务失败，人工场景零 ERROR 仍标记 **UNVERIFIED**。

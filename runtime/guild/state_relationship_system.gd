@@ -21,3 +21,11 @@ func get_value(relationship_id: StringName) -> int:
 # 判断关系状态是否已有运行期写入。
 func has_value(relationship_id: StringName) -> bool:
 	return _values.has(relationship_id)
+
+
+# 结算事务失败时恢复关系状态，未存在的临时键会被移除。
+func restore_value(relationship_id: StringName, previous_value: int, previously_present: bool) -> void:
+	if previously_present:
+		_values[relationship_id] = previous_value
+	else:
+		_values.erase(relationship_id)

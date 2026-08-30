@@ -27,6 +27,7 @@ func _run_injured_rescue_case() -> bool:
 	var resolution_system := TaskResolutionSystem.new()
 	add_child(resolution_system)
 	var dispatch_instance := DispatchInstance.new()
+	dispatch_instance.status = &"ACTIVE"
 	dispatch_instance.character_refs.assign([character])
 	var result_id := resolution_system.resolve_result(dispatch_instance, task_asset.result_group)
 	passed = _check(passed, result_id == &"result_missing_caravan_injured_rescue", "测试角色未命中带伤救回：%s" % result_id)

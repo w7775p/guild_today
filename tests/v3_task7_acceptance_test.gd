@@ -111,7 +111,8 @@ func _run_formal_route(route_label: String, party_ids: Array[StringName], expect
 		session.task_system,
 		task_instance,
 		dispatch_instance,
-		session.get_current_day()
+		session.get_current_day(),
+		expected_result_asset
 	)
 	passed = _check(passed, not early_settlement, "%s 到期前结算应被拒绝" % route_label)
 
@@ -142,7 +143,8 @@ func _run_formal_route(route_label: String, party_ids: Array[StringName], expect
 		session.task_system,
 		task_instance,
 		dispatch_instance,
-		session.get_current_day()
+		session.get_current_day(),
+		expected_result_asset
 	), "%s 重复结算应被拒绝" % route_label)
 
 	if expected_result_id == &"result_missing_caravan_full_success":
@@ -237,7 +239,8 @@ func _run_temporary_injured_route(passed: bool) -> bool:
 		task_system,
 		task_instance,
 		dispatch_instance,
-		day_system.get_current_day()
+		day_system.get_current_day(),
+		result_asset
 	), "带伤救回测试到期前结算应被拒绝")
 
 	day_system.advance_day()
@@ -265,7 +268,8 @@ func _run_temporary_injured_route(passed: bool) -> bool:
 		task_system,
 		task_instance,
 		dispatch_instance,
-		day_system.get_current_day()
+		day_system.get_current_day(),
+		result_asset
 	), "带伤救回结果结算失败")
 	var report := report_system.record_report(result_asset, result_instance)
 	passed = _check(passed, report != null and report.result_asset_id == INJURED_RESULT_ID, "带伤救回报告记录失败")
@@ -289,7 +293,8 @@ func _run_temporary_injured_route(passed: bool) -> bool:
 		task_system,
 		task_instance,
 		dispatch_instance,
-		day_system.get_current_day()
+		day_system.get_current_day(),
+		result_asset
 	), "带伤救回重复结算应被拒绝")
 	_cleanup(nodes)
 	return passed
