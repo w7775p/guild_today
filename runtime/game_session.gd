@@ -69,24 +69,47 @@ func get_task_instance(task_instance_id: StringName) -> TaskInstance:
 	return task_system.get_task_instance(task_instance_id)
 
 
-# 校验正式任务、人数、角色引用和占用后，把派遣命令交给对应 System。
-func submit_dispatch(task_instance_id: StringName, character_ids: Array[StringName]) -> DispatchInstance:
-	if not _initialized or _formal_task == null:
-		return null
+# 任务展示只读取与 TaskInstance 关联的正式静态资产。
+func get_task_asset(task_instance_id: StringName) -> TaskAsset:
 	var task_instance := task_system.get_task_instance(task_instance_id)
-	if task_instance == null or task_instance != _task_instance or task_instance.lifecycle_state != &"PUBLISHED":
+	if task_instance == null or _formal_task == null or task_instance.task_id != _formal_task.id:
 		return null
-	if character_ids.size() < _formal_task.min_party_size or character_ids.size() > _formal_task.max_party_size:
-		return null
+	return _formal_task
 
-	var party: Array[CharacterAsset] = []
+
+# 返回空字符串表示派遣合法；UI 使用同一检查结果显示明确失败原因。
+func validate_dispatch(task_instance_id: StringName, character_ids: Array[StringName]) -> String:
+	if not _initialized or _formal_task == null:
+		return "游戏会话尚未初始化"
+	var task_instance := task_system.get_task_instance(task_instance_id)
+	if task_instance == null or task_instance != _task_instance:
+		return "任务实例不存在"
+	if task_instance.lifecycle_state != &"PUBLISHED":
+		return "当前任务已经派遣"
+	if character_ids.size() < _formal_task.min_party_size:
+		return "至少选择 %d 名角色" % _formal_task.min_party_size
+	if character_ids.size() > _formal_task.max_party_size:
+		return "最多选择 %d 名角色" % _formal_task.max_party_size
 	var selected_ids: Dictionary[StringName, bool] = {}
 	for character_id in character_ids:
-		if selected_ids.has(character_id) or not _formal_characters.has(character_id):
-			return null
+		if not _formal_characters.has(character_id):
+			return "选择中包含未知角色"
+		if selected_ids.has(character_id):
+			return "同一角色不能重复选择"
 		if dispatch_system.is_character_occupied(character_id):
-			return null
+			return "%s 正在执行其他派遣" % _formal_characters[character_id].name
 		selected_ids[character_id] = true
+	return ""
+
+
+# 校验正式任务、人数、角色引用和占用后，把派遣命令交给对应 System。
+func submit_dispatch(task_instance_id: StringName, character_ids: Array[StringName]) -> DispatchInstance:
+	if not validate_dispatch(task_instance_id, character_ids).is_empty():
+		return null
+	var task_instance := task_system.get_task_instance(task_instance_id)
+
+	var party: Array[CharacterAsset] = []
+	for character_id in character_ids:
 		party.append(_formal_characters[character_id])
 
 	var dispatch_instance := dispatch_system.create_dispatch(
@@ -122,6 +145,10 @@ func get_current_day() -> int:
 
 func get_active_dispatches() -> Array[DispatchInstance]:
 	return dispatch_system.get_active_dispatches()
+
+
+func get_dispatch_instance(dispatch_instance_id: StringName) -> DispatchInstance:
+	return dispatch_system.get_dispatch_instance(dispatch_instance_id)
 
 
 func is_character_occupied(character_id: StringName) -> bool:

@@ -9,7 +9,8 @@ Godot 4.7.2 运行项目，当前目标是完成 V3 首张真实任务的可玩�
 - V3 Task 2 已完成真实队伍最高能力判定。
 - V3 Task 3 已完成结果后果持久化与报告记录。
 - V3 Task 4 已完成最小日期与任务生命周期。
-- V3 Task 5 已完成正式 GameSession；Task 6 等待授权。
+- V3 Task 5 已完成正式 GameSession。
+- V3 Task 6 已完成核心循环 UI；Task 7 等待授权。
 
 ## 启动项目
 

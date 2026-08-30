@@ -76,9 +76,16 @@
 - 完整成功、查明位置、搜索失败三条路线均完成两日等待、唯一判定、结算、报告、派遣结束和角色释放。
 - Task 5 正常专项日志零 ERROR；Task 3/4 与 V2 `runtime_chain` 回归通过。
 
+## Task 6 验证结论
+
+- 核心循环 UI 只通过 `GameSession` 查询状态和提交命令，没有直接写入 Task、Dispatch、Guild、Character 或 Report 字段。
+- `GameSession.validate_dispatch()` 提供玩家可见失败原因；界面确认按钮仅在 1–2 名合法角色时启用。
+- 报告进入独占阅读态，展示结果 ID、派遣队伍最高能力和已结算后果；关闭只修改报告阅读状态。
+- Task 6 专项、正式主场景启动、Task 5 与 V2 `runtime_chain` 回归均通过，正常日志零 ERROR。
+
 ## 下一步
 
-等待 Jackie 授权 V3 Task 6；占位策划内容继续按本文件的唯一语义占位符映射维护。
+等待 Jackie 授权 V3 Task 7；占位策划内容继续按本文件的唯一语义占位符映射维护。
 
 ## 历史归档
 

@@ -17,9 +17,9 @@ V3 只使用已经存在的真实策划资产验证产品，不继续扩充角�
 - 唯一项目目录：`D:\Godot\guild_today`。
 - 禁止操作：`D:\Godot\guild-workbench`。
 - V2 Task 0–16：已完成并已推送。
-- 当前执行任务：无；最近完成 V3 Task 5。
+- 当前执行任务：无；最近完成 V3 Task 6。
 - V3 有效编号：Task 1–8，共 8 个 Task。
-- V3 Task 1、Task 2、Task 3、Task 4、Task 5 已完成；Task 6–8 继续等待授权与前置条件。
+- V3 Task 1、Task 2、Task 3、Task 4、Task 5、Task 6 已完成；Task 7–8 继续等待授权与前置条件。
 - 第一张正式任务：`task_missing_caravan`，显示名“失踪商队调查”。
 - 第一批正式角色：
   - `hero_aelius`
@@ -30,7 +30,7 @@ V3 只使用已经存在的真实策划资产验证产品，不继续扩充角�
   - `hero_viletta`
 - 第一张正式结果组：`result_group_missing_caravan`，包含 5 个结果。
 - 第二张结构反例：`task_collapsed_mine_rescue`，显示名“塌方矿井”。
-- 当前 `project.godot` 主场景仍是测试场景；正式 `GameSession` 已建立，核心循环 UI 尚未建立。
+- 当前 `project.godot` 主场景为 `ui/main/guild_main.tscn`；正式 `GameSession` 与核心循环 UI 已建立。
 - 当前 `TaskResolutionSystem` 已从 `DispatchInstance.character_refs[]` 读取队伍最高战斗、最高调查和最高交涉；Task 2 已完成。
 
 ## 3. 策划与工程真源
@@ -546,7 +546,7 @@ TaskAsset 只允许加入首张任务展示、派遣和等待明确需要的字�
 
 ---
 
-### [ ] V3 Task 6：实现核心循环 UI
+### [x] V3 Task 6：实现核心循环 UI
 
 #### 单一目标
 
@@ -827,6 +827,6 @@ V3 完成后停止。下一阶段应重新制定 V4 计划，再决定 JSON Impo
 
 ## 11. 当前下一步
 
-当前下一步：等待 Jackie 授权 V3 Task 6，随后实现核心循环 UI。
+当前下一步：等待 Jackie 授权 V3 Task 7，随后完成首张真实任务可玩验收。
 
-最近完成更新：Task 5 已通过完整成功、查明位置、搜索失败三条正式 GameSession 路线，并完成 Task 3/4 与 V2 `runtime_chain` 回归；正常专项日志零 ERROR。
+最近完成更新：Task 6 已通过任务查看、1–2 人选择、派遣、两日等待、报告阅读与状态反馈的鼠标控件专项测试；正式主场景启动、Task 5 与 V2 `runtime_chain` 回归退出码均为 0。
