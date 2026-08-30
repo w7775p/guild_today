@@ -19,7 +19,7 @@ V3 只使用已经存在的真实策划资产验证产品，不继续扩充角�
 - V2 Task 0–16：已完成并已推送。
 - 当前执行任务：无。
 - V3 有效编号：Task 1–8，共 8 个 Task。
-- V3 Task 1、Task 2 已完成；V3 Task 3 因结果后果的策划与状态归属缺口阻塞；Task 4–8 继续等待前置条件。
+- V3 Task 1、Task 2、Task 3 已完成；Task 4–8 继续等待授权与前置条件。
 - 第一张正式任务：`task_missing_caravan`，显示名“失踪商队调查”。
 - 第一批正式角色：
   - `hero_aelius`
@@ -37,7 +37,7 @@ V3 只使用已经存在的真实策划资产验证产品，不继续扩充角�
 
 ### 3.1 Notion 策划入口
 
-- 当前项目真源：`https://app.notion.com/p/3bb7fb71ada4814888f9ea8e28e501d4`
+- 当前项目方向页：`https://app.notion.com/p/3bb7fb71ada4814888f9ea8e28e501d4`
 - 当前角色池：`https://app.notion.com/p/3c87fb71ada48046859dd6319bf6d491`
 - 当前任务池：`https://app.notion.com/p/3cb7fb71ada480809a6ec11c2a5e10b2`
 - 当前结果组池：`https://app.notion.com/p/3cb7fb71ada4812e96c7ee9a3672827f`
@@ -57,7 +57,7 @@ V3 只使用已经存在的真实策划资产验证产品，不继续扩充角�
 8. `findings.md`
 9. 当前 Task 直接涉及的代码、测试与资产
 
-策划内容冲突时，Jackie 最新明确决定优先；Notion 对应当前页面其次。本地代码只能证明现状，不能覆盖策划与冻结架构。
+真源职责固定为：Jackie 最新明确决定 → 对应 Notion 策划页 → 本地冻结架构与工程规则。`task_plan.md` 只维护 Task 状态、范围和验收；`progress.md` 记录实际验证；`findings.md` 记录已采用决定与未冻结项。代码只能证明当前实现。
 
 ## 4. 新对话接力协议
 
@@ -101,6 +101,8 @@ V3 只使用已经存在的真实策划资产验证产品，不继续扩充角�
 - 实现需要新增计划外的状态系统、规则类型或目录。
 - 一个结果出现零命中、多命中或持续后果没有明确拥有者。
 - 需要改变玩家可见规则或任务设计。
+
+Task 3 已获专项授权：尚未冻结的文本和稳定 ID 可以使用“类型＋语义”的唯一占位符，例如 `【task_outcome_full_success】`。同一个通用占位值禁止跨字段复用；工作性推测数值必须在 `findings.md` 单列。
 
 禁止凭经验补值、用默认值掩盖缺口、把“待定”翻译成程序规则。
 
@@ -160,7 +162,7 @@ V3 只使用已经存在的真实策划资产验证产品，不继续扩充角�
 4. “带伤救回”的受伤角色选择规则与伤势等级。
 5. “查明位置”是否完成当前任务，以及后续救援使用的稳定任务或解锁 ID。
 6. 五个结果最终展示给玩家的完整报告文本。
-7. Notion 当前项目真源的角色数量与当前角色池六人记录冲突如何处理。
+7. Notion 当前项目方向页的角色数量与当前角色池六人记录冲突如何处理。
 8. 当前任务池中“结果组待建立”旧文案是否按现有结果组引用校准。
 
 #### 允许修改
@@ -326,7 +328,7 @@ TaskAsset 只允许加入首张任务展示、派遣和等待明确需要的字�
 
 ---
 
-### [!] V3 Task 3：持久化首张任务的结果后果
+### [x] V3 Task 3：持久化首张任务的结果后果
 
 #### 单一目标
 
@@ -335,14 +337,16 @@ TaskAsset 只允许加入首张任务展示、派遣和等待明确需要的字�
 #### 前置条件
 
 - V3 Task 2 已完成。
-- Task 1 的所有结果效果数值、目标和状态归属已经确认。
+- Jackie 已确认未定文本和 ID 使用“类型＋语义”的唯一占位符；未定数值允许工作性推测，后续可替换。
+- 阿斯特里德职业采用“魔剑士”。
+- 任务池与结果组池差异属于测试资料的状态未同步，当前以已有稳定结果组资产为准。
 
 #### 状态所有权
 
 - 金币与总声望：`GuildState`。
 - 角色伤势：本 Task 新增的最小角色运行状态拥有者。
 - 商会信任或关系：`StateRelationshipSystem`。
-- 已获得情报与后续内容解锁：`ReportIntelSystem` 或经架构确认的最小拥有者。
+- 已获得情报与后续内容解锁：`ReportIntelSystem`。
 - 已发生结果：`ResultInstance`。
 - 报告记录：`ReportIntelSystem`。
 
@@ -352,16 +356,20 @@ TaskAsset 只允许加入首张任务展示、派遣和等待明确需要的字�
 
 - 当前结果实际需要的具体 EffectResource。
 - `runtime/results/result_settlement_system.gd`
-- `runtime/characters/` 下最小角色运行状态类型与系统。
-- `runtime/characters/state_relationship_system.gd`
+- `runtime/characters/character_runtime_state.gd`
+- `runtime/characters/character_state_system.gd`
+- `runtime/guild/state_relationship_system.gd`
 - `runtime/reports/report_intel_system.gd`
+- `runtime/reports/report_record.gd`
+- `runtime/tasks/task_system.gd`
+- `assets/data/characters/hero_astrid.tres` 及受影响的 Task 1 回归测试。
 - 首张任务五个结果资源。
 - Task 3 专项测试。
 - 三份规划记录。
 
 #### 实施原则
 
-1. Effect 只描述已确认的静态变化。
+1. Effect 只描述已确认变化或已在 `findings.md` 标明的工作性推测。
 2. ResultSettlementSystem 先验证全部效果，再请求各状态拥有者写入。
 3. 任一效果无法执行时，整次结算不得产生半写入。
 4. 同一 DispatchInstance 继续只允许结算一次。
@@ -408,7 +416,7 @@ TaskAsset 只允许加入首张任务展示、派遣和等待明确需要的字�
 
 #### 架构冻结
 
-本 Task 允许正式引入最小日期拥有者，建议路径：
+本 Task 正式引入最小日期拥有者，固定路径：
 
 - `runtime/time/day_system.gd`
 
@@ -816,6 +824,6 @@ V3 完成后停止。下一阶段应重新制定 V4 计划，再决定 JSON Impo
 
 ## 11. 当前下一步
 
-当前下一步：等待 Jackie 确认 V3 Task 3 的结果效果数值、状态归属与后续救援稳定 ID。
+当前下一步：等待 Jackie 授权 V3 Task 4，随后实现最小日期与任务生命周期。
 
-最近上下文整理：2026-08-30 09:48（北京时间）。Task 3 仍处于阻塞状态，本轮未开始实现。
+最近完成更新：Task 3 已通过 Godot 4.7.2 单脚本检查、专项测试、Task 1/2 回归与 V2 `runtime_chain` 回归；未定文本和 ID 使用唯一语义占位符。

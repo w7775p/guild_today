@@ -1,4 +1,4 @@
-; 正式内容资产：阿斯特里德。职业仍未最终确认，按约定使用占位值。
+; 正式内容资产：阿斯特里德。职业采用 Jackie 确认的工作性占位方案。
 [gd_resource type="Resource" script_class="CharacterAsset" load_steps=2 format=3]
 
 [ext_resource type="Script" path="res://assets/types/character_asset.gd" id="1_character_asset"]
@@ -7,7 +7,7 @@
 script = ExtResource("1_character_asset")
 id = &"hero_astrid"
 name = "阿斯特里德"
-profession = "【占位占位】"
+profession = "魔剑士"
 battle = 8
 investigation = 8
 negotiation = 8

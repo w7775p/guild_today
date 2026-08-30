@@ -1,17 +1,30 @@
-; 正式内容资产：搜索失败。阈值来自 V3 Task 2 工作规则，关系与报告仍为占位。
-[gd_resource type="Resource" script_class="ResultAsset" load_steps=5 format=3]
+; 正式内容资产：搜索失败。信任变化采用工作性推测，报告终态保留占位。
+[gd_resource type="Resource" script_class="ResultAsset" load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://assets/types/result_asset.gd" id="1_result_asset"]
 [ext_resource type="Script" path="res://assets/types/ability_below_condition.gd" id="2_ability_below_condition"]
 [ext_resource type="Script" path="res://assets/types/condition_resource.gd" id="3_condition_resource"]
+[ext_resource type="Script" path="res://assets/types/effect_resource.gd" id="4_effect_resource"]
+[ext_resource type="Script" path="res://assets/types/relationship_effect.gd" id="5_relationship_effect"]
+[ext_resource type="Script" path="res://assets/types/task_outcome_effect.gd" id="6_task_outcome_effect"]
 
 [sub_resource type="Resource" id="AbilityBelowCondition_investigation_5"]
 script = ExtResource("2_ability_below_condition")
 ability_id = &"investigation"
 value = 5
 
+[sub_resource type="Resource" id="RelationshipEffect_search_failed"]
+script = ExtResource("5_relationship_effect")
+relationship_id = &"【relationship_merchant_trust】"
+amount = -5
+
+[sub_resource type="Resource" id="TaskOutcomeEffect_search_failed"]
+script = ExtResource("6_task_outcome_effect")
+terminal_state_id = &"【task_outcome_search_failed】"
+
 [resource]
 script = ExtResource("1_result_asset")
 id = &"result_missing_caravan_search_failed"
 conditions = Array[ExtResource("3_condition_resource")]([SubResource("AbilityBelowCondition_investigation_5")])
-report_text = "【占位占位】"
+effects = Array[ExtResource("4_effect_resource")]([SubResource("RelationshipEffect_search_failed"), SubResource("TaskOutcomeEffect_search_failed")])
+report_text = "【report_missing_caravan_search_failed】"

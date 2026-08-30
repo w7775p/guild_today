@@ -34,3 +34,13 @@ func record_final_result(instance_id: StringName, result_id: StringName) -> bool
 		return false
 	task_instance.final_result_id = result_id
 	return true
+
+
+# 任务终态只能经 TaskSystem 写入，未确认终态暂以占位 ID 保存。
+func record_terminal_state(instance_id: StringName, terminal_state_id: StringName) -> bool:
+	var task_instance := get_task_instance(instance_id)
+	if task_instance == null or terminal_state_id.is_empty():
+		push_error("TaskSystem 记录任务终态需要有效的任务实例与终态 ID")
+		return false
+	task_instance.lifecycle_state = terminal_state_id
+	return true

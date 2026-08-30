@@ -1,6 +1,6 @@
 # 《公会》正式工程铁律
 
-> 项目真源：https://app.notion.com/p/3c07fb71ada4813eb79dcfda505d78a6?pvs=204
+> 本页来源（正式工程铁律）：https://app.notion.com/p/3c07fb71ada4813eb79dcfda505d78a6?pvs=204
 > 同步时间：2026-08-18T06:51:50.592Z
 > 职责：代码组织、数据与状态所有权、验证流程和 Git 纪律。
 ## 一、工程铁律

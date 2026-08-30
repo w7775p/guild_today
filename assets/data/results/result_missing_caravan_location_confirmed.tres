@@ -1,10 +1,13 @@
-; 正式内容资产：查明位置。阈值来自 V3 Task 2 工作规则，任务终态与报告仍为占位。
-[gd_resource type="Resource" script_class="ResultAsset" load_steps=7 format=3]
+; 正式内容资产：查明位置。情报与后续任务 ID 保留占位。
+[gd_resource type="Resource" script_class="ResultAsset" load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://assets/types/result_asset.gd" id="1_result_asset"]
 [ext_resource type="Script" path="res://assets/types/ability_condition.gd" id="2_ability_condition"]
 [ext_resource type="Script" path="res://assets/types/ability_below_condition.gd" id="3_ability_below_condition"]
 [ext_resource type="Script" path="res://assets/types/condition_resource.gd" id="4_condition_resource"]
+[ext_resource type="Script" path="res://assets/types/effect_resource.gd" id="5_effect_resource"]
+[ext_resource type="Script" path="res://assets/types/intel_effect.gd" id="6_intel_effect"]
+[ext_resource type="Script" path="res://assets/types/task_outcome_effect.gd" id="7_task_outcome_effect"]
 
 [sub_resource type="Resource" id="AbilityCondition_investigation_5"]
 script = ExtResource("2_ability_condition")
@@ -16,8 +19,18 @@ script = ExtResource("3_ability_below_condition")
 ability_id = &"battle"
 value = 4
 
+[sub_resource type="Resource" id="IntelEffect_location_confirmed"]
+script = ExtResource("6_intel_effect")
+intel_id = &"【intel_missing_caravan_location】"
+unlock_task_id = &"【task_missing_caravan_followup_rescue】"
+
+[sub_resource type="Resource" id="TaskOutcomeEffect_location_confirmed"]
+script = ExtResource("7_task_outcome_effect")
+terminal_state_id = &"【task_outcome_location_confirmed】"
+
 [resource]
 script = ExtResource("1_result_asset")
 id = &"result_missing_caravan_location_confirmed"
 conditions = Array[ExtResource("4_condition_resource")]([SubResource("AbilityCondition_investigation_5"), SubResource("AbilityBelowCondition_battle_4")])
-report_text = "【占位占位】"
+effects = Array[ExtResource("5_effect_resource")]([SubResource("IntelEffect_location_confirmed"), SubResource("TaskOutcomeEffect_location_confirmed")])
+report_text = "【report_missing_caravan_location_confirmed】"

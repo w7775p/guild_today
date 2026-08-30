@@ -1,6 +1,6 @@
 # 《公会》协作流程
 
-> 项目真源：https://app.notion.com/p/3c07fb71ada481ca8567e2e01efb05b1?pvs=204
+> 本页来源（协作流程）：https://app.notion.com/p/3c07fb71ada481ca8567e2e01efb05b1?pvs=204
 > 同步时间：2026-08-18T09:19:01.507Z
 > 职责：人与 AI 的开发流程、决策优先级、修改前后检查与汇报方式。
 ## 1. 当前阶段
@@ -18,10 +18,11 @@
 → 状态变化进入后续判断
 ```
 ## 2. 开工前读取顺序
-1. https://app.notion.com/p/3c07fb71ada481abb702fdf1a48e2eb3
-2. https://app.notion.com/p/3c07fb71ada4813eb79dcfda505d78a6
-3. https://app.notion.com/p/3c07fb71ada4819391eaefbecabc326e
-4. 与本次任务直接相关的代码、测试和资产
+1. 仓库根目录 `AGENTS.md`。
+2. `task_plan.md`、`progress.md`、`findings.md`。
+3. `docs/project/architecture.md`、`docs/project/engineering_rules.md`；遇到错误或资源问题时再读 `docs/project/known_traps.md`。
+4. 与本次任务直接相关的代码、测试和资产。
+5. 只有策划内容存在缺口或冲突时，才回到对应 Notion 策划页核对。
 ### 权责优先级
 - **产品、角色、任务等策划内容**：用户最新明确决定 / 对应策划真源与本地正式工作案优先。
 - **Godot 技术架构**：Godot正式开发架构中的“已冻结继承 / 正式架构变更”优先。
@@ -38,7 +39,7 @@
 - `ResultSettlementSystem`
 - `StateRelationshipSystem` 壳
 - `ReportIntelSystem` 壳
-- `SaveSystem` 壳
+- `SaveSystem` 保留前序架构记录，V3 不创建；是否进入运行时留到 V4 决定
 - 已确认的静态 Resource 类型声明；**不得因此补全未冻结字段 Schema**
 - GdUnit4 自动测试
 - 核心循环 UI 壳

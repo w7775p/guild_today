@@ -1,4 +1,4 @@
-; 正式内容资产：失踪商队调查。结果条件与效果留给后续 Task 2、Task 3。
+; 正式内容资产：失踪商队调查。结果条件与效果通过正式结果组引用。
 [gd_resource type="Resource" script_class="TaskAsset" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://assets/types/task_asset.gd" id="1_task_asset"]

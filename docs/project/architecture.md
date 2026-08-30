@@ -1,6 +1,6 @@
 # 《公会》Godot 正式开发架构
 
-> 项目真源：https://app.notion.com/p/3c07fb71ada481abb702fdf1a48e2eb3?pvs=204
+> 本页来源（Godot 正式开发架构）：https://app.notion.com/p/3c07fb71ada481abb702fdf1a48e2eb3?pvs=204
 > 同步时间：2026-08-20T05:25:00.128Z
 > 职责：运行时架构、Resource / Instance / System 边界、冻结契约与 MVP 范围。
 ## 一、当前开发原则
@@ -15,7 +15,7 @@ Task → Dispatch → Resolution → Result → Settlement
         ↓
 Guild / Character & Relationship / Report & Intel
 ```
-内容制作管线继续沿用当前项目真源：
+内容制作管线继续沿用当前策划生产链：
 ```plain text
 本地原稿 / Excel
 → Python 转表
@@ -52,6 +52,7 @@ GameSession
 └─ SaveSystem
 ```
 该结构作为前序冻结依据保留；`DispatchSystem` 的加入见第三节正式变更。
+`SaveSystem` 仅保留为前序架构记录，V3 不创建运行文件；是否进入正式运行时留到 V4 决定。
 ### 2.3 TaskAsset / TaskInstance
 `TaskAsset` 保存任务静态正式数据，单局运行不直接改写。
 `TaskInstance : RefCounted` 表示同一静态任务在当前游戏中的一次具体实例，至少保存：
@@ -159,8 +160,7 @@ GameSession
 ├─ TaskResolutionSystem
 ├─ ResultSettlementSystem
 ├─ StateRelationshipSystem
-├─ ReportIntelSystem
-└─ SaveSystem
+└─ ReportIntelSystem
 ```
 ## 四、当前待验证：角色数据资产方案 v0.1
 本节来自 `角色卡策划原案.xlsx` 中埃利乌斯角色卡的第一次真实样本拆解。**它是候选结构，不是已冻结 Godot 契约。** 必须继续用第二名不同结构角色与两条不同结构任务验证后，才决定是否冻结具体模块。
@@ -267,7 +267,8 @@ res://runtime/
 ├── game_session.tscn
 ├── guild/
 │   ├── guild_state.gd
-│   └── state_value.gd
+│   ├── state_value.gd
+│   └── state_relationship_system.gd   # 关系状态拥有者
 ├── tasks/
 │   ├── task_system.gd
 │   ├── task_instance.gd
@@ -278,11 +279,11 @@ res://runtime/
 ├── results/
 │   └── result_settlement_system.gd     # 只建薄接口
 ├── characters/
-│   └── state_relationship_system.gd    # 只建已有职责边界
+│   ├── character_runtime_state.gd      # 当前只保存伤势事实
+│   └── character_state_system.gd       # 角色运行状态拥有者
 ├── reports/
-│   └── report_intel_system.gd          # 只建已有职责边界
-└── save/
-    └── save_system.gd
+│   ├── report_intel_system.gd          # 报告与情报拥有者
+│   └── report_record.gd
 
 res://assets/types/
 ├── character_asset.gd                  # 薄类型，不先拆六个子模块
@@ -329,7 +330,6 @@ res://
 │   ├── results/
 │   ├── characters/
 │   ├── reports/
-│   └── save/
 ├── assets/
 │   ├── types/
 │   └── data/
@@ -347,7 +347,8 @@ res://
 - `tests/`：GdUnit4 自动测试。
 - `tests/fixtures/`：全部 `TEST_ONLY` 测试资产。
 - `addons/`：GdUnit4 等第三方插件。
-- `docs/`：从当前项目真源导出的工程 Markdown 文档。
+- `docs/`：从对应 Notion 工程页面导出的冻结架构与规则；执行状态由仓库根目录三份规划记录维护。
+- `runtime/save/`：V3 不创建，是否进入正式运行时留到 V4 决定。
 ### 当前禁止预建
 不得提前创建 `rules/`、独立 `events/` 运行模块、`time/`、`inventory/`、`editor/`、`importer/`、`dialogue/`、`managers/` 等尚未被当前闭环证明需要的目录。
 ### 角色 / 任务 / 结果资产边界

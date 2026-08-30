@@ -1,9 +1,13 @@
-; 正式内容资产：完整成功。阈值来自 V3 Task 2 工作规则，报告与效果仍为占位。
-[gd_resource type="Resource" script_class="ResultAsset" load_steps=6 format=3]
+; 正式内容资产：完整成功。商人评价数值仍用工作性推测，报告终态保留占位。
+[gd_resource type="Resource" script_class="ResultAsset" load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://assets/types/result_asset.gd" id="1_result_asset"]
 [ext_resource type="Script" path="res://assets/types/ability_condition.gd" id="2_ability_condition"]
 [ext_resource type="Script" path="res://assets/types/condition_resource.gd" id="3_condition_resource"]
+[ext_resource type="Script" path="res://assets/types/effect_resource.gd" id="4_effect_resource"]
+[ext_resource type="Script" path="res://assets/types/gold_effect.gd" id="5_gold_effect"]
+[ext_resource type="Script" path="res://assets/types/relationship_effect.gd" id="6_relationship_effect"]
+[ext_resource type="Script" path="res://assets/types/task_outcome_effect.gd" id="7_task_outcome_effect"]
 
 [sub_resource type="Resource" id="AbilityCondition_investigation_7"]
 script = ExtResource("2_ability_condition")
@@ -15,8 +19,22 @@ script = ExtResource("2_ability_condition")
 ability_id = &"battle"
 value = 6
 
+[sub_resource type="Resource" id="GoldEffect_full_success"]
+script = ExtResource("5_gold_effect")
+amount = 90
+
+[sub_resource type="Resource" id="RelationshipEffect_full_success"]
+script = ExtResource("6_relationship_effect")
+relationship_id = &"【relationship_merchant_evaluation】"
+amount = 5
+
+[sub_resource type="Resource" id="TaskOutcomeEffect_full_success"]
+script = ExtResource("7_task_outcome_effect")
+terminal_state_id = &"【task_outcome_full_success】"
+
 [resource]
 script = ExtResource("1_result_asset")
 id = &"result_missing_caravan_full_success"
 conditions = Array[ExtResource("3_condition_resource")]([SubResource("AbilityCondition_investigation_7"), SubResource("AbilityCondition_battle_6")])
-report_text = "【占位占位】"
+effects = Array[ExtResource("4_effect_resource")]([SubResource("GoldEffect_full_success"), SubResource("RelationshipEffect_full_success"), SubResource("TaskOutcomeEffect_full_success")])
+report_text = "【report_missing_caravan_full_success】"

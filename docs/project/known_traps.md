@@ -1,6 +1,6 @@
 # 《公会》known_traps
 
-> 项目真源：https://app.notion.com/p/3c07fb71ada4819391eaefbecabc326e?pvs=204
+> 本页来源（known_traps）：https://app.notion.com/p/3c07fb71ada4819391eaefbecabc326e?pvs=204
 > 同步时间：2026-08-18T06:51:27.039Z
 > 职责：Godot、资源、状态边界和回归问题的编号化排错记录。
 ## 一、Godot / 生命周期

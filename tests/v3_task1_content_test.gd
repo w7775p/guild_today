@@ -5,7 +5,7 @@ const CHARACTER_EXPECTATIONS: Array[Dictionary] = [
 	{"path": "res://assets/data/characters/hero_rin.tres", "id": "hero_rin", "name": "凛", "profession": "武士", "battle": 7, "investigation": 4, "negotiation": 2},
 	{"path": "res://assets/data/characters/hero_dai.tres", "id": "hero_dai", "name": "戴禛", "profession": "牧师", "battle": 3, "investigation": 5, "negotiation": 7},
 	{"path": "res://assets/data/characters/hero_patrick.tres", "id": "hero_patrick", "name": "帕特里克", "profession": "税务官", "battle": 3, "investigation": 5, "negotiation": 9},
-	{"path": "res://assets/data/characters/hero_astrid.tres", "id": "hero_astrid", "name": "阿斯特里德", "profession": "【占位占位】", "battle": 8, "investigation": 8, "negotiation": 8},
+	{"path": "res://assets/data/characters/hero_astrid.tres", "id": "hero_astrid", "name": "阿斯特里德", "profession": "魔剑士", "battle": 8, "investigation": 8, "negotiation": 8},
 	{"path": "res://assets/data/characters/hero_viletta.tres", "id": "hero_viletta", "name": "维蕾塔", "profession": "猎魔人", "battle": 6, "investigation": 7, "negotiation": 1}
 ]
 
@@ -17,12 +17,20 @@ const RESULT_IDS: Array[StringName] = [
 	&"result_missing_caravan_search_failed"
 ]
 
+const REPORT_PLACEHOLDERS: Array[String] = [
+	"【report_missing_caravan_full_success】",
+	"【report_missing_caravan_delayed_success】",
+	"【report_missing_caravan_injured_rescue】",
+	"【report_missing_caravan_location_confirmed】",
+	"【report_missing_caravan_search_failed】"
+]
+
 
 # Task 1 只验收正式资源加载与稳定引用，不执行结果条件或效果。
 func _ready() -> void:
 	var passed := _validate_formal_content()
 	if passed:
-		print("V3 Task 1 content success: characters=6, task=task_missing_caravan, results=5, placeholders=report_text|astrid_profession")
+		print("V3 Task 1 content success: characters=6, task=task_missing_caravan, results=5, placeholders=report_text")
 	get_tree().quit(0 if passed else 1)
 
 
@@ -67,7 +75,7 @@ func _validate_formal_content() -> bool:
 		if result_asset == null:
 			continue
 		passed = _check(passed, result_asset.id == RESULT_IDS[index], "正式结果 ID 错误：%s" % RESULT_IDS[index])
-		passed = _check(passed, result_asset.report_text == "【占位占位】", "正式结果报告占位缺失：%s" % RESULT_IDS[index])
+		passed = _check(passed, result_asset.report_text == REPORT_PLACEHOLDERS[index], "正式结果报告占位错误：%s" % RESULT_IDS[index])
 
 	return passed
 
