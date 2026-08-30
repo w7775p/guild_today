@@ -7,3 +7,6 @@ var dispatch_instance_id: StringName
 var task_instance_id: StringName
 var character_refs: Array[CharacterAsset] = []
 var status: StringName
+var started_day: int = -1
+var due_day: int = -1
+var ended_day: int = -1

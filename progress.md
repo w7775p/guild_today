@@ -43,11 +43,20 @@
 - 13 个相关脚本通过 Godot 4.7.2 单脚本检查；Task 3 专项、Task 1/2 回归与 V2 `runtime_chain` 回归退出码均为 0。
 - Task 3 专项中的重复结算 ERROR 属于独立负向分支，五个结果均验证重复写入被拒绝。
 
+### V3 Task 4
+
+- 本地完成提交：`feat(v3): 实现最小日期与任务生命周期`。
+- 新增 `runtime/time/day_system.gd`，以整数游戏日推进并发出日期变化通知。
+- `DispatchInstance` 记录 `started_day`、`due_day`、`ended_day`；`DispatchSystem` 提供到期查询和显式结束，角色占用持续到结束。
+- `ResultSettlementSystem` 拒绝定时派遣在缺少当前日期或尚未达到 `due_day` 时结算。
+- Task 4 专项测试覆盖第 1 日派遣、第 2 日未到期、第 3 日到期、到期前结算拒绝、显式结束和角色释放。
+- Task 4 专项、Task 1/2/3 回归与 V2 `runtime_chain` 回归退出码均为 0；到期前结算拒绝属于预期负向分支。
+
 ## 当前进度
 
-- Task 1、Task 2、Task 3 完成。
+- Task 1、Task 2、Task 3、Task 4 完成。
 - Jackie 已解除 Task 3 前置阻塞，允许未定文本和 ID 使用唯一语义占位符，未定数值采用可替换的工作性推测。
-- 当前没有执行中的 Task；Task 4 等待 Jackie 授权。
+- 当前没有执行中的 Task；Task 5 等待 Jackie 授权。
 
 ## 未解决问题
 
@@ -63,7 +72,7 @@
 
 ## 下一步行动
 
-等待 Jackie 授权 V3 Task 4；授权后只实现最小日期与任务生命周期。
+等待 Jackie 授权 V3 Task 5；授权后只组装正式 GameSession。
 
 ## 历史归档
 

@@ -15,7 +15,8 @@ func settle_result(
 	report_system: ReportIntelSystem = null,
 	task_system: TaskSystem = null,
 	task_instance: TaskInstance = null,
-	dispatch_instance: DispatchInstance = null
+	dispatch_instance: DispatchInstance = null,
+	current_day: int = -1
 ) -> bool:
 	if result_instance == null or guild_state == null:
 		push_error("ResultSettlementSystem 缺少结果实例或 GuildState")
@@ -25,6 +26,9 @@ func settle_result(
 		return false
 	if _settled_dispatch_ids.has(result_instance.dispatch_instance_id):
 		push_error("ResultSettlementSystem 拒绝重复结算派遣：%s" % result_instance.dispatch_instance_id)
+		return false
+	if dispatch_instance != null and dispatch_instance.due_day >= 1 and (current_day < 1 or current_day < dispatch_instance.due_day):
+		push_error("ResultSettlementSystem 拒绝未到期派遣结算：%s" % dispatch_instance.dispatch_instance_id)
 		return false
 	if not _are_effects_supported(result_instance.resolved_effects):
 		return false

@@ -39,6 +39,7 @@
 - `ResultSettlementSystem`
 - `StateRelationshipSystem` 壳
 - `ReportIntelSystem` 壳
+- V3 最小 `DaySystem`
 - `SaveSystem` 保留前序架构记录，V3 不创建；是否进入运行时留到 V4 决定
 - 已确认的静态 Resource 类型声明；**不得因此补全未冻结字段 Schema**
 - GdUnit4 自动测试
@@ -47,7 +48,7 @@
 ## 4. 当前阶段禁止擅自引入
 除非真实需求出现并重新冻结，否则不要引入：
 - 通用 `RuleEngine / Condition / Effect / Flag` DSL
-- TimeSystem / 日历 / 每日刷新框架
+- 超出 V3 最小 `DaySystem` 的 TimeSystem / 日历 / 每日刷新框架
 - 完整 Inventory / Facility / Economy 扩展系统
 - Godot JSON Importer / 自定义 Data Editor
 - 万能 Manager / ServiceLocator / EventBus

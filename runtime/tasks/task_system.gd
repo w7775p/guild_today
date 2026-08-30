@@ -26,6 +26,15 @@ func get_task_instance(instance_id: StringName) -> TaskInstance:
 	return _task_instances.get(instance_id) as TaskInstance
 
 
+# 只有已发布任务可以显式进入进行中，避免 UI 或日期系统直接改生命周期字段。
+func start_task_instance(instance_id: StringName) -> bool:
+	var task_instance := get_task_instance(instance_id)
+	if task_instance == null or task_instance.lifecycle_state != &"PUBLISHED":
+		return false
+	task_instance.lifecycle_state = &"IN_PROGRESS"
+	return true
+
+
 # 最终结果只能经 TaskSystem 写入对应 TaskInstance。
 func record_final_result(instance_id: StringName, result_id: StringName) -> bool:
 	var task_instance := get_task_instance(instance_id)

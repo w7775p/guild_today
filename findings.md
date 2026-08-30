@@ -62,9 +62,16 @@
 - Task 1/2 与 V2 `runtime_chain` 回归通过；Task 3 没有改变结果判定规则。
 - 附加 `vertical_slice_test.tscn` 输出全部既有成功信息，但该场景没有自动退出，因此手动终止且不计入自动通过项。
 
+## Task 4 验证结论
+
+- `DaySystem` 只持有整数 `current_day`，日期推进通过 `day_advanced` 通知，不直接写入任务、派遣、结果或公会状态。
+- 定时派遣的到期事实由 `DispatchInstance.started_day`、`due_day`、`ended_day` 持有；角色占用从 ACTIVE 派遣推导，显式结束后释放。
+- `ResultSettlementSystem` 在定时派遣到期前拒绝结算；缺少当前日期也拒绝定时派遣结算。
+- Task 4 专项、Task 1/2/3 与 V2 `runtime_chain` 回归均通过；负向结算分支的 ERROR 为测试预期输出。
+
 ## 下一步
 
-等待 Jackie 授权 V3 Task 4；占位策划内容继续按本文件的唯一语义占位符映射维护。
+等待 Jackie 授权 V3 Task 5；占位策划内容继续按本文件的唯一语义占位符映射维护。
 
 ## 历史归档
 

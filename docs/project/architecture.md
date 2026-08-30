@@ -140,10 +140,11 @@ dispatch_instance_id
 task_instance_id
 character_refs[]
 status = ACTIVE / ENDED
-started_at
-ended_at
+started_day
+due_day
+ended_day
 ```
-时间字段最终类型和单位仍等待时间系统冻结。
+V3 时间字段统一使用整数游戏日；最小日期拥有者见 3.4。
 角色占用由当前 `ACTIVE DispatchInstance` 推导，不额外维护 `is_busy` 第二真源。
 ### 3.2 派遣成员真源迁移决议
 前序冻结曾要求 `TaskInstance.party_member_ids` 保存本次实际派遣成员；后续派遣系统又形成独立 `DispatchInstance.character_refs[]`。
@@ -162,6 +163,20 @@ GameSession
 ├─ StateRelationshipSystem
 └─ ReportIntelSystem
 ```
+
+### 3.4 V3 最小日期边界
+
+`DaySystem` 的正式路径为 `runtime/time/day_system.gd`，只保存 `current_day`，初始值为第 1 日；`advance_day()` 每次推进一天并发出 `day_advanced` 通知。日期系统不直接修改任务、派遣、结果或公会状态。
+
+`DispatchSystem.create_dispatch()` 接收派遣开始日与任务持续天数，并把以下时间事实写入 `DispatchInstance`：
+
+```plain text
+started_day
+due_day = started_day + duration_days
+ended_day
+```
+
+`DispatchSystem.is_dispatch_due()` 与 `get_due_dispatches()` 只查询仍为 `ACTIVE` 且达到 `due_day` 的派遣。到期只代表可以进入结算链；`ResultSettlementSystem.settle_result()` 对定时派遣拒绝缺少当前日期或尚未达到 `due_day` 的结算，实际判定和结束仍由上层编排者显式调用。
 ## 四、当前待验证：角色数据资产方案 v0.1
 本节来自 `角色卡策划原案.xlsx` 中埃利乌斯角色卡的第一次真实样本拆解。**它是候选结构，不是已冻结 Godot 契约。** 必须继续用第二名不同结构角色与两条不同结构任务验证后，才决定是否冻结具体模块。
 ### 4.1 已确认的上层原则
@@ -276,6 +291,8 @@ res://runtime/
 ├── dispatch/
 │   ├── dispatch_system.gd
 │   └── dispatch_instance.gd
+├── time/
+│   └── day_system.gd                # V3 整数游戏日拥有者
 ├── results/
 │   └── result_settlement_system.gd     # 只建薄接口
 ├── characters/
@@ -327,6 +344,7 @@ res://
 │   ├── guild/
 │   ├── tasks/
 │   ├── dispatch/
+│   ├── time/
 │   ├── results/
 │   ├── characters/
 │   ├── reports/
@@ -350,7 +368,7 @@ res://
 - `docs/`：从对应 Notion 工程页面导出的冻结架构与规则；执行状态由仓库根目录三份规划记录维护。
 - `runtime/save/`：V3 不创建，是否进入正式运行时留到 V4 决定。
 ### 当前禁止预建
-不得提前创建 `rules/`、独立 `events/` 运行模块、`time/`、`inventory/`、`editor/`、`importer/`、`dialogue/`、`managers/` 等尚未被当前闭环证明需要的目录。
+不得提前创建 `rules/`、独立 `events/` 运行模块、`inventory/`、`editor/`、`importer/`、`dialogue/`、`managers/` 等尚未被当前闭环证明需要的目录；`time/` 仅允许存放当前 V3 的最小 `day_system.gd`。
 ### 角色 / 任务 / 结果资产边界
 `CharacterAsset / TaskAsset / EventAsset / ResultGroupAsset / ResultAsset` 的类型脚本可以位于 `assets/types/`；正式内容资产未冻结前不生产正式 `.tres`。测试内容只进入 `tests/fixtures/`，不得进入 `assets/data/`。
 ### 下一阶段文档要求

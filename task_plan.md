@@ -17,9 +17,9 @@ V3 只使用已经存在的真实策划资产验证产品，不继续扩充角�
 - 唯一项目目录：`D:\Godot\guild_today`。
 - 禁止操作：`D:\Godot\guild-workbench`。
 - V2 Task 0–16：已完成并已推送。
-- 当前执行任务：无。
+- 当前执行任务：无；最近完成 V3 Task 4。
 - V3 有效编号：Task 1–8，共 8 个 Task。
-- V3 Task 1、Task 2、Task 3 已完成；Task 4–8 继续等待授权与前置条件。
+- V3 Task 1、Task 2、Task 3、Task 4 已完成；Task 5–8 继续等待授权与前置条件。
 - 第一张正式任务：`task_missing_caravan`，显示名“失踪商队调查”。
 - 第一批正式角色：
   - `hero_aelius`
@@ -403,7 +403,7 @@ TaskAsset 只允许加入首张任务展示、派遣和等待明确需要的字�
 
 ---
 
-### [ ] V3 Task 4：实现最小日期与任务生命周期
+### [x] V3 Task 4：实现最小日期与任务生命周期
 
 #### 单一目标
 
@@ -440,6 +440,7 @@ TaskAsset 只允许加入首张任务展示、派遣和等待明确需要的字�
 - `runtime/time/day_system.gd`
 - `runtime/dispatch/dispatch_instance.gd`
 - `runtime/dispatch/dispatch_system.gd`
+- `runtime/results/result_settlement_system.gd`，增加定时派遣的到期校验。
 - 必要的 TaskInstance 生命周期公开 API。
 - Task 4 专项测试。
 - 三份规划记录。
@@ -824,6 +825,6 @@ V3 完成后停止。下一阶段应重新制定 V4 计划，再决定 JSON Impo
 
 ## 11. 当前下一步
 
-当前下一步：等待 Jackie 授权 V3 Task 4，随后实现最小日期与任务生命周期。
+当前下一步：等待 Jackie 授权 V3 Task 5，随后组装正式 GameSession。
 
-最近完成更新：Task 3 已通过 Godot 4.7.2 单脚本检查、专项测试、Task 1/2 回归与 V2 `runtime_chain` 回归；未定文本和 ID 使用唯一语义占位符。
+最近完成更新：Task 4 已通过日期、派遣生命周期与结算边界专项测试，并完成 Task 1/2/3 与 V2 `runtime_chain` 回归；未定文本和 ID 使用唯一语义占位符。
