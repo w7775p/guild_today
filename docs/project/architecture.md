@@ -556,3 +556,20 @@ GuildState
 ```
 CharacterAsset 继续保持最小读取接口，不在本阶段扩展完整角色编辑结构。
 
+## 十五、V3 Task 8 结构反例验证记录
+
+Task 8 使用第二张正式任务“塌方矿井”验证现有最小数据结构能够表达单能力、双能力复合、全项不足和全项满足分区。当前结果内容仍使用语义占位符，验证结论针对字段与运行链，不冻结尚未确认的策划文本和数值。
+
+### 15.1 已由两张任务验证的字段
+
+- `TaskAsset`：`id`、`title`、`description`、`commissioner`、`objective`、`promised_reward`、`duration_days`、`min_party_size`、`max_party_size`、`repeatable`、`result_group`、`event_reference`。
+- `ResultGroupAsset`：稳定 `id` 与 `Array[ResultAsset]` 结果引用；结果组不保存排序优先级。
+- `ResultAsset`：稳定 `id`、`Array[ConditionResource] conditions`、`Array[EffectResource] effects`、`report_text`。
+- `AbilityCondition` 与 `AbilityBelowCondition`：通过 `ability_id` 和阈值表达默认 AND 的能力分区；`TaskResolutionSystem` 只接受唯一命中。
+- `GameSession.task_asset_path`：正式场景可选择一张正式 `TaskAsset`，默认路径仍为首张任务，系统、状态拥有者和 UI 调用链保持复用。
+
+### 15.2 仍待后续验证或冻结的字段
+
+- 角色行为题、职业特例、可购买情报、OR / NOT / 嵌套条件、随机权重、Event 链、JSON Importer、SaveSystem。
+- `CharacterAsset` 完整角色卡 Schema、玩家可见报告最终文案、任务终态最终 ID 和结果效果最终数值。
+

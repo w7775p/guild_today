@@ -99,9 +99,17 @@
 - 专项测试输出：`formal_routes=4, temporary_numeric_fallback=true, lifecycle=true, persistent_effects=true`；正式主场景、Task 1–6、fixture 与 V2 `runtime_chain` 回归退出码均为 0。
 - 专项负例的结算 ERROR 属于预期拒绝分支；Godot 环境告警为 `user://logs/godot.log` 写入失败和根证书仓库读取失败，未发现游戏逻辑错误。
 
-## 下一步
+## Task 8 工作状态
 
-开始 Task 8：接入“塌方矿井”并验证第二张任务结构。
+Task 8 已完成：接入“塌方矿井”并验证第二张任务结构；结果 ID、终态 ID 与报告文本采用类型加语义的稳定占位符，待正式策划冻结后替换。Jackie 已确认第二张任务人工验收通过。
+
+## Task 8 自动验收结论
+
+- 正式任务 `task_collapsed_mine_rescue` 使用 `TaskAsset → TaskInstance → DispatchInstance → TaskResolutionSystem → ResultAsset → ResultInstance → ResultSettlementSystem → ReportIntelSystem` 现有链路；未新增通用规则引擎或隐式优先级。
+- 工作阈值为战斗 ≥7、调查 ≥6、交涉 ≥8；8 个结果分别覆盖调查、交涉、战斗单项，调查加战斗、调查加交涉、交涉加战斗，三项均不足和三项全部满足。
+- `tests/v3_task8_collapsed_mine_test.tscn` 退出码为 0，输出 `results=8, formal_routes=8, unique_results=true, game_session=true`；Task 1–7、V2 `runtime_chain`、首张主场景和第二张 UI 场景启动均通过。
+- `GameSession.task_asset_path` 的默认值仍指向首张任务，第二张 UI 通过场景属性选择正式任务，正式角色池和状态拥有者保持同一套实现。
+- 任务承诺报酬 120、报告文本与任务终态仍属于工作性占位内容；正式策划冻结前不视为最终数值或文案。
 
 ## 历史归档
 

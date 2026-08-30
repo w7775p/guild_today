@@ -73,17 +73,26 @@
 ### V3 Task 7
 
 - 已完成自动与人工验收：四条正式路线通过 `GameSession`，带伤救回通过临时普通 `CharacterAsset` 数值覆盖；Jackie 已确认三轮人工验收通过。
+- Task 7 唯一本地完成提交：`de0fbb5`。
 - 六名正式角色全部单人及双人派遣共 21 种组合中：完整成功 11 种、延迟成功 4 种、查明位置 3 种、搜索失败 3 种、带伤救回 0 种。
 - Jackie 决定保留正式角色与结果条件；当正式角色能力数值无法覆盖某结果区间时，专项测试允许临时创建普通 `CharacterAsset` 覆盖该结果，该情况按数值覆盖缺口验收，不判定为角色设计缺陷。
 - 已新增 `tests/fixtures/test_injured_rescue_character.tres` 与对应基础规则测试；同时补充 Task 7 完整专项测试，临时角色只用于数值覆盖，不进入正式运行路径。
 - `tests/v3_task7_acceptance_test.tscn` 退出码为 0，输出 `formal_routes=4, temporary_numeric_fallback=true, lifecycle=true, persistent_effects=true`；Task 1–6、fixture 与 V2 `runtime_chain` 回归退出码均为 0，正式主场景启动退出码为 0。
 - 专项负例中的“到期前结算/重复结算” ERROR 属于预期拒绝分支；Godot 运行环境仍报告 `user://logs/godot.log` 写入失败和根证书仓库读取告警，未出现游戏逻辑失败。
 
+### V3 Task 8
+
+- 已接入正式任务 `task_collapsed_mine_rescue`、结果组 `result_group_collapsed_mine_rescue` 与 8 个结果资产；条件使用三项能力阈值战斗 7、调查 6、交涉 8 的 AND 组合，结果分区互斥。
+- `GameSession` 新增可配置正式任务资产路径，默认首张任务行为保持不变；人工入口为 `ui/main/collapsed_mine_guild_main.tscn`。
+- `tests/v3_task8_collapsed_mine_test.tscn` 退出码为 0，输出 `results=8, formal_routes=8, unique_results=true, game_session=true`；正式主场景、Task 1–7 和 V2 `runtime_chain` 回归退出码均为 0。
+- 专项验证仅出现 Godot 环境日志告警，未出现资源解析、结果零命中、多命中或业务链失败。
+- Jackie 已确认第二张任务人工验收通过。
+
 ## 当前进度
 
-- Task 1、Task 2、Task 3、Task 4、Task 5、Task 6 完成。
+- Task 1、Task 2、Task 3、Task 4、Task 5、Task 6、Task 7、Task 8 完成。
 - Jackie 已解除 Task 3 前置阻塞，允许未定文本和 ID 使用唯一语义占位符，未定数值采用可替换的工作性推测。
-- Task 7 已完成自动与人工验收，等待进入 Task 8。
+- Task 7、Task 8 已完成自动与人工验收；V3 Task 1–8 已完成。
 
 ## 未解决问题
 
@@ -100,7 +109,7 @@
 
 ## 下一步行动
 
-开始 Task 8：接入“塌方矿井”第二张正式任务，验证单能力与双能力复合结果。
+V3 Task 1–8 已完成并通过验收；停止实现，重新制定 V4 计划。
 
 ## 历史归档
 

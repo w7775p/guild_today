@@ -17,9 +17,9 @@ V3 只使用已经存在的真实策划资产验证产品，不继续扩充角�
 - 唯一项目目录：`D:\Godot\guild_today`。
 - 禁止操作：`D:\Godot\guild-workbench`。
 - V2 Task 0–16：已完成并已推送。
-- 当前执行任务：无；V3 Task 7 已完成，Task 8 待开始。
+- 当前执行任务：V3 Task 8 已完成；V3 Task 1–8 验收通过，等待重新制定 V4 计划。
 - V3 有效编号：Task 1–8，共 8 个 Task。
-- V3 Task 1、Task 2、Task 3、Task 4、Task 5、Task 6、Task 7 已完成；Task 8 等待开始。
+- V3 Task 1、Task 2、Task 3、Task 4、Task 5、Task 6、Task 7、Task 8 已完成。
 - 第一张正式任务：`task_missing_caravan`，显示名“失踪商队调查”。
 - 第一批正式角色：
   - `hero_aelius`
@@ -726,7 +726,7 @@ Jackie 至少完成三轮：
 
 ---
 
-### [ ] V3 Task 8：用第二张结构反例验证并冻结契约
+### [x] V3 Task 8：用第二张结构反例验证并冻结契约
 
 #### 单一目标
 
@@ -768,16 +768,23 @@ Jackie 至少完成三轮：
 
 若三项能力全部满足时存在多结果命中，必须回到策划结果互斥规则处理；禁止在 TaskResolutionSystem 中增加隐式优先级。
 
+#### 当前工作资产口径
+
+- 当前工作阈值为战斗 ≥7、调查 ≥6、交涉 ≥8；对应低于阈值的条件统一使用 `AbilityBelowCondition`，八个分区覆盖六类单项/双项组合、三项均不足和三项全部满足。
+- “塌方矿井”结果组使用 8 个稳定语义 ID；报告文本和任务终态使用同名 `【report_collapsed_mine_<result>】`、`【task_outcome_collapsed_mine_<result>】` 占位符，待正式策划冻结后替换。
+- 任务承诺报酬当前使用工作性数值 120；该数值只服务当前结构验证，未视为最终策划。
+- `GameSession.task_asset_path` 允许正式场景选择任务资产，默认仍加载 `task_missing_caravan`；Task 8 人工入口为 `ui/main/collapsed_mine_guild_main.tscn`。
+
 #### 验收
 
 - 第二张任务沿现有正式链完成发布、派遣、等待、判定、结算和报告。
-- 七类派遣分别唯一命中预期结果。
+- 七类派遣与三项能力全部满足边界共八类，分别唯一命中预期结果。
 - 第一张“失踪商队调查”全部回归通过。
 - 没有新增通用 RuleEngine、DSL 或结果优先级。
 - `docs/project/architecture.md` 明确区分：
   - 已经由两张真实任务证明的正式字段。
   - 仍待角色行为题、职业题、情报购买题验证的字段。
-- Jackie 人工确认第二张任务至少一条路线可完成。
+- Jackie 已确认第二张任务人工验收通过。
 
 #### V3 结束后仍不冻结
 
@@ -837,6 +844,6 @@ V3 完成后停止。下一阶段应重新制定 V4 计划，再决定 JSON Impo
 
 ## 11. 当前下一步
 
-当前下一步：开始 V3 Task 8；用第二张结构反例验证并冻结契约。
+当前下一步：V3 Task 1–8 已完成并通过验收；停止实现，重新制定 V4 计划。
 
 最近完成更新：Task 6 已通过任务查看、1–2 人选择、派遣、两日等待、报告阅读与状态反馈的鼠标控件专项测试；正式主场景启动、Task 5 与 V2 `runtime_chain` 回归退出码均为 0。

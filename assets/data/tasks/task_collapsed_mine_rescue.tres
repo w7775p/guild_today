@@ -1,0 +1,20 @@
+; 正式内容资产：塌方矿井。具体报告文本与终态 ID 使用稳定语义占位符，待正式策划冻结后替换。
+[gd_resource type="Resource" script_class="TaskAsset" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://assets/types/task_asset.gd" id="1_task_asset"]
+[ext_resource type="Resource" path="res://assets/data/results/result_group_collapsed_mine_rescue.tres" id="2_result_group"]
+
+[resource]
+script = ExtResource("1_task_asset")
+id = &"task_collapsed_mine_rescue"
+title = "塌方矿井"
+description = "北岭矿井发生塌方，矿工、工具和矿石被困在主井、侧井与通风道之间。请确认受困区域，选择安全路线并带回幸存者。"
+commissioner = "北岭矿业协会"
+objective = "确认受困人员位置；选择救援路线；带回幸存者并记录矿井状态。"
+promised_reward = 120
+duration_days = 2
+min_party_size = 1
+max_party_size = 2
+repeatable = false
+result_group = ExtResource("2_result_group")
+event_reference = null

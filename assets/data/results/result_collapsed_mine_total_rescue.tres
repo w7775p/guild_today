@@ -1,0 +1,35 @@
+; 正式内容资产：塌方矿井·全项协同救援。Task 8 工作性阈值待正式策划校准。
+[gd_resource type="Resource" script_class="ResultAsset" load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://assets/types/result_asset.gd" id="1_result_asset"]
+[ext_resource type="Script" path="res://assets/types/ability_condition.gd" id="2_ability_condition"]
+[ext_resource type="Script" path="res://assets/types/ability_below_condition.gd" id="3_ability_below_condition"]
+[ext_resource type="Script" path="res://assets/types/condition_resource.gd" id="4_condition_resource"]
+[ext_resource type="Script" path="res://assets/types/effect_resource.gd" id="5_effect_resource"]
+[ext_resource type="Script" path="res://assets/types/task_outcome_effect.gd" id="6_task_outcome_effect"]
+
+[sub_resource type="Resource" id="AbilityCondition_battle_7"]
+script = ExtResource("2_ability_condition")
+ability_id = &"battle"
+value = 7
+
+[sub_resource type="Resource" id="AbilityCondition_investigation_6"]
+script = ExtResource("2_ability_condition")
+ability_id = &"investigation"
+value = 6
+
+[sub_resource type="Resource" id="AbilityCondition_negotiation_8"]
+script = ExtResource("2_ability_condition")
+ability_id = &"negotiation"
+value = 8
+
+[sub_resource type="Resource" id="TaskOutcomeEffect_total_rescue"]
+script = ExtResource("6_task_outcome_effect")
+terminal_state_id = &"【task_outcome_collapsed_mine_total_rescue】"
+
+[resource]
+script = ExtResource("1_result_asset")
+id = &"result_collapsed_mine_total_rescue"
+conditions = Array[ExtResource("4_condition_resource")]([SubResource("AbilityCondition_battle_7"), SubResource("AbilityCondition_investigation_6"), SubResource("AbilityCondition_negotiation_8")])
+effects = Array[ExtResource("5_effect_resource")]([SubResource("TaskOutcomeEffect_total_rescue")])
+report_text = "【report_collapsed_mine_total_rescue】"

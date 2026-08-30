@@ -20,6 +20,9 @@ const FORMAL_CHARACTER_IDS: Array[StringName] = [
 ]
 
 
+@export var task_asset_path: String = FORMAL_TASK_PATH
+
+
 @onready var guild_state: GuildState = $GuildState
 @onready var task_system: TaskSystem = $TaskSystem
 @onready var dispatch_system: DispatchSystem = $DispatchSystem
@@ -189,9 +192,10 @@ func get_unlocked_task_id(intel_id: StringName) -> StringName:
 
 # 首次进入场景时加载正式资产并发布首张 TaskInstance。
 func _initialize_formal_content() -> bool:
-	_formal_task = load(FORMAL_TASK_PATH) as TaskAsset
+	# 通过场景配置选择一张正式任务，默认仍为首张任务，保持同一套 GameSession 链路。
+	_formal_task = load(task_asset_path) as TaskAsset
 	if _formal_task == null or _formal_task.result_group == null:
-		push_error("GameSession 无法加载首张正式任务")
+		push_error("GameSession 无法加载正式任务：%s" % task_asset_path)
 		return false
 	for character_id in FORMAL_CHARACTER_IDS:
 		var character := load(FORMAL_CHARACTER_PATH_PATTERN % character_id) as CharacterAsset
