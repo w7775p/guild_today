@@ -1,0 +1,12 @@
+; TEST_ONLY：用于覆盖“带伤救回”结果的普通 CharacterAsset 测试角色，不进入正式角色池。
+[gd_resource type="Resource" script_class="CharacterAsset" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://assets/types/character_asset.gd" id="1_character_asset"]
+
+[resource]
+script = ExtResource("1_character_asset")
+id = &"test_injured_rescue_character"
+name = "测试救援角色"
+battle = 5
+investigation = 5
+negotiation = 0

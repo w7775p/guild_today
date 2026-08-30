@@ -10,11 +10,11 @@ Godot 4.7.2 运行项目，当前目标是完成 V3 首张真实任务的可玩�
 - V3 Task 3 已完成结果后果持久化与报告记录。
 - V3 Task 4 已完成最小日期与任务生命周期。
 - V3 Task 5 已完成正式 GameSession。
-- V3 Task 6 已完成核心循环 UI；Task 7 等待授权。
+- V3 Task 6 已完成核心循环 UI；Task 7 自动与人工验收已通过，Task 8 待开始。
 
 ## 启动项目
 
-使用 Godot 4.7.2 打开 `D:\Godot\guild_today\project.godot`，按 `F5` 运行主场景。
+使用 `D:\steam\steamapps\common\Godot Engine\godot.windows.opt.tools.64.exe` 打开 `D:\Godot\guild_today\project.godot`，按 `F5` 运行主场景。
 
 当前测试入口会在 Output 输出启动信息和已验收资源的加载结果。
 

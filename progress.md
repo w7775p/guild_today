@@ -9,6 +9,7 @@
 ## 核心约束
 
 - 项目目录：`D:\Godot\guild_today`；禁止操作 `D:\Godot\guild-workbench`。
+- Godot 4.7.2 可执行文件：`D:\steam\steamapps\common\Godot Engine\godot.windows.opt.tools.64.exe`；验证时直接使用绝对路径。
 - V3 只按 Task 1→8 顺序推进，一次只做一个 Task。
 - 未确定文本和 ID 使用“类型＋语义”的唯一占位符；推测数值必须单列，不能伪装成正式策划。
 - 每个 Task 必须完成 Godot 4.7.2 单脚本检查、专项测试、受影响回归、旧引用搜索、`git diff --check` 与差异审计。
@@ -69,11 +70,20 @@
 - `project.godot` 主场景已切换为 `ui/main/guild_main.tscn`，正式窗口为 1280×800。
 - 修改脚本单文件检查、Task 6 专项、正式主场景启动、Task 5 与 V2 `runtime_chain` 回归退出码均为 0，正常日志零 ERROR。
 
+### V3 Task 7
+
+- 已完成自动与人工验收：四条正式路线通过 `GameSession`，带伤救回通过临时普通 `CharacterAsset` 数值覆盖；Jackie 已确认三轮人工验收通过。
+- 六名正式角色全部单人及双人派遣共 21 种组合中：完整成功 11 种、延迟成功 4 种、查明位置 3 种、搜索失败 3 种、带伤救回 0 种。
+- Jackie 决定保留正式角色与结果条件；当正式角色能力数值无法覆盖某结果区间时，专项测试允许临时创建普通 `CharacterAsset` 覆盖该结果，该情况按数值覆盖缺口验收，不判定为角色设计缺陷。
+- 已新增 `tests/fixtures/test_injured_rescue_character.tres` 与对应基础规则测试；同时补充 Task 7 完整专项测试，临时角色只用于数值覆盖，不进入正式运行路径。
+- `tests/v3_task7_acceptance_test.tscn` 退出码为 0，输出 `formal_routes=4, temporary_numeric_fallback=true, lifecycle=true, persistent_effects=true`；Task 1–6、fixture 与 V2 `runtime_chain` 回归退出码均为 0，正式主场景启动退出码为 0。
+- 专项负例中的“到期前结算/重复结算” ERROR 属于预期拒绝分支；Godot 运行环境仍报告 `user://logs/godot.log` 写入失败和根证书仓库读取告警，未出现游戏逻辑失败。
+
 ## 当前进度
 
 - Task 1、Task 2、Task 3、Task 4、Task 5、Task 6 完成。
 - Jackie 已解除 Task 3 前置阻塞，允许未定文本和 ID 使用唯一语义占位符，未定数值采用可替换的工作性推测。
-- 当前没有执行中的 Task；Task 7 等待 Jackie 授权。
+- Task 7 已完成自动与人工验收，等待进入 Task 8。
 
 ## 未解决问题
 
@@ -82,6 +92,7 @@
 - 完整成功评价、搜索失败信任的数值、稳定状态 ID 与拥有者。
 - 带伤救回的受伤角色选择规则与伤势等级。
 - “查明位置”是否结束当前任务，以及后续救援稳定 ID。
+- “带伤救回”要求调查能力至少 5 且战斗能力为 4–5，六名正式角色及其双人组合均无法满足；专项测试已使用临时普通 `CharacterAsset` 覆盖。
 - 五份完整玩家可见报告文本。
 - 正式策划的五人/六人角色数量冲突。
 - 任务池“结果组待建立”与结果组池已有稳定 ID 的冲突。
@@ -89,7 +100,7 @@
 
 ## 下一步行动
 
-等待 Jackie 授权 V3 Task 7；授权后只完成首张真实任务可玩验收。
+开始 Task 8：接入“塌方矿井”第二张正式任务，验证单能力与双能力复合结果。
 
 ## 历史归档
 
