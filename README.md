@@ -7,7 +7,7 @@ Godot 4.7.2 运行项目，目标是逐步验证第一阶段运行时骨架。
 - 已完成 Task 0：项目入口与最小启动场景。
 - 已完成 Task 1：`CharacterAsset` 静态资源加载。
 - 已完成 Task 2：`TaskAsset` 静态资源加载。
-- 后续 Task 必须按 `task_plan.md` 的授权和验收状态推进。
+- V3 后续 Task 必须按 `task_plan.md` 的授权和验收状态推进。
 
 ## 启动项目
 
@@ -28,13 +28,15 @@ Godot 4.7.2 运行项目，目标是逐步验证第一阶段运行时骨架。
 ```text
 res://
 ├── project.godot
-├── resources/
+├── assets/types/
+├── assets/data/
+├── runtime/
 ├── tests/
 └── docs/project/
 ```
 
 ## 任务规划
 
-- [任务计划](task_plan.md)：Task 0–16 当前执行真源。
+- [任务计划](task_plan.md)：V3 Task 1–8 当前执行真源。
 - [进度日志](progress.md)：每次任务的实际变更与验证。
 - [发现记录](findings.md)：架构决策、陷阱和长期发现。
