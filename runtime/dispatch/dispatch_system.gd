@@ -66,6 +66,16 @@ func get_due_dispatches(current_day: int) -> Array[DispatchInstance]:
 	return due_dispatches
 
 
+# ACTIVE 派遣由本系统现有实例即时筛选，GameSession 不保存第二份占用清单。
+func get_active_dispatches() -> Array[DispatchInstance]:
+	var active_dispatches: Array[DispatchInstance] = []
+	for value in _dispatch_instances.values():
+		var dispatch_instance := value as DispatchInstance
+		if dispatch_instance.status == &"ACTIVE":
+			active_dispatches.append(dispatch_instance)
+	return active_dispatches
+
+
 # 角色占用只扫描 ACTIVE 派遣，不维护可独立修改的 is_busy 副本。
 func is_character_occupied(character_id: StringName) -> bool:
 	if character_id.is_empty():

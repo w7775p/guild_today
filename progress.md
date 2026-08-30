@@ -52,11 +52,19 @@
 - Task 4 专项测试覆盖第 1 日派遣、第 2 日未到期、第 3 日到期、到期前结算拒绝、显式结束和角色释放。
 - Task 4 专项、Task 1/2/3 回归与 V2 `runtime_chain` 回归退出码均为 0；到期前结算拒绝属于预期负向分支。
 
+### V3 Task 5
+
+- 本地完成提交：`feat(v3): 组装正式游戏会话`。
+- 新增 `runtime/game_session.gd` 与正式场景，统一编排 Task、Dispatch、Day、Resolution、Settlement、状态和报告系统。
+- 正式会话只加载六名正式角色与 `task_missing_caravan`，公开查询、派遣、推进日期、ACTIVE 派遣和未读报告接口。
+- Task 5 专项覆盖完整成功、查明位置、搜索失败三条端到端路线；均在第 3 日完成唯一结果、结算、报告与角色释放，日志零 ERROR。
+- 修改脚本单文件检查、Task 5 专项、Task 3/4 与 V2 `runtime_chain` 回归退出码均为 0。
+
 ## 当前进度
 
-- Task 1、Task 2、Task 3、Task 4 完成。
+- Task 1、Task 2、Task 3、Task 4、Task 5 完成。
 - Jackie 已解除 Task 3 前置阻塞，允许未定文本和 ID 使用唯一语义占位符，未定数值采用可替换的工作性推测。
-- 当前没有执行中的 Task；Task 5 等待 Jackie 授权。
+- 当前没有执行中的 Task；Task 6 等待 Jackie 授权。
 
 ## 未解决问题
 
@@ -72,7 +80,7 @@
 
 ## 下一步行动
 
-等待 Jackie 授权 V3 Task 5；授权后只组装正式 GameSession。
+等待 Jackie 授权 V3 Task 6；授权后只实现核心循环 UI。
 
 ## 历史归档
 

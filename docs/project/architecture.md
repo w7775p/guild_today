@@ -161,7 +161,9 @@ GameSession
 ├─ TaskResolutionSystem
 ├─ ResultSettlementSystem
 ├─ StateRelationshipSystem
-└─ ReportIntelSystem
+├─ CharacterStateSystem
+├─ ReportIntelSystem
+└─ DaySystem
 ```
 
 ### 3.4 V3 最小日期边界
@@ -279,6 +281,7 @@ TaskInstance.party_member_ids 的迁移后最终去留
 当前可安全创建的是已经有稳定职责的运行时骨架与薄静态类型：
 ```plain text
 res://runtime/
+├── game_session.gd
 ├── game_session.tscn
 ├── guild/
 │   ├── guild_state.gd

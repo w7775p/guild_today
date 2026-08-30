@@ -1,0 +1,42 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://runtime/game_session.gd" id="1_game_session"]
+[ext_resource type="Script" path="res://runtime/guild/guild_state.gd" id="2_guild_state"]
+[ext_resource type="Script" path="res://runtime/tasks/task_system.gd" id="3_task_system"]
+[ext_resource type="Script" path="res://runtime/dispatch/dispatch_system.gd" id="4_dispatch_system"]
+[ext_resource type="Script" path="res://runtime/tasks/task_resolution_system.gd" id="5_resolution_system"]
+[ext_resource type="Script" path="res://runtime/results/result_settlement_system.gd" id="6_settlement_system"]
+[ext_resource type="Script" path="res://runtime/guild/state_relationship_system.gd" id="7_relationship_system"]
+[ext_resource type="Script" path="res://runtime/characters/character_state_system.gd" id="8_character_state_system"]
+[ext_resource type="Script" path="res://runtime/reports/report_intel_system.gd" id="9_report_system"]
+[ext_resource type="Script" path="res://runtime/time/day_system.gd" id="10_day_system"]
+
+[node name="GameSession" type="Node"]
+script = ExtResource("1_game_session")
+
+[node name="GuildState" type="Node" parent="."]
+script = ExtResource("2_guild_state")
+
+[node name="TaskSystem" type="Node" parent="."]
+script = ExtResource("3_task_system")
+
+[node name="DispatchSystem" type="Node" parent="."]
+script = ExtResource("4_dispatch_system")
+
+[node name="TaskResolutionSystem" type="Node" parent="."]
+script = ExtResource("5_resolution_system")
+
+[node name="ResultSettlementSystem" type="Node" parent="."]
+script = ExtResource("6_settlement_system")
+
+[node name="StateRelationshipSystem" type="Node" parent="."]
+script = ExtResource("7_relationship_system")
+
+[node name="CharacterStateSystem" type="Node" parent="."]
+script = ExtResource("8_character_state_system")
+
+[node name="ReportIntelSystem" type="Node" parent="."]
+script = ExtResource("9_report_system")
+
+[node name="DaySystem" type="Node" parent="."]
+script = ExtResource("10_day_system")

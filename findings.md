@@ -69,9 +69,16 @@
 - `ResultSettlementSystem` 在定时派遣到期前拒绝结算；缺少当前日期也拒绝定时派遣结算。
 - Task 4 专项、Task 1/2/3 与 V2 `runtime_chain` 回归均通过；负向结算分支的 ERROR 为测试预期输出。
 
+## Task 5 验证结论
+
+- 正式 `GameSession` 只编排现有状态拥有者；角色占用、金币、日期、结果和报告仍由对应 System 持有。
+- `GameSession` 加载六名正式角色与首张任务，不读取 `tests/fixtures/`，也不注册为 Autoload。
+- 完整成功、查明位置、搜索失败三条路线均完成两日等待、唯一判定、结算、报告、派遣结束和角色释放。
+- Task 5 正常专项日志零 ERROR；Task 3/4 与 V2 `runtime_chain` 回归通过。
+
 ## 下一步
 
-等待 Jackie 授权 V3 Task 5；占位策划内容继续按本文件的唯一语义占位符映射维护。
+等待 Jackie 授权 V3 Task 6；占位策划内容继续按本文件的唯一语义占位符映射维护。
 
 ## 历史归档
 

@@ -73,6 +73,16 @@ func get_report(report_id: StringName) -> ReportRecord:
 	return _reports.get(report_id) as ReportRecord
 
 
+# 未读报告从报告真源即时筛选，供 GameSession 和后续 UI 查询。
+func get_unread_reports() -> Array[ReportRecord]:
+	var unread_reports: Array[ReportRecord] = []
+	for value in _reports.values():
+		var report := value as ReportRecord
+		if not report.is_read:
+			unread_reports.append(report)
+	return unread_reports
+
+
 # 关闭报告只改变阅读事实，不重复触发任何效果。
 func mark_report_read(report_id: StringName) -> bool:
 	var record := get_report(report_id)
